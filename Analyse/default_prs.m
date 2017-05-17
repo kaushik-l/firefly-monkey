@@ -7,6 +7,7 @@ prs.filepath_neur = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyIn
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
+prs.comments = monkeyInfo.comments;
 
 prs.fs_smr = 5000/6; % sampling rate of smr file
 prs.filtwidth = 10; % width in samples (10 samples @ fs_smr = 12ms)

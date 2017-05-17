@@ -3,6 +3,7 @@ classdef singleunit < handle
     properties
         channel_no
         spkwf
+        tseries
         trials
     end
     %%

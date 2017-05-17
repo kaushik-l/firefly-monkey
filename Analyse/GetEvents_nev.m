@@ -1,4 +1,4 @@
-function t_events = GetEvents_nev(fname)
+function [t_events,prs] = GetEvents_nev(fname,prs)
 % get begin, reward, and end times from plx file
 
 load(fname);
@@ -23,3 +23,5 @@ t_end(1) = []; % remove dummy entry
 if t_beg(end)>t_end(end), t_beg(end) = []; end % remove last incomplete trial
 t_events.t_beg = t_beg;
 t_events.t_end = t_end;
+
+prs.fs = MetaTags.TimeRes; % sampling rate

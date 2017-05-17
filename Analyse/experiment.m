@@ -15,8 +15,7 @@ classdef experiment < handle
         function AddSessions(this,monk_id,session_id)
             prs = default_prs(monk_id,session_id);
             this.sessions(end+1) = session(monk_id,session_id,prs.coord);
-            this.sessions(end).AddTrials(prs);
-            this.sessions(end).AnalyseBehaviour(prs);
+            this.sessions(end).AddBehaviours(prs);
             this.sessions(end).AddUnits(prs);
         end
         %% function to plot data

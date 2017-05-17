@@ -2,43 +2,27 @@ classdef session < handle
     %%
     properties
         monk_id
-        session_id
+        sess_id
         coord
-        tseries
-        trials                                                              % trial
+        behaviours = behaviour.empty();                                     % trial
         multiunits = multiunit.empty();                                     % multiunit
         singleunits = singleunit.empty();                                   % singleunit
         lfps = lfp.empty();                                                 % lfp
         populations = population.empty();                                   % population
-        behaviour
     end
     %%
     methods
         %% class constructor
-        function this = session(monk_id,session_id,coord)
+        function this = session(monk_id,sess_id,coord)
             this.monk_id = monk_id;
-            this.session_id = session_id;
+            this.sess_id = sess_id;
             this.coord = coord;
         end
-        %% add trials
-        function AddTrials(this,prs)
-            cd(prs.filepath_behv);
-            flist_smr=dir('*.smr'); nfile = length(flist_smr);
-            flist_log=dir('*.log');
-            flist_mat=dir('*.mat');
-            for i=1:length(flist_smr)
-                fprintf(['... reading ' flist_smr(i).name '\n']);
-                data_smr = ImportSMR(flist_smr(i).name);
-                [this.tseries.smr(i),trials_temp] = AddSMRData(data_smr,prs);
-                trials_temp = AddLOGData(flist_log(i).name,trials_temp);
-                trials_temp = AddMATData(flist_mat(i).name,trials_temp);
-                this.trials = [this.trials trials_temp];
-                clear trials_temp;
-            end
-        end
-        %% analyse behaviour
-        function AnalyseBehaviour(this,prs)
-            this.behaviour = AnalyseBehaviour(this.trials,prs);
+        %% add behaviour
+        function AddBehaviours(this,prs)
+            this.behaviours = behaviour(prs.comments);
+            this.behaviours.AddTrials(prs);
+            this.behaviours.AnalyseBehaviour(prs);
         end
         %% add units
         function AddUnits(this,prs)
@@ -67,12 +51,12 @@ classdef session < handle
             elseif ~isempty(file_nev) % data recorded using Cereplex
                 file_mat=dir('*.mat');
                 fprintf(['... reading events from ' file_mat.name '\n']);
-                events_nev = GetEvents_nev(file_mat.name);
-                events_smr.t_beg = [this.trials.t_beg];
-                events_smr.t_rew = [this.trials.t_rew];
-                events_smr.t_end = [this.trials.t_end];
-                events_smr.ntrls = [this.tseries.smr.ntrls];
-                if length(this.trials)==length(events_nev.t_end)
+                [events_nev,prs] = GetEvents_nev(file_mat.name,prs);
+                events_smr.t_beg = [this.behaviours.trials.t_beg];
+                events_smr.t_rew = [this.behaviours.trials.t_rew];
+                events_smr.t_end = [this.behaviours.trials.t_end];
+                events_smr.ntrls = [this.behaviours.tseries.smr.ntrls];
+                if length(this.behaviours.trials)==length(events_nev.t_end)
                     fprintf(['... reading spikes from ' file_mat.name '\n']);
                     for j=1:prs.maxchannels
                         fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels) '\n']);

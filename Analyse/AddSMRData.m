@@ -93,20 +93,22 @@ for j=1:length(t.end)
     end
 end
 
+exp_beg = t.events(find(markers==1,1,'first'));
+exp_end = t.events(find(markers==3,1,'last'));
+%% timestamps referenced relative to exp_beg
+for i=1:length(trl)
+    trl(i).t_beg = trl(i).t_beg - exp_beg;
+    trl(i).t_end = trl(i).t_end - exp_beg;
+    trl(i).t_rew = trl(i).t_rew - exp_beg;
+end
+
 %% downsample continuous data
 for i=1:length(chnames)
     if ~any(strcmp(chnames{i},'mrk'))
+        ch.(chnames{i}) = ch.(chnames{i})(ts>exp_beg & ts<exp_end);
         ch.(chnames{i}) = downsample(ch.(chnames{i}),prs.factor_downsample);
     end
 end
+ts = ts(ts>exp_beg & ts<exp_end) - exp_beg;
 ch.ts = downsample(ts,prs.factor_downsample); ch.ts = ch.ts(:);
-ch.exp_beg = t.events(find(markers==1,1,'first'));
-ch.exp_end = t.events(find(markers==3,1,'last'));
 ch.ntrls = length(trl);
-
-%% timestamps referenced relative to exp_beg
-for i=1:length(trl)
-    trl(i).t_beg = trl(i).t_beg - ch.exp_beg;
-    trl(i).t_end = trl(i).t_end - ch.exp_beg;
-    trl(i).t_rew = trl(i).t_rew - ch.exp_beg;
-end

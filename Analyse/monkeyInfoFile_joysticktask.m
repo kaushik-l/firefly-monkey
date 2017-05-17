@@ -13,6 +13,8 @@ monkeyInfo (end).coord.depth = 5365;     % Depth below gray matter (in microns)
 monkeyInfo (end).channels = 1:24;        % Channel #? (all channels=0)
 monkeyInfo (end).units = 0;              % Analyse all units? (sorted units=0; all units=1)
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 08 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
  
 %% session 2
 monkeyInfo (end+1).monk_id = 44;
@@ -23,6 +25,8 @@ monkeyInfo (end).coord.depth = 5655;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 09 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 3
 monkeyInfo (end+1).monk_id = 44;
@@ -33,6 +37,8 @@ monkeyInfo (end).coord.depth = 4572;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 10 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 4
 monkeyInfo (end+1).monk_id = 44;
@@ -43,6 +49,8 @@ monkeyInfo (end).coord.depth = 6231;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 11 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 5
 monkeyInfo (end+1).monk_id = 44;
@@ -53,6 +61,8 @@ monkeyInfo (end).coord.depth = 5673;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 14 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 6
 monkeyInfo (end+1).monk_id = 44;
@@ -63,6 +73,8 @@ monkeyInfo (end).coord.depth = 10800;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 15 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 7
 monkeyInfo (end+1).monk_id = 44;
@@ -73,6 +85,8 @@ monkeyInfo (end).coord.depth = 6100;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 17 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 8
 monkeyInfo (end+1).monk_id = 44;
@@ -83,6 +97,8 @@ monkeyInfo (end).coord.depth = 5900;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 21 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 9
 monkeyInfo (end+1).monk_id = 44;
@@ -93,6 +109,8 @@ monkeyInfo (end).coord.depth = 5776;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 22 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 10
 monkeyInfo (end+1).monk_id = 44;
@@ -103,6 +121,8 @@ monkeyInfo (end).coord.depth = 7809;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 23 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 11
 monkeyInfo (end+1).monk_id = 44;
@@ -113,6 +133,8 @@ monkeyInfo (end).coord.depth = 11212;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 25 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 12
 monkeyInfo (end+1).monk_id = 44;
@@ -123,6 +145,8 @@ monkeyInfo (end).coord.depth = 7342;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 26 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 13
 monkeyInfo (end+1).monk_id = 44;
@@ -133,6 +157,8 @@ monkeyInfo (end).coord.depth = 12855;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 28 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 14
 monkeyInfo (end+1).monk_id = 44;
@@ -143,6 +169,8 @@ monkeyInfo (end).coord.depth = 5540;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 29 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 15
 monkeyInfo (end+1).monk_id = 44;
@@ -153,6 +181,8 @@ monkeyInfo (end).coord.depth = 3723;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 30 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 16
 monkeyInfo (end+1).monk_id = 44;
@@ -163,6 +193,8 @@ monkeyInfo (end).coord.depth = 2715;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 1 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 17
 monkeyInfo (end+1).monk_id = 44;
@@ -173,6 +205,8 @@ monkeyInfo (end).coord.depth = 6460;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 2 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 18
 monkeyInfo (end+1).monk_id = 44;
@@ -183,6 +217,8 @@ monkeyInfo (end).coord.depth = 5455;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 5 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 19
 monkeyInfo (end+1).monk_id = 44;
@@ -193,6 +229,8 @@ monkeyInfo (end).coord.depth = 6347;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 6 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 20
 monkeyInfo (end+1).monk_id = 44;
@@ -203,6 +241,8 @@ monkeyInfo (end).coord.depth = 7734;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 7 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 21
 monkeyInfo (end+1).monk_id = 44;
@@ -213,6 +253,8 @@ monkeyInfo (end).coord.depth = 5188;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 9 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 22
 monkeyInfo (end+1).monk_id = 44;
@@ -223,6 +265,8 @@ monkeyInfo (end).coord.depth = 5873;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 12 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 23
 monkeyInfo (end+1).monk_id = 44;
@@ -233,6 +277,8 @@ monkeyInfo (end).coord.depth = 7133;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 13 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 24
 monkeyInfo (end+1).monk_id = 44;
@@ -243,6 +289,8 @@ monkeyInfo (end).coord.depth = 5370;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 14 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 25
 monkeyInfo (end+1).monk_id = 44;
@@ -253,6 +301,8 @@ monkeyInfo (end).coord.depth = 7502;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 15 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 26
 monkeyInfo (end+1).monk_id = 44;
@@ -263,6 +313,8 @@ monkeyInfo (end).coord.depth = 7273;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 16 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 27
 monkeyInfo (end+1).monk_id = 44;
@@ -273,6 +325,8 @@ monkeyInfo (end).coord.depth = 8513;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 19 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 28
 monkeyInfo (end+1).monk_id = 44;
@@ -283,6 +337,8 @@ monkeyInfo (end).coord.depth = 9932;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 20 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 29
 monkeyInfo (end+1).monk_id = 44;
@@ -293,6 +349,8 @@ monkeyInfo (end).coord.depth = 6490;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 21 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 30
 monkeyInfo (end+1).monk_id = 44;
@@ -303,6 +361,8 @@ monkeyInfo (end).coord.depth = 11935;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 22 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 31
 monkeyInfo (end+1).monk_id = 44;
@@ -313,6 +373,8 @@ monkeyInfo (end).coord.depth = 7692;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 23 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 32
 monkeyInfo (end+1).monk_id = 44;
@@ -323,6 +385,8 @@ monkeyInfo (end).coord.depth = 10033;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 27 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 33
 monkeyInfo (end+1).monk_id = 44;
@@ -333,6 +397,8 @@ monkeyInfo (end).coord.depth = 9478;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 28 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 34
 monkeyInfo (end+1).monk_id = 44;
@@ -343,6 +409,8 @@ monkeyInfo (end).coord.depth = 9042;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Dec 29 2016';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 35
 monkeyInfo (end+1).monk_id = 44;
@@ -353,6 +421,8 @@ monkeyInfo (end).coord.depth = 8979;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 3 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 36
 monkeyInfo (end+1).monk_id = 44;
@@ -363,6 +433,8 @@ monkeyInfo (end).coord.depth = 8732;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 4 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 37
 monkeyInfo (end+1).monk_id = 44;
@@ -373,6 +445,8 @@ monkeyInfo (end).coord.depth = 10487;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 5 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 38
 monkeyInfo (end+1).monk_id = 44;
@@ -383,6 +457,8 @@ monkeyInfo (end).coord.depth = 7880;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 6 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 39
 monkeyInfo (end+1).monk_id = 44;
@@ -393,6 +469,8 @@ monkeyInfo (end).coord.depth = 10553;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 9 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 40
 monkeyInfo (end+1).monk_id = 44;
@@ -403,6 +481,8 @@ monkeyInfo (end).coord.depth = 8650;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 10 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 41
 monkeyInfo (end+1).monk_id = 44;
@@ -413,6 +493,8 @@ monkeyInfo (end).coord.depth = 8177;
 monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 11 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 42
 monkeyInfo (end+1).monk_id = 44;
@@ -423,6 +505,8 @@ monkeyInfo (end).coord.depth = 10468;
 monkeyInfo (end).channels = 1:16;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Jan 12 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 43
 monkeyInfo (end+1).monk_id = 44;
@@ -433,7 +517,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 25 2017';
-
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 %% session 44
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 44;
@@ -443,6 +528,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 26 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 45
 monkeyInfo (end+1).monk_id = 44;
@@ -453,6 +540,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 27 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 46
 monkeyInfo (end+1).monk_id = 44;
@@ -463,6 +552,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 28 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 47
 monkeyInfo (end+1).monk_id = 44;
@@ -473,6 +564,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 30 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 48
 monkeyInfo (end+1).monk_id = 44;
@@ -493,6 +586,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 1 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 50
 monkeyInfo (end+1).monk_id = 44;
@@ -513,6 +608,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 3 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 52
 monkeyInfo (end+1).monk_id = 44;
@@ -523,6 +620,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 4 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 53
 monkeyInfo (end+1).monk_id = 44;
@@ -533,6 +632,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 6 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 54
 monkeyInfo (end+1).monk_id = 44;
@@ -543,6 +644,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 7 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 55
 monkeyInfo (end+1).monk_id = 44;
@@ -553,6 +656,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 8 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 56
 monkeyInfo (end+1).monk_id = 44;
@@ -743,6 +848,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Mar 16 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+    'XXXXX was unusual'};
 
 %% session 75
 monkeyInfo (end+1).monk_id = 44;

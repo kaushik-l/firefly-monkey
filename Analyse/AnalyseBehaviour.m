@@ -1,4 +1,4 @@
-function behaviour = AnalyseBehaviour(trials,prs)
+function stats = AnalyseBehaviour(trials,prs)
 
 for i=1:length(trials)
     %% final velocity
@@ -39,34 +39,34 @@ theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 
 %% save
 % trial index
-behaviour.trlindx.correct = correct; 
-behaviour.trlindx.incorrect = incorrect; 
-behaviour.trlindx.crazy = crazy;
+stats.trlindx.correct = correct; 
+stats.trlindx.incorrect = incorrect; 
+stats.trlindx.crazy = crazy;
 
 % % stimulus parameters
 % behaviour.prs.floordensity = floordensity;
 
 % final position - monkey and fly
-behaviour.pos_final.r_monk = rf_monk; behaviour.pos_final.theta_monk = thetaf_monk;
-behaviour.pos_final.r_fly = r_fly; behaviour.pos_final.theta_fly = theta_fly;
+stats.pos_final.r_monk = rf_monk; stats.pos_final.theta_monk = thetaf_monk;
+stats.pos_final.r_fly = r_fly; stats.pos_final.theta_fly = theta_fly;
 
 % absolute position - monkey
-behaviour.pos_abs.x_monk = {trials.xmp};
-behaviour.pos_abs.y_monk = {trials.ymp};
+stats.pos_abs.x_monk = {trials.xmp};
+stats.pos_abs.y_monk = {trials.ymp};
 
 % absolute position - eye
-behaviour.pos_abs.z_leye =  {trials.zlep_scr};
-behaviour.pos_abs.y_leye =  {trials.ylep_scr};
-behaviour.pos_abs.z_reye =  {trials.zrep_scr};
-behaviour.pos_abs.y_reye =  {trials.yrep_scr};
+stats.pos_abs.z_leye =  {trials.zlep_scr};
+stats.pos_abs.y_leye =  {trials.ylep_scr};
+stats.pos_abs.z_reye =  {trials.zrep_scr};
+stats.pos_abs.y_reye =  {trials.yrep_scr};
 
 % relative position - fly, eye
-behaviour.pos_rel.x_fly = {trials.xfp_rel};
-behaviour.pos_rel.y_fly = {trials.yfp_rel};
-behaviour.pos_rel.r_fly = {trials.r_fly_rel};
-behaviour.pos_rel.theta_fly = {trials.theta_fly_rel};
+stats.pos_rel.x_fly = {trials.xfp_rel};
+stats.pos_rel.y_fly = {trials.yfp_rel};
+stats.pos_rel.r_fly = {trials.r_fly_rel};
+stats.pos_rel.theta_fly = {trials.theta_fly_rel};
 
-behaviour.pos_rel.x_leye = {trials.xlep};
-behaviour.pos_rel.y_leye = {trials.ylep};
-behaviour.pos_rel.x_reye = {trials.xrep};
-behaviour.pos_rel.y_reye = {trials.yrep};
+stats.pos_rel.x_leye = {trials.xlep};
+stats.pos_rel.y_leye = {trials.ylep};
+stats.pos_rel.x_reye = {trials.xrep};
+stats.pos_rel.y_reye = {trials.yrep};
