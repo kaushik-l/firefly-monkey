@@ -41,12 +41,12 @@ t.end = t.events(markers ==3);
 t.reward = t.events(markers ==4);
 t.beg = t.beg(1:length(t.end));
 
-%% filter
+%% define filter
 sig = prs.filtwidth; %filter width
 sz = prs.filtsize; %filter size
 t2 = linspace(-sz/2, sz/2, sz);
 h = exp(-t2.^2/(2*sig^2));
-h = h/sum(h);
+h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
 
 %% load relevant channels
 chnames = fieldnames(chno); MAX_LENGTH = inf; dt = [];

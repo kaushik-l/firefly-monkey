@@ -23,6 +23,7 @@ classdef session < handle
             this.behaviours = behaviour(prs.comments);
             this.behaviours.AddTrials(prs);
             this.behaviours.AnalyseBehaviour(prs);
+            this.behaviours.UseDatatype('single');
         end
         %% add units
         function AddUnits(this,prs)
@@ -67,6 +68,7 @@ classdef session < handle
                                     %fetch multiunit
                                     this.multiunits(end+1) = multiunit(units(i));
                                     this.multiunits(end).AddTrials(units(i).tspk,events_nev,events_smr,prs);
+                                    this.multiunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
                                 elseif units(i).type == 'sua'
                                     %fetch singleunits
                                     this.singleunits(end+1) = singleunit(units(i));

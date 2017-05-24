@@ -21,12 +21,18 @@ classdef behaviour < handle
             for i=1:length(flist_smr)
                 fprintf(['... reading ' flist_smr(i).name '\n']);
                 data_smr = ImportSMR(flist_smr(i).name);
-                [this.tseries.smr(i),trials_temp] = AddSMRData(data_smr,prs);
+                [tseries_temp,trials_temp] = AddSMRData(data_smr,prs);
                 trials_temp = AddLOGData(flist_log(i).name,trials_temp);
-                trials_temp = AddMATData(flist_mat(i).name,trials_temp);
+                [tseries_temp,trials_temp] = ...
+                    AddMATData(flist_mat(i).name,tseries_temp,trials_temp);
+                this.tseries.smr(i) = tseries_temp;
                 this.trials = [this.trials trials_temp];
-                clear trials_temp;
+                clear trials_temp tseries_temp;
             end
+        end
+        %% change datatype (to save memory)
+        function UseDatatype(this,data_type)
+            UseDatatype_behv(this,data_type);
         end
         %% analyse behaviour
         function AnalyseBehaviour(this,prs)

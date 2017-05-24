@@ -1,4 +1,4 @@
-function trials = AddMATData(file,trials)
+function [tseries,trials] = AddMATData(file,tseries,trials)
 
 MATData = load(file);
 
@@ -19,7 +19,7 @@ t_end_mat = MATData.events.t_end; t_end_mat = t_end_mat(1+i:ntrls+i) - offset;
 t_flyON = MATData.events.t_flyON; t_flyON = t_flyON(1+i:ntrls+i) -  offset;
 t_flyOFF = MATData.events.t_flyOFF; t_flyOFF = t_flyOFF(1+i:ntrls+i) - offset;
 
-%% add fly ON/OFF times
+%% add fly ON/OFF times to trials
 for j=1:ntrls
     trials(j).t_end_mat = t_end_mat(j); % trial end times from matlab (compare with trials(j).t_end)
     trials(j).t_flyON = t_flyON(j);
@@ -27,5 +27,29 @@ for j=1:ntrls
         trials(j).t_flyOFF = t_flyOFF(j);
     else
         trials(j).t_flyOFF = nan; % trials in which firefly was ON throughout
+    end
+end
+
+%% add fly status to tseries
+ts = tseries.ts; ns = length(ts);
+tseries.fly_sts = zeros(ns,1);
+for i=1:ntrls
+    if ~isnan(trials(i).t_flyOFF)
+        tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_flyOFF)=1;
+    else
+        tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_end)=1;
+    end
+end
+
+%% add fly status to trials
+for i=1:ntrls
+    ts = trials(i).ts; ns = length(ts);
+    trials(i).fly_sts = zeros(ns,1);
+    t_on = trials(i).t_flyON - trials(i).t_beg;
+    t_off = trials(i).t_flyOFF - trials(i).t_beg;
+    if ~isnan(t_off)
+        trials(i).fly_sts(ts>t_on & ts<t_off)=1;
+    else
+        trials(i).fly_sts(ts>t_on)=1;
     end
 end
