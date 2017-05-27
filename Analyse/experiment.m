@@ -19,11 +19,11 @@ classdef experiment < handle
             this.sessions(end).AddUnits(prs);
         end
         %% function to plot data
-        function Plot(this,monk_id,sess_id,unit_id)
+        function Plot(this,monk_id,sess_id,unit_type,unit_id)
             monk_ids = [this.sessions.monk_id];
-            sess_ids = [this.sessions.session_id];
-            data = this.sessions((monk_ids == monk_id) & (sess_ids == sess_id));
-            plotdata(data,unit_id);
+            sess_ids = [this.sessions.sess_id];
+            indx = (monk_ids == monk_id) & (sess_ids == sess_id);
+            this.sessions(indx).PlotUnits(unit_type,unit_id);
         end
     end
 end

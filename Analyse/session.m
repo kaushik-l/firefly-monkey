@@ -93,5 +93,19 @@ classdef session < handle
                 this.lfps = GetLfp(file_ead.name,j);
             end
         end
+        %% plot units
+        function PlotUnits(this,unit_type,unit_id)
+            behv = this.behaviours;
+            units = this.(unit_type);
+            if length(unit_id)~=1
+                error('unit id should be an non-negative integer');
+            end
+            if unit_id~=0
+                unit = units(unit_id);
+                PlotUnit(behv,unit);        % plot data from a specific unit
+            else
+                PlotUnits(behv,units);      % plot data from all units
+            end
+        end
     end
 end

@@ -3,7 +3,6 @@ function [tseries, trials] = AddTrials2Unit(tspk,events_spk,events_smr,prs)
 ntrls = events_smr.ntrls;
 ntrls_cum = cumsum(ntrls);
 ntrls_tot = sum(ntrls);
-t_start = events_spk.t_start;
 tspk = double(tspk)/prs.fs;
 
 %% tseries
@@ -15,6 +14,7 @@ for i=1:nsmr
 end
 
 %% trials
+trials(ntrls_tot) = struct();
 for i=1:ntrls_tot
     t_start = events_spk.t_start(find(i<=ntrls_cum,1));
     trials(i).tspk = tspk(tspk > (t_start + events_smr.t_beg(i)) & tspk < (t_start + events_smr.t_end(i))) -...
