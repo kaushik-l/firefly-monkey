@@ -74,7 +74,7 @@ for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     Td = trial_behv_temp.t_end - trial_behv_temp.t_beg;
-    ts = linspace(0,1,101);
+    ts = linspace(0,1,(1/prs.binwidth_warp)+1);
     [relnspk,~]=hist(trial_spks_temp.reltspk,ts); relnspk = relnspk(:)/Td;
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size

@@ -1,4 +1,9 @@
-function PlotUnit(behv,unit,plot_type)
+function PlotUnit(behv,unit,plot_type,prs)
+
+%% parameters
+binwidth_abs = prs.binwidth_abs;
+binwidth_warp = prs.binwidth_warp;
+trlkrnlwidth = prs.trlkrnlwidth;
 
 ntrl = length(behv.trials);
 correct = behv.stats.trlindx.correct;
@@ -19,16 +24,8 @@ Td = [behv_all.t_end] - [behv_all.t_beg];
 [~,indx] = sort(Td);
 behv_all = behv_all(indx);
 spks_all = spks_all(indx);
-
-Td = [behv_correct.t_end] - [behv_correct.t_beg];
-[~,indx] = sort(Td);
-behv_correct = behv_correct(indx);
-spks_correct = spks_correct(indx);
-
-Td = [behv_incorrect.t_end] - [behv_incorrect.t_beg];
-[~,indx] = sort(Td);
-behv_incorrect = behv_incorrect(indx);
-spks_incorrect = spks_incorrect(indx);
+Td_all = [behv_all.t_end] - [behv_all.t_beg];
+rew_all = [behv_all.reward];
 
 switch plot_type
     case 'raster_start'
@@ -36,7 +33,7 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).tspk)
-                plot(spks_all(i).tspk(1:3:end),i,'ob','markersize',0.2,'markerFacecolor','b');
+                plot(spks_all(i).tspk(1:3:end),i,'oy','markersize',0.2,'markerFacecolor','y');
             end
         end
         xlim([0 4]); axis off;
@@ -74,12 +71,15 @@ switch plot_type
         for i=1:ntrls_all
             nspk(i,1:ns(i)) = spks_all(i).nspk;
         end
-        trlkrnl = ones(100,1)/100;
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk = conv2nan(nspk, trlkrnl);
         % plot
-        nspk = nspk/0.012;
-        figure; imagesc(nspk,[0  max(mean(nspk))]);
-        set(gca,'Ydir','normal');
+        ts = binwidth_abs:binwidth_abs:ns_max*binwidth_abs;
+        nspk = nspk/binwidth_abs;
+        nspk(isnan(nspk)) = 0; % display nan as white pixels
+        figure; imagesc(ts,1:ntrls_all,nspk,[0  max(mean(nspk))]);
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); axis([0 4 100 ntrls_all]); axis off;
         
     case 'rate_end'
         %% psth - aligned to end of trial
@@ -94,12 +94,15 @@ switch plot_type
         for i=1:ntrls_all
             nspk2end(i,end-ns(i)+1:end) = spks_all(i).nspk2end;
         end
-        trlkrnl = ones(100,1)/100;
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk2end = conv2nan(nspk2end, trlkrnl);
         % plot
-        nspk2end = nspk2end/0.012;
-        figure; imagesc(nspk2end,[0 max(mean(nspk2end))]);
-        set(gca,'Ydir','normal');
+        ts = -ns_max*binwidth_abs:binwidth_abs:binwidth_abs;
+        nspk2end = nspk2end/binwidth_abs;
+        nspk2end(isnan(nspk2end)) = 0;  % display nan as white pixels
+        figure; imagesc(ts,1:ntrls_all,nspk2end,[0 3.25]);
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); axis off;
         
     case 'rate_warp'
         %% psth - normalised by trial duration
@@ -108,10 +111,27 @@ switch plot_type
         for i=1:ntrls_all
             relnspk(i,:) = spks_all(i).relnspk;
         end
-        trlkrnl = ones(100,1)/100;
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         relnspk = conv2(relnspk, trlkrnl, 'valid');
         % plot
-        relnspk = relnspk/0.01;
+        relnspk = relnspk/binwidth_warp;
+        relnspk(isnan(relnspk)) = 0;  % display nan as white pixels
         figure; imagesc(relnspk,[0 max(mean(relnspk))]);
-        set(gca,'Ydir','normal');
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); ylim([100 ntrls_all]); axis off;
+    case 'psth_warp'
+        %% same as rate_warp but trial averaged
+        ns_max = length(spks_all(1).relnspk);
+        relnspk = nan(ntrls_all,ns_max);
+        for i=1:ntrls_all
+            relnspk(i,:) = spks_all(i).relnspk;
+        end
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+        relnspk = conv2(relnspk, trlkrnl, 'valid');
+        % plot
+        relnspk = mean(relnspk)/binwidth_warp; % mean across trials
+        ts = linspace(0,1,length(relnspk));
+        figure(7); hold on;
+        plot(ts,relnspk);
+        set(gca,'Ydir','normal'); axis off;
 end

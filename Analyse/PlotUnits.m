@@ -1,39 +1,104 @@
-function PlotUnits(behv,units,plot_type)
+function PlotUnits(behv,units,plot_type,prs)
 
+%% parameters
+binwidth_abs = prs.binwidth_abs;
+binwidth_warp = prs.binwidth_warp;
+trlkrnlwidth = prs.trlkrnlwidth;
 nunits = length(units);
-correct = behv.stats.trlindx.correct;
-incorrect = behv.stats.trlindx.incorrect;
 crazy = behv.stats.trlindx.crazy;
 
 % behavioural data
 behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
-behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
-behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
-
 % order trials based on trial duration
 Td = [behv_all.t_end] - [behv_all.t_beg];
 [~,indx_all] = sort(Td);
 behv_all = behv_all(indx_all);
 
-Td = [behv_correct.t_end] - [behv_correct.t_beg];
-[~,indx_correct] = sort(Td);
-behv_correct = behv_correct(indx_correct);
-
-Td = [behv_incorrect.t_end] - [behv_incorrect.t_beg];
-[~,indx_incorrect] = sort(Td);
-behv_incorrect = behv_incorrect(indx_incorrect);
+%% population dynamics
+switch plot_type
+    case 'psth_trial'
+        %% psth of all neurons on one trial
+        spks_all = units(1).trials(~crazy);
+        spks_all = spks_all(indx_all);
+        ns_max = length(spks_all(1).relnspk);
+        % initialise response matrix (Neurons x Time)
+        r = nan(length(prs.goodorder),ns_max);
+        k = 0;
+        for j=prs.goodorder %1:nunits
+            k = k+1;
+            % neural data
+            spks_all = units(j).trials(~crazy);
+            % order trials based on trial duration
+            relnspk = nan(ntrls_all,ns_max);
+            for i=1:ntrls_all
+                relnspk(i,:) = spks_all(i).relnspk;
+            end
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+            relnspk = conv2(relnspk, trlkrnl, 'valid');
+            relnspk = mean(relnspk)/binwidth_warp; % mean across trials
+            relnspk = relnspk/max(relnspk); % normalise psth of individual neurons
+            r(k,:) = relnspk;
+        end
+        imagesc(r); set(gca,'Ydir','normal'); axis off;
+    case 'crosscorr'
+        %% move to population analysis
+        spks_all = units(1).trials(~crazy);
+        spks_all = spks_all(indx_all);
+        ns_max = length(spks_all(1).relnspk);
+        % choose a pair of units
+        indx = prs.units;
+        spks1 = units(indx(1)).trials(~crazy); spks1 = spks1(indx_all);
+        spks2 = units(indx(2)).trials(~crazy); spks2 = spks2(indx_all);
+        r1 = []; r2 = [];
+        for i=1:ntrls_all
+            relnspk1 = [zeros(ns_max,1); spks1(i).relnspk; zeros(ns_max,1)];
+            r1 = [r1 ; relnspk1];
+            relnspk2 = [zeros(ns_max,1); spks2(i).relnspk; zeros(ns_max,1)];
+            r2 = [r2 ; relnspk2];
+        end
+        [C,lags] = xcorr(r1,r2,101);
+        hold on; plot(lags,C/max(C));        
+    case 'dynamicPCA_warp'
+        %% plot population activity as trajectries in a dynamic
+        %% state-space obtained by performing PCA oat each timestep
+        %% each trial gives one trajectory
+        spks_all = units(1).trials(~crazy);
+        spks_all = spks_all(indx_all);
+        ns_max = length(spks_all(1).relnspk);
+        % initialise response matrix (Trials x Time x Neurons)
+        r = nan(ntrls_all - trlkrnlwidth + 1,ns_max,length(prs.goodunits));
+        k = 0;
+        for j=prs.goodunits %1:nunits
+            k = k+1;
+            % neural data
+            spks_all = units(j).trials(~crazy);
+            % order trials based on trial duration
+            spks_all = spks_all(indx_all);
+            r_temp = nan(ntrls_all,ns_max);
+            for i=1:ntrls_all
+                r_temp(i,:) = spks_all(i).relnspk;
+            end
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+            r_temp = conv2(r_temp, trlkrnl, 'valid');
+            r_temp = r_temp/binwidth_warp;
+            % standardise and store response of each neuron
+            rmax_temp = max(nanmean(r_temp));
+            r(:,:,k) = r_temp/rmax_temp;
+        end
+        % dynamic PCA
+        % get the top three components (w) and the corresponding activity (z)
+        [w,z] = dpca(r,3);
+        indx = randperm(ntrls_all);
+        plot3(squeeze(z(indx(1:100),:,1))',squeeze(z(indx(1:100),:,2))',squeeze(z(indx(1:100),:,3))','k');
+    case 'dynamic_tuning'
+        x=1;
+end
 
 for j=1:nunits
     % neural data
-    spks_all = units(j).trials(~crazy);
-    spks_correct = units(j).trials(correct);
-    spks_incorrect = units(j).trials(incorrect);
-    
+    spks_all = units(j).trials(~crazy);    
     % order trials based on trial duration
     spks_all = spks_all(indx_all);
-    spks_correct = spks_correct(indx_correct);   
-    spks_incorrect = spks_incorrect(indx_incorrect);
-    
     switch plot_type
         case 'raster_start'
             %% raster plot - aligned to start of trial
@@ -69,7 +134,7 @@ for j=1:nunits
             xlim([0 1]); axis off;
             
         case 'rate_start'
-            %% psth - aligned to start of trial
+            %% rate - aligned to start of trial
             % find longest trial
             ns = zeros(1,ntrls_all);
             for i=1:ntrls_all
@@ -81,16 +146,16 @@ for j=1:nunits
             for i=1:ntrls_all
                 nspk(i,1:ns(i)) = spks_all(i).nspk;
             end
-            trlkrnl = ones(100,1)/100;
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
             nspk = conv2nan(nspk, trlkrnl);
+            nspk = nspk/binwidth_abs;
             % plot
-            nspk = nspk/0.012;
             figure(4); hold on; SubplotArray('multiunits',units(j).channel_no);
             imagesc(nspk,[0  max(mean(nspk))]);
             set(gca,'Ydir','normal'); axis off;
             
         case 'rate_end'
-            %% psth - aligned to end of trial
+            %% rate - aligned to end of trial
             % find longest trial
             ns = zeros(1,ntrls_all);
             for i=1:ntrls_all
@@ -102,27 +167,42 @@ for j=1:nunits
             for i=1:ntrls_all
                 nspk2end(i,end-ns(i)+1:end) = spks_all(i).nspk2end;
             end
-            trlkrnl = ones(100,1)/100;
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
             nspk2end = conv2nan(nspk2end, trlkrnl);
+            nspk2end = nspk2end/binwidth_abs;
             % plot
-            nspk2end = nspk2end/0.012;
             figure(5); hold on; SubplotArray('multiunits',units(j).channel_no);
             imagesc(nspk2end,[0 max(mean(nspk2end))]);
             set(gca,'Ydir','normal'); axis off;
             
         case 'rate_warp'
-            %% psth - normalised by trial duration
+            %% rate - normalised by trial duration
             ns_max = length(spks_all(1).relnspk);
             relnspk = nan(ntrls_all,ns_max);
             for i=1:ntrls_all
                 relnspk(i,:) = spks_all(i).relnspk;
             end
-            trlkrnl = ones(100,1)/100;
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
             relnspk = conv2(relnspk, trlkrnl, 'valid');
+            relnspk = relnspk/binwidth_warp;
             % plot
-            relnspk = relnspk/0.01;
             figure(6); hold on; SubplotArray('multiunits',units(j).channel_no);
             imagesc(relnspk,[0 max(mean(relnspk))]);
             set(gca,'Ydir','normal'); axis off;
+        case 'psth_warp'
+            %% same as rate_warp but trial averaged
+            ns_max = length(spks_all(1).relnspk);
+            relnspk = nan(ntrls_all,ns_max);
+            for i=1:ntrls_all
+                relnspk(i,:) = spks_all(i).relnspk;
+            end
+            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+            relnspk = conv2(relnspk, trlkrnl, 'valid');
+            relnspk = mean(relnspk)/binwidth_warp; % mean across trials
+            relnspk = relnspk/max(relnspk); % normalise psth of individual neurons
+            % plot
+            ts = linspace(0,1,length(relnspk));
+            figure(7); hold on;
+            plot(ts,relnspk,'b'); axis off;
     end
 end
