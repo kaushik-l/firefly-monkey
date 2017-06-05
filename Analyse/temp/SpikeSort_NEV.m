@@ -722,6 +722,15 @@ wf = wf(:,indx);
 plot(wf); % inspect
 tspk = tspk(indx);
 
+%% channel 81
+openNEV('report', 'uV', 'nomat', 'nosave','c:81');
+tspk = NEV.Data.Spikes.TimeStamp;
+wf = NEV.Data.Spikes.Waveform;
+indx = min(wf(13:16,:))<-50 & max(wf)<100 & max(wf(20:24,:))>0;
+wf = wf(:,indx); 
+plot(wf); % inspect
+tspk = tspk(indx);
+
 %% channel 82
 openNEV('report', 'uV', 'nomat', 'nosave','c:82');
 tspk = NEV.Data.Spikes.TimeStamp;
