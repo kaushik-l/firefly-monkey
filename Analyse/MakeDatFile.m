@@ -1,5 +1,11 @@
 function MakeDatFile(fname,T_exp)
 
+% IN 
+% fname --> filename
+%T_exp --> experiment time in seconds. If left empty, it will run the whole
+%           experiment. 
+
+
 [~,fOut] = fileparts(fname);
 buffer_read = 1000; % batch length of data to read (s)
 buffer_write = 10; % batch length of data to write (s)
@@ -7,7 +13,7 @@ NT_header = 102; % header length of .ns6
 count = 0;
 
 %% read header information
-NEV = openNEV('/m44s1249.nev','report', 'read');
+NEV = openNEV(['/' fname '.nev'],'report', 'read');
 fs = NEV.MetaTags.SampleRes;
 % load the entire file if T_exp is not specified
 % this is what we want for spike-sorting; duration should only be 
@@ -21,10 +27,10 @@ t_read = 0;
 while t_read<T_exp
     fprintf(['Reading datafile... T = ' num2str(t_read) 's\n']);
     if T_exp-t_read > buffer_read
-        NS6 = openNSx(['/' fname],'report','read', 'uV',['t:' num2str(t_read) ':' num2str(t_read+buffer_read)],'sec');        
+        NS6 = openNSx(['/' fname '.ns6'],'report','read', 'uV',['t:' num2str(t_read) ':' num2str(t_read+buffer_read)],'sec');        
         dt_read = buffer_read;
     else
-        NS6 = openNSx(['/' fname],'report','read', 'uV',['t:' num2str(t_read) ':' num2str(T_exp)],'sec');
+        NS6 = openNSx(['/' fname '.ns6'],'report','read', 'uV',['t:' num2str(t_read) ':' num2str(T_exp)],'sec');
         dt_read = T_exp - t_read;
     end
     t_read = t_read + buffer_read;
