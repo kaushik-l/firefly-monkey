@@ -1060,3 +1060,13 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\June 23 2017';
+
+%% session 95
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 96;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\June 27 2017';

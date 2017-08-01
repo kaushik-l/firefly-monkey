@@ -15,7 +15,7 @@ classdef singleunit < handle
         end
         %% add spike times
         function AddTrials(this,tspk,events_spk,events_smr,prs)
-            this.trials = AddTrials2Unit(tspk,events_spk,events_smr,prs);
+            [this.tseries, this.trials] = AddTrials2Unit(tspk,events_spk,events_smr,prs);
         end
         %% analyse spikes
         function analyse_spks(this,exp_name,prs)

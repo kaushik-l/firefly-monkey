@@ -23,8 +23,8 @@ classdef behaviour < handle
                 data_smr = ImportSMR(flist_smr(i).name);
                 [tseries_temp,trials_temp] = AddSMRData(data_smr,prs);
                 trials_temp = AddLOGData(flist_log(i).name,trials_temp);
-                [tseries_temp,trials_temp] = ...
-                    AddMATData(flist_mat(i).name,tseries_temp,trials_temp);
+%                 [tseries_temp,trials_temp] = ...
+%                     AddMATData(flist_mat(i).name,tseries_temp,trials_temp);
                 this.tseries.smr(i) = tseries_temp;
                 this.trials = [this.trials trials_temp];
                 clear trials_temp tseries_temp;

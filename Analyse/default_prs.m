@@ -3,8 +3,8 @@ function prs = default_prs(monk_id,session_id)
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
+prs.filepath_behv = ['C:\Users\jlaks\Google Drive\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur = ['C:\Users\jlaks\Google Drive\' monkeyInfo.folder '\neural data\'];
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
