@@ -61,7 +61,7 @@ classdef session < handle
                 if 1 %length(this.behaviours.trials)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
-                            %fetch multiunit
+                            %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
                             this.singleunits(end).AddTrials(sua(i).tspk,events_nev,events_smr,prs);
 %                             this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
