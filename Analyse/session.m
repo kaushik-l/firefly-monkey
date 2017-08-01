@@ -63,7 +63,15 @@ classdef session < handle
                             %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
                             this.singleunits(end).AddTrials(sua(i).tspk,events_nev,events_smr,prs);
-%                             this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
+                            this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
+                        end
+                    end
+                    if ~isempty(mua)
+                        for i=1:length(mua)
+                            %fetch multiunit
+                            this.multiunits(end+1) = multiunit(mua(i));
+                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,events_smr,prs);
+                            this.multiunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
                         end
                     end
                 else

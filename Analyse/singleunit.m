@@ -5,6 +5,7 @@ classdef singleunit < handle
         spkwf
         tseries
         trials
+        corrgrams
     end
     %%
     methods
@@ -18,8 +19,9 @@ classdef singleunit < handle
             [this.tseries, this.trials] = AddTrials2Unit(tspk,events_spk,events_smr,prs);
         end
         %% analyse spikes
-        function analyse_spks(this,exp_name,prs)
-            
+        function AnalyseUnit(this,exp_name,behaviours,prs)
+            [this.tseries,this.trials,this.corrgrams] = ...
+                AnalyseUnit(exp_name,this.tseries,this.trials,behaviours.tseries,behaviours.trials,prs);
         end
         %% destroy spike times
         function destroy_spks(this)
