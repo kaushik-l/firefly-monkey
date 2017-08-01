@@ -1010,3 +1010,53 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Apr 11 2017';
+
+%% session 91
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 91;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:32;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\V-probe\June 15 2017';
+
+%% session 92
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 92;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:32;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\V-probe\June 16 2017';
+
+%% session 93
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 93;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:32;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\V-probe\June 19 2017';
+
+%% session 94
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 94;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:32;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\V-probe\June 20 2017';
+
+%% session 94
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 95;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\June 23 2017';

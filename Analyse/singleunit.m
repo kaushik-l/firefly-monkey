@@ -10,12 +10,12 @@ classdef singleunit < handle
     methods
         %% class constructor
         function this = singleunit(unit)
-            this.channel_no = unit.chnl;
-            this.spkwf = mean(unit.spkwf);
+            this.channel_no = []; %unit.chnl;
+            this.spkwf = []; %mean(unit.spkwf);
         end
         %% add spike times
-        function AddTrials(this,tspk,t_events,prs)
-            this.trials = AddTrials2Unit(tspk,t_events,prs);
+        function AddTrials(this,tspk,events_spk,events_smr,prs)
+            this.trials = AddTrials2Unit(tspk,events_spk,events_smr,prs);
         end
         %% analyse spikes
         function analyse_spks(this,exp_name,prs)

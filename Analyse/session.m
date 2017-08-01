@@ -29,6 +29,7 @@ classdef session < handle
         function AddUnits(this,prs)
             cd(prs.filepath_neur);
             file_ead=dir('*_ead.plx');
+            file_ns6=dir('*.ns6');
             file_nev=dir('*.nev');
             if ~isempty(file_ead) % data recorded using Plexon
                 fprintf(['... reading ' file_ead.name '\n']);
@@ -49,32 +50,21 @@ classdef session < handle
                         end
                     end
                 end
-            elseif ~isempty(file_nev) % data recorded using Cereplex
-                file_mat=dir('*.mat');
-                fprintf(['... reading events from ' file_mat.name '\n']);
-                [events_nev,prs] = GetEvents_nev(file_mat.name,prs);
+            elseif ~isempty(file_ns6) % data recorded using Cereplex
+                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv');
+                fprintf(['... reading events from ' file_nev.name '\n']);
+                [events_nev,prs] = GetEvents_nev(file_nev.name,prs);
                 events_smr.t_beg = [this.behaviours.trials.t_beg];
                 events_smr.t_rew = [this.behaviours.trials.t_rew];
                 events_smr.t_end = [this.behaviours.trials.t_end];
                 events_smr.ntrls = [this.behaviours.tseries.smr.ntrls];
-                if length(this.behaviours.trials)==length(events_nev.t_end)
-                    fprintf(['... reading spikes from ' file_mat.name '\n']);
-                    for j=1:prs.maxchannels
-                        fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels) '\n']);
-                        units = GetUnits_nev(file_mat.name,j);
-                        if ~isempty(units)
-                            for i=1:length(units)
-                                if units(i).type == 'mua'
-                                    %fetch multiunit
-                                    this.multiunits(end+1) = multiunit(units(i));
-                                    this.multiunits(end).AddTrials(units(i).tspk,events_nev,events_smr,prs);
-                                    this.multiunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
-                                elseif units(i).type == 'sua'
-                                    %fetch singleunits
-                                    this.singleunits(end+1) = singleunit(units(i));
-                                    this.singleunits(end).AddTrials(units(i).tspk,events_nev,events_smr,prs);
-                                end
-                            end
+                if 1 %length(this.behaviours.trials)==length(events_nev.t_end)
+                    if ~isempty(sua)
+                        for i=1:length(sua)
+                            %fetch multiunit
+                            this.singleunits(end+1) = singleunit(sua(i));
+                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,events_smr,prs);
+%                             this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
                         end
                     end
                 else

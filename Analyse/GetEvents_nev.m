@@ -1,7 +1,9 @@
-function [t_events,prs] = GetEvents_nev(fname,prs)
+function [t_events,prs] = GetEvents_nev(f_nev,prs)
 % get begin, reward, and end times from plx file
 
-load(fname);
+NEV = openNEV(['/' f_nev], 'nosave');
+events = NEV.Data.SerialDigitalIO;
+
 t_events.t_start = events.TimeStampSec(events.UnparsedData==1);
 t_events.t_rew = events.TimeStampSec(events.UnparsedData==4);
 
@@ -24,4 +26,4 @@ if t_beg(end)>t_end(end), t_beg(end) = []; end % remove last incomplete trial
 t_events.t_beg = t_beg;
 t_events.t_end = t_end;
 
-prs.fs = MetaTags.TimeRes; % sampling rate
+prs.fs = NEV.MetaTags.TimeRes; % sampling rate

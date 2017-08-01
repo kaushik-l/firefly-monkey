@@ -11,8 +11,8 @@ classdef multiunit < handle
     methods
         %% class constructor
         function this = multiunit(unit)
-            this.channel_no = unit.chnl;
-            this.spkwf = mean(unit.spkwf);
+            this.channel_no = []; %unit.chnl;
+            this.spkwf = []; %mean(unit.spkwf);
         end
         %% add spike times
         function AddTrials(this,tspk,events_spk,events_smr,prs)
