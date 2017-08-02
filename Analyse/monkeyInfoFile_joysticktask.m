@@ -1061,14 +1061,25 @@ monkeyInfo = [];
 % monkeyInfo (end).units = 0;
 % monkeyInfo (end).folder = 'Quigley\Utah array\June 23 2017';
 
-%% session 96
+% %% session 96
+% monkeyInfo (end+1).monk_id = 44;
+% monkeyInfo (end).session_id = 96;
+% monkeyInfo (end).coord.row = nan;
+% monkeyInfo (end).coord.column = nan;
+% monkeyInfo (end).coord.depth = nan;
+% monkeyInfo (end).channels = 1:96;
+% monkeyInfo (end).units = 0;
+% monkeyInfo (end).folder = 'Quigley\Utah array\June 27 2017';
+% monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
+%      'XXXXX was unusual'};
+%% session 113 (?)
 monkeyInfo (end+1).monk_id = 44;
-monkeyInfo (end).session_id = 96;
+monkeyInfo (end).session_id =113;
 monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
-monkeyInfo (end).folder = 'Quigley\Utah array\June 27 2017';
-monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; '...
-     'XXXXX was unusual'};
+monkeyInfo (end).folder = 'Quigley\Utah array\August 1 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no perturbations; juice - 150ms & 300ms; ' ...
+    'extra experiment with random ITI and random time-to-reward'};
