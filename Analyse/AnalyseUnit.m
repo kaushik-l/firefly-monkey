@@ -58,6 +58,31 @@ for i=1:ntrls
     nspk2end = conv(nspk2end,h,'same');
     trials_spks(i).nspk2end = nspk2end; % smoothed spike train
 end
+%% Compute spikes around reward time and ITI
+for i=1:ntrls-1
+    trial_spks_temp = trials_spks(i);
+    trial_spks_temp_nextTrial = trials_spks(i+1);
+    trial_behv_temp = trials_behv(i);
+    trial_behv_temp_nextTrial = trials_behv(i+1);
+    Td = trial_behv_temp_nextTrial.t_beg-trial_behv_temp.t_end;
+    trial_spks_temp.tspkITI = trial_spks_temp.tspk -Td;
+    trials_spks(i).tspkITI = trial_spks_temp.tspkITI;
+end
+% convolve with gaussian kernel
+for i=1:ntrls
+    trial_spks_temp = trials_spks(i);
+    trial_behv_temp = trials_behv(i);
+    ts = trial_behv_temp.ts;
+    ts = ts - ts(end);
+    [nspkITI,~]=hist(trial_spks_temp.tspkITI,ts); nspkITI = nspkITI(:);
+    sig = prs.spkkrnlwidth; %filter width
+    sz = prs.spkkrnlsize; %filter size
+    t2 = linspace(-sz/2, sz/2, sz);
+    h = exp(-t2.^2/(2*sig^2));
+    h = h/sum(h);
+    nspkITI = conv(nspkITI,h,'same');
+    trials_spks(i).nspkITI = nspkITI; % smoothed spike train
+end
 
 %% convert spiketimes to percentile of total trial duration
 % by stretching/compressing all trials to the "same" length
