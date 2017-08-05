@@ -64,7 +64,7 @@ for i=1:ntrls-1
     trial_spks_temp_nextTrial = trials_spks(i+1);
     trial_behv_temp = trials_behv(i);
     trial_behv_temp_nextTrial = trials_behv(i+1);
-    Td = trial_behv_temp_nextTrial.t_beg-trial_behv_temp.t_end;
+    Td = trial_behv_temp_nextTrial.t_beg-trial_behv_temp.t_rew;
     trial_spks_temp.tspkITI = trial_spks_temp.tspk -Td;
     trials_spks(i).tspkITI = trial_spks_temp.tspkITI;
 end
