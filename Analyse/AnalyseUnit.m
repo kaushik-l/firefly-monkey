@@ -23,7 +23,7 @@ end
 for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
-    ts = trial_behv_temp.ts;
+    ts = trial_behv_temp.ts; % time-vector aligned to trial beginning
     [nspk,~]=hist(trial_spks_temp.tspk,ts); nspk = nspk(:);
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
@@ -48,7 +48,7 @@ for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     ts = trial_behv_temp.ts;
-    ts = ts - ts(end);
+    ts = ts - ts(end); % time-vector aligned to trial end
     [nspk2end,~]=hist(trial_spks_temp.tspk2end,ts); nspk2end = nspk2end(:);
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
@@ -58,30 +58,29 @@ for i=1:ntrls
     nspk2end = conv(nspk2end,h,'same');
     trials_spks(i).nspk2end = nspk2end; % smoothed spike train
 end
-%% Compute spikes around reward time and ITI
-for i=1:ntrls-1
+%% Compute spikes relative to reward time
+for i=1:ntrls
     trial_spks_temp = trials_spks(i);
-    trial_spks_temp_nextTrial = trials_spks(i+1);
     trial_behv_temp = trials_behv(i);
-    trial_behv_temp_nextTrial = trials_behv(i+1);
-    Td = trial_behv_temp_nextTrial.t_beg-trial_behv_temp.t_rew;
-    trial_spks_temp.tspkITI = trial_spks_temp.tspk -Td;
-    trials_spks(i).tspkITI = trial_spks_temp.tspkITI;
+    Tr = trial_behv_temp.t_rew-trial_behv_temp.t_beg;
+    trial_spks_temp.tspk2rew = trial_spks_temp.tspk-Tr;
+    trials_spks(i).tspk2rew = trial_spks_temp.tspk2rew;
 end
 % convolve with gaussian kernel
 for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     ts = trial_behv_temp.ts;
-    ts = ts - ts(end);
-    [nspkITI,~]=hist(trial_spks_temp.tspkITI,ts); nspkITI = nspkITI(:);
+    Tr = trial_behv_temp.t_rew-trial_behv_temp.t_beg;
+    ts = ts - Tr; % time-vector aligned to reward
+    [nspk2rew,~]=hist(trial_spks_temp.tspk2rew,ts); nspk2rew = nspk2rew(:);
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
     t2 = linspace(-sz/2, sz/2, sz);
     h = exp(-t2.^2/(2*sig^2));
     h = h/sum(h);
-    nspkITI = conv(nspkITI,h,'same');
-    trials_spks(i).nspkITI = nspkITI; % smoothed spike train
+    nspk2rew = conv(nspk2rew,h,'same');
+    trials_spks(i).nspk2rew = nspk2rew; % smoothed spike train
 end
 
 %% convert spiketimes to percentile of total trial duration

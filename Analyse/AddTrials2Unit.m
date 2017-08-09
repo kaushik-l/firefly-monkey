@@ -7,7 +7,7 @@ tspk = double(tspk)/prs.fs;
 
 %% tseries
 nsmr = length(ntrls);
-for i=1:nsmr
+ for i=1:nsmr
     t_start = events_spk.t_start(i);
     t_end = t_start + events_smr.t_end(ntrls(i));
     tseries.smr(i).tspk = tspk(tspk>t_start & tspk<t_end) - t_start;

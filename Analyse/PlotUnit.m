@@ -43,7 +43,7 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).tspk2end)
-                plot(spks_all(i).tspk2end(1:4:end),i,'ob','markersize',0.2,'markerFacecolor','b');
+                plot(spks_all(i).tspk2end(1:4:end),i,'ob','markersize',0.5,'markerFacecolor','b');
             end
         end
         xlim([-4 0]); axis off;
@@ -53,11 +53,20 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).reltspk)
-                plot(spks_all(i).reltspk,i,'ob','markersize',0.2,'markerFacecolor','b');
+                plot(spks_all(i).reltspk,i,'ob','markersize',0.5,'markerFacecolor','b');
             end
         end
         xlim([0 1]); axis off;
         
+    case 'raster_reward'
+        %% raster plot aligned to reward onset
+        figure; hold on;
+        for i=1:ntrls_all
+            if ~isempty(spks_all(i).tspk2end)
+                plot(spks_all(i).tspk2rew(1:4:end),i,'ob','markersize',0.5,'markerFacecolor','b');
+            end
+        end
+        xlim([-4 0]); axis off;
     case 'rate_start'
         %% psth - aligned to start of trial
         % find longest trial
@@ -119,6 +128,29 @@ switch plot_type
         figure; imagesc(relnspk,[0 max(mean(relnspk))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
         set(gca,'Ydir','normal'); ylim([100 ntrls_all]); axis off;
+case 'rate_reward'
+        %% psth - aligned to start of reward TODO Add time to end 
+        % find longest trial
+        ns = zeros(1,ntrls_all);
+        for i=1:ntrls_all
+            ns(i) = length(spks_all(i).nspk2rew);
+        end 
+        ns_max = max(ns);
+        % store responses in a matrix (Trial x Time)
+        nspk2rew = nan(ntrls_all,ns_max);
+        for i=1:ntrls_all
+            nspk2rew(i,end-ns(i)+1:end) = spks_all(i).nspk2rew;
+        end
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+        nspk2rew = conv2nan(nspk2rew, trlkrnl);
+        % plot
+        ts = -ns_max*binwidth_abs:binwidth_abs:binwidth_abs; % redefine to make it to the ts the same as the longest trial.  
+        nspk2rew = nspk2rew/binwidth_abs;
+        nspk2rew(isnan(nspk2rew)) = 0;  % display nan as white pixels
+        figure; imagesc(ts,1:ntrls_all,nspk2rew,[0 3.25]);
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); axis([-4 0.1 100 ntrls_all]); %axis off;
+        
     case 'psth_warp'
         %% same as rate_warp but trial averaged
         ns_max = length(spks_all(1).relnspk);
