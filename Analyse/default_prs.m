@@ -1,5 +1,7 @@
 function prs = default_prs(monk_id,session_id)
 
+if nargin<2, session_id = 1; end
+
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
@@ -28,11 +30,14 @@ prs.spkkrnlwidth = prs.spkkrnlwidth/prs.binwidth; % width in samples
 prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
 prs.corr_lag = 1; % timescale of correlograms (s)
 prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
+prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
 
 %% plotting parameters
 prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
 prs.trlkrnlwidth = 100; % width of the gaussian kernel for trial averaging (number of trials)
+prs.maxtrls = 5000; % maximum #trials to plot at once.
+prs.rewardwin = 65;
 
 %% temporary
 prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...

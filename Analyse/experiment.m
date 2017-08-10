@@ -16,10 +16,29 @@ classdef experiment < handle
             prs = default_prs(monk_id,sess_id);
             this.sessions(end+1) = session(monk_id,sess_id,prs.coord);
             this.sessions(end).AddBehaviours(prs);
-            this.sessions(end).AddUnits(prs);
+%             this.sessions(end).AddUnits(prs);
         end
-        %% function to plot data
-        function Plot(this,monk_id,sess_id,unit_type,unit_id,plot_type)
+        %% function to plot behavioural data
+        function PlotBehaviour(this,monk_id,sess_id,plot_type)
+            monk_ids = [this.sessions.monk_id];
+            sess_ids = [this.sessions.sess_id];
+            if sess_id ~= 0
+                prs = default_prs(monk_id,sess_id);
+                indx = (monk_ids == monk_id) & (sess_ids == sess_id);
+                this.sessions(indx).PlotBehaviour(plot_type,prs);
+            else
+                prs = default_prs(monk_id);
+                indx = find(monk_ids == monk_id);
+                count = 0;
+                for i=indx
+                    count = count + 1;
+                    behv(count) = this.sessions(i).behaviours;
+                end
+                PlotBehaviour(behv,plot_type,prs)
+            end
+        end
+        %% function to plot neural data
+        function PlotNeurons(this,monk_id,sess_id,unit_type,unit_id,plot_type)
             prs = default_prs(monk_id,sess_id);
             monk_ids = [this.sessions.monk_id];
             sess_ids = [this.sessions.sess_id];
