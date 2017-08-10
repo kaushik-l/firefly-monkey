@@ -1,4 +1,4 @@
-function [ch,trl] = AddSMRData(data,prs)
+function trl = AddSMRData(data,prs)
 
 %% check channel headers
 nch = length(data);

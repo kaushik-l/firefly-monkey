@@ -20,6 +20,7 @@ classdef session < handle
         end
         %% add behaviour
         function AddBehaviours(this,prs)
+            cd(prs.filepath_behv);
             this.behaviours = behaviour(prs.comments);
             this.behaviours.AddTrials(prs);
             this.behaviours.AnalyseBehaviour(prs);
@@ -92,6 +93,11 @@ classdef session < handle
             for j=1:prs.maxchannels
                 this.lfps = GetLfp(file_ead.name,j);
             end
+        end
+        %% plot behaviour
+        function PlotBehaviour(this,plot_type,prs)
+            behv = this.behaviours;
+            PlotBehaviour(behv,plot_type,prs);
         end
         %% plot units
         function PlotUnits(this,unit_type,unit_id,plot_type,prs)

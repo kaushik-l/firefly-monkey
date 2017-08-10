@@ -1,4 +1,4 @@
-function [tseries,trials] = AddMATData(file,tseries,trials)
+function trials = AddMATData(file,trials)
 
 MATData = load(file);
 
@@ -31,15 +31,15 @@ for j=1:ntrls
 end
 
 %% add fly status to tseries
-ts = tseries.ts; ns = length(ts);
-tseries.fly_sts = zeros(ns,1);
-for i=1:ntrls
-    if ~isnan(trials(i).t_flyOFF)
-        tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_flyOFF)=1;
-    else
-        tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_end)=1;
-    end
-end
+% ts = tseries.ts; ns = length(ts);
+% tseries.fly_sts = zeros(ns,1);
+% for i=1:ntrls
+%     if ~isnan(trials(i).t_flyOFF)
+%         tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_flyOFF)=1;
+%     else
+%         tseries.fly_sts(ts>trials(i).t_flyON & ts<trials(i).t_end)=1;
+%     end
+% end
 
 %% add fly status to trials
 for i=1:ntrls
