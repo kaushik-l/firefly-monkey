@@ -37,7 +37,8 @@ prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
 prs.trlkrnlwidth = 100; % width of the gaussian kernel for trial averaging (number of trials)
 prs.maxtrls = 5000; % maximum #trials to plot at once.
-prs.rewardwin = 65;
+prs.rewardwin = 65; % size of reward window
+prs.maxrewardwin = 400; % maximum reward window for ROC analysis
 
 %% temporary
 prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...

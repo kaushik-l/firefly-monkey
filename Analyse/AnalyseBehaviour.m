@@ -1,5 +1,8 @@
 function stats = AnalyseBehaviour(trials,prs)
 
+maxrewardwin = prs.maxrewardwin;
+bootstrap_trl = prs.bootstrap_trl;
+
 for i=1:length(trials)
     %% final velocity
     v_monk(i) = (trials(i).v(end));
@@ -37,6 +40,11 @@ r_fly = sqrt((x_fly - x0_monk).^2 + (y_fly - y0_monk).^2);
 thetaf_monk = atan2d((x_monk - x0_monk),(y_monk - y0_monk));
 theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 
+%% ROC analysis
+[rewardwin ,pCorrect, pcorrect_shuffled_mu] = ...
+    ComputeROCFirefly([r_fly(~crazy)' (pi/180)*theta_fly(~crazy)'],...
+    [rf_monk(~crazy)' (pi/180)*thetaf_monk(~crazy)'],maxrewardwin,bootstrap_trl);
+
 %% save
 % trial index
 stats.trlindx.correct = correct; 
@@ -70,3 +78,8 @@ stats.pos_rel.x_leye = {trials.xlep};
 stats.pos_rel.y_leye = {trials.ylep};
 stats.pos_rel.x_reye = {trials.xrep};
 stats.pos_rel.y_reye = {trials.yrep};
+
+% ROC results
+stats.accuracy.rewardwin = rewardwin;
+stats.accuracy.pCorrect = pCorrect;
+stats.accuracy.pcorrect_shuffled_mu = pcorrect_shuffled_mu;
