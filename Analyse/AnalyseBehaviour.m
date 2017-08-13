@@ -40,6 +40,10 @@ r_fly = sqrt((x_fly - x0_monk).^2 + (y_fly - y0_monk).^2);
 thetaf_monk = atan2d((x_monk - x0_monk),(y_monk - y0_monk));
 theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 
+%% linear regression
+[pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(~crazy)', rf_monk(~crazy)', 0.05, 2);
+[pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(~crazy)', thetaf_monk(~crazy)', 0.05, 2);
+
 %% ROC analysis
 [rewardwin ,pCorrect, pcorrect_shuffled_mu] = ...
     ComputeROCFirefly([r_fly(~crazy)' (pi/180)*theta_fly(~crazy)'],...
@@ -78,6 +82,9 @@ stats.pos_rel.x_leye = {trials.xlep};
 stats.pos_rel.y_leye = {trials.ylep};
 stats.pos_rel.x_reye = {trials.xrep};
 stats.pos_rel.y_reye = {trials.yrep};
+
+% regression results
+stats.pos_regress = pos_regress;
 
 % ROC results
 stats.accuracy.rewardwin = rewardwin;

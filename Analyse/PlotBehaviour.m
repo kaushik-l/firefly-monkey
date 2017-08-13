@@ -154,7 +154,7 @@ switch plot_type
         xlabel('Hypothetical reward window (m)'); ylabel('Fraction of rewarded trials');
         lessticks('x'); lessticks('y');
         % ROC curve
-        figure;
+        figure; hold on;
         plot(pCorrect_shuffled_mu,pCorrect,'k');
         xlabel('Shuffled accuracy'); ylabel('Actual accuracy');
         lessticks('x'); lessticks('y');
