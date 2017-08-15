@@ -62,17 +62,17 @@ end
 for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
-    Tr = trial_behv_temp.t_rew-trial_behv_temp.t_beg;
+    Tr = trial_behv_temp.t_rew-trial_behv_temp.t_beg; 
     trial_spks_temp.tspk2rew = trial_spks_temp.tspk-Tr;
     trials_spks(i).tspk2rew = trial_spks_temp.tspk2rew;
 end
-% convolve with gaussian kernel
+
+% convolve with gaussian kernel (old stuff)
 for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     ts = trial_behv_temp.ts;
     Tr = trial_behv_temp.t_rew-trial_behv_temp.t_beg;
-    ts = ts - Tr; % time-vector aligned to reward
     [nspk2rew,~]=hist(trial_spks_temp.tspk2rew,ts); nspk2rew = nspk2rew(:);
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size

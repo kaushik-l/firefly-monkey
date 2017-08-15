@@ -88,7 +88,8 @@ switch plot_type
         nspk(isnan(nspk)) = 0; % display nan as white pixels
         figure; imagesc(ts,1:ntrls_all,nspk,[0  max(mean(nspk))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([0 4 100 ntrls_all]); axis off;
+        set(gca,'Ydir','normal','box', 'off','TickDir', 'out'); axis([0 4 100 ntrls_all]); %axis off;
+        ylabel('Trial'); xlabel('Time(s)'); 
         
     case 'rate_end'
         %% psth - aligned to end of trial
@@ -106,12 +107,13 @@ switch plot_type
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk2end = conv2nan(nspk2end, trlkrnl);
         % plot
-        ts = -ns_max*binwidth_abs:binwidth_abs:binwidth_abs;
+        ts = -ns_max*binwidth_abs:binwidth_abs:-binwidth_abs;
         nspk2end = nspk2end/binwidth_abs;
         nspk2end(isnan(nspk2end)) = 0;  % display nan as white pixels
-        figure; imagesc(ts,1:ntrls_all,nspk2end,[0 3.25]);
+        figure; imagesc(ts,1:ntrls_all,nspk2end,[0  max(mean(nspk2end))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); axis off;
+        set(gca,'Ydir','normal', 'box', 'off','TickDir', 'out'); axis([-4 0 100 ntrls_all]); %axis off;
+        ylabel('Trial'); xlabel('Time(s)'); 
         
     case 'rate_warp'
         %% psth - normalised by trial duration
@@ -133,24 +135,37 @@ case 'rate_reward'
         % find longest trial
         ns = zeros(1,ntrls_all);
         for i=1:ntrls_all
-            ns(i) = length(spks_all(i).nspk2rew);
-        end 
+            ns(i) = length(spks_all(i).nspk);
+        end
         ns_max = max(ns);
         % store responses in a matrix (Trial x Time)
-        nspk2rew = nan(ntrls_all,ns_max);
+        nspk = nan(ntrls_all,ns_max);
         for i=1:ntrls_all
-            nspk2rew(i,end-ns(i)+1:end) = spks_all(i).nspk2rew;
+            nspk(i,1:ns(i)) = spks_all(i).nspk; % Trials already sorted
         end
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
-        nspk2rew = conv2nan(nspk2rew, trlkrnl);
-        % plot
-        ts = -ns_max*binwidth_abs:binwidth_abs:binwidth_abs; % redefine to make it to the ts the same as the longest trial.  
-        nspk2rew = nspk2rew/binwidth_abs;
-        nspk2rew(isnan(nspk2rew)) = 0;  % display nan as white pixels
-        figure; imagesc(ts,1:ntrls_all,nspk2rew,[0 3.25]);
-        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([-4 0.1 100 ntrls_all]); %axis off;
+        nspk = conv2nan(nspk, trlkrnl);
+        count=0;
+        Tr = [behv_all.t_rew] - [behv_all.t_beg];
+        for i=1:ntrls_all
+            rew_indx(i) = round(Tr(i)/prs.binwidth_abs);
+            if ~isnan(rew_indx(i))
+                count = count+1;
+                nspk2rew(count,:) = circshift(nspk(i,:),-rew_indx(i)+75); % do not use a number
+            end
+        end
         
+        % ADD HIST of REWARD TIMES  - 
+
+        % plot  
+        ts = binwidth_abs:binwidth_abs:ns_max*binwidth_abs; % redefine to make it to the ts the same as the longest trial.
+        nspk2rew = nspk2rew/binwidth_abs;
+        %nspk2rew(isnan(nspk2rew)) = 0;  % display nan as white pixels
+        figure; imagesc(ts,1:size(nspk2rew,1),nspk2rew,[0  1.5*max(mean(nspk2rew))]);
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        axis([0 ts(150) 100 count]);set(gca,'Ydir','normal','XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off'); vline(ts(75));
+        ylabel('Trial'); xlabel('Time(s)'); 
+%         figure; plot(ts,nanmean(nspk2rew), 'LineWidth', 1.5); set(gca,'XTick', [0:0.1:1.5], 'TickDir', 'out'); xlim([0 ts(125)]); vline(ts(75),'k');
     case 'psth_warp'
         %% same as rate_warp but trial averaged
         ns_max = length(spks_all(1).relnspk);
