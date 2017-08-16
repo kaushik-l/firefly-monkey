@@ -32,6 +32,7 @@ prs.corr_lag = 1; % timescale of correlograms (s)
 prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
 prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
 prs.saccade_thresh = 120; % deg/s
+prs.ncorrbins = 100; % 100 bins of data in each trial
 
 %% plotting parameters
 prs.binwidth_abs = prs.binwidth; % use same width as for the analysis

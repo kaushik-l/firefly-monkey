@@ -1596,6 +1596,50 @@ monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jul 3 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, fixed ground'};
 
+%% session 144
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 144;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 1 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 145
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 145;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 2 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 146
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 146;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 3 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 147
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 147;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 4 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
 %% Bruno
 
 %% session 1
