@@ -33,7 +33,7 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).tspk)
-                plot(spks_all(i).tspk(1:3:end),i,'oy','markersize',0.2,'markerFacecolor','y');
+                plot(spks_all(i).tspk(1:3:end),i,'oy','markersize',0.8,'markerFacecolor','y');
             end
         end
         xlim([0 4]); axis off;
@@ -43,7 +43,7 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).tspk2end)
-                plot(spks_all(i).tspk2end(1:4:end),i,'ob','markersize',0.5,'markerFacecolor','b');
+                plot(spks_all(i).tspk2end(1:4:end),i,'ob','markersize',0.8,'markerFacecolor','b');
             end
         end
         xlim([-4 0]); axis off;
@@ -53,7 +53,7 @@ switch plot_type
         figure; hold on;
         for i=1:ntrls_all
             if ~isempty(spks_all(i).reltspk)
-                plot(spks_all(i).reltspk,i,'ob','markersize',0.5,'markerFacecolor','b');
+                plot(spks_all(i).reltspk,i,'ob','markersize',0.8,'markerFacecolor','b');
             end
         end
         xlim([0 1]); axis off;
@@ -61,12 +61,15 @@ switch plot_type
     case 'raster_reward'
         %% raster plot aligned to reward onset
         figure; hold on;
-        for i=1:ntrls_all
-            if ~isempty(spks_all(i).tspk2end)
-                plot(spks_all(i).tspk2rew(1:4:end),i,'ob','markersize',0.5,'markerFacecolor','b');
+   
+        Tr = [behv_all.t_rew] - [behv_all.t_beg];
+        for i=1:ntrls_all 
+            if ~isempty(spks_all(i).tspk) && ~isnan(Tr(i))
+                plot(spks_all(i).tspk(1:3:end) - Tr(i) + 0.1,i,'or','markersize',0.8,'markerFacecolor','r');
+                plot(0.1,i,'ok','markersize',0.8,'markerFacecolor','k');
             end
         end
-        xlim([-4 0]); axis off;
+        %xlim([-4 0]); axis off;
     case 'rate_start'
         %% psth - aligned to start of trial
         % find longest trial
@@ -155,17 +158,18 @@ case 'rate_reward'
             end
         end
         
-        % ADD HIST of REWARD TIMES  - 
+        % Hist of reward times 
+        % juice_time = [behv_all.t_end] - [behv_all.t_rew]; <--This does not give the actual reward time. Delays in the system
 
         % plot  
         ts = binwidth_abs:binwidth_abs:ns_max*binwidth_abs; % redefine to make it to the ts the same as the longest trial.
         nspk2rew = nspk2rew/binwidth_abs;
         %nspk2rew(isnan(nspk2rew)) = 0;  % display nan as white pixels
         figure; imagesc(ts,1:size(nspk2rew,1),nspk2rew,[0  1.5*max(mean(nspk2rew))]);
-        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        yyaxis left; colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
         axis([0 ts(150) 100 count]);set(gca,'Ydir','normal','XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off'); vline(ts(75));
-        ylabel('Trial'); xlabel('Time(s)'); 
-%         figure; plot(ts,nanmean(nspk2rew), 'LineWidth', 1.5); set(gca,'XTick', [0:0.1:1.5], 'TickDir', 'out'); xlim([0 ts(125)]); vline(ts(75),'k');
+        ylabel('Trial'); xlabel('Time(s)');
+        yyaxis right; plot(ts,nanmean(nspk2rew(301:end,:)), 'LineWidth', 3, 'Color', 'r'); set(gca,'XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off'); xlim([0 ts]);
     case 'psth_warp'
         %% same as rate_warp but trial averaged
         ns_max = length(spks_all(1).relnspk);
