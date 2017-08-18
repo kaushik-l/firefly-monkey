@@ -1,5 +1,7 @@
 function [ch,trl] = AddSMRData(data,prs)
 
+postrewardtime = prs.postrewardtime;
+
 %% check channel headers
 nch = length(data);
 hdr = {data.hdr};
@@ -75,22 +77,23 @@ ts = dt:dt:length(ch.(chnames{end}))*dt;
 %% extract trials
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
+    trl(j).t_beg = t.beg(j);
+    if any(t.reward>t.beg(j) & t.reward<t.end(j))
+        trl(j).reward = true;
+        trl(j).t_rew = t.reward(t.reward>t.beg(j) & t.reward<t.end(j));
+        trl(j).t_end = trl(j).t_rew + postrewardtime; % does not correspond to the t_end marker on spike2
+    else
+        trl(j).reward = false;
+        trl(j).t_rew = nan;
+        trl(j).t_end = t.end(j); % corresponds to the t_end marker on spike2
+    end
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
-            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j) & ts<t.end(j));
+            trl(j).(chnames{i}) = ch.(chnames{i})(ts>trl(j).t_beg & ts<trl(j).t_end);
             trl(j).(chnames{i}) = downsample(trl(j).(chnames{i}),prs.factor_downsample);
         end
     end
     trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)';
-    trl(j).t_beg = t.beg(j);
-    trl(j).t_end = t.end(j);
-    if any(t.reward>t.beg(j) & t.reward<t.end(j))
-        trl(j).reward = true;
-        trl(j).t_rew = t.reward(t.reward>t.beg(j) & t.reward<t.end(j));
-    else
-        trl(j).reward = false;
-        trl(j).t_rew = nan;
-    end
 end
 
 exp_beg = t.events(find(markers==1,1,'first'));

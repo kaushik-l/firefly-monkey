@@ -4,6 +4,7 @@ ntrls = events_smr.ntrls;
 ntrls_cum = cumsum(ntrls);
 ntrls_tot = sum(ntrls);
 tspk = double(tspk)/prs.fs;
+postrewardtime = prs.postrewardtime; 
 
 %% tseries
 nsmr = length(ntrls);
@@ -17,6 +18,6 @@ end
 trials(ntrls_tot) = struct();
 for i=1:ntrls_tot
     t_start = events_spk.t_start(find(i<=ntrls_cum,1));
-    trials(i).tspk = tspk(tspk > (t_start + events_smr.t_beg(i)) & tspk < (t_start + events_smr.t_rew(i) + 0.5)) -...
+    trials(i).tspk = tspk(tspk > (t_start + events_smr.t_beg(i)) & tspk < (t_start + events_smr.t_end(i))) -...
         (t_start + events_smr.t_beg(i));
 end
