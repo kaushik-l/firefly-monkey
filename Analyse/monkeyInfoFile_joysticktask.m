@@ -5,7 +5,7 @@ monkeyInfo = [];
 %% Quigley
 
 %% session 1
-monkeyInfo (end+1).monk_id = 44;         % Monkey # 
+monkeyInfo (end+1).monk_id = 44;         % Monkey #
 monkeyInfo (end).session_id = 1;         % Session #
 monkeyInfo (end).coord.row = -3;         % Row (grid)
 monkeyInfo (end).coord.column = 14;      % Column (grid)
@@ -14,7 +14,7 @@ monkeyInfo (end).channels = 1:24;        % Channel #? (all channels=0)
 monkeyInfo (end).units = 0;              % Analyse all units? (sorted units=0; all units=1)
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 08 2016';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, fixed DCI, fixed ITI'};
- 
+
 %% session 2
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 2;
@@ -1640,10 +1640,32 @@ monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Aug 4 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
 
+%% session 148
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 148;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 8 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 149
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 149;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Aug 9 2017';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+
 %% Bruno
 
 %% session 1
-monkeyInfo (end+1).monk_id = 51;         % Monkey # 
+monkeyInfo (end+1).monk_id = 51;         % Monkey #
 monkeyInfo (end).session_id = 1;         % Session #
 monkeyInfo (end).coord.row = -6;         % Row (grid)
 monkeyInfo (end).coord.column = 18;      % Column (grid)
@@ -1652,9 +1674,9 @@ monkeyInfo (end).channels = 1:24;        % Channel #? (all channels=0)
 monkeyInfo (end).units = 0;              % Analyse all units? (sorted units=0; all units=1)
 monkeyInfo (end).folder = 'Bruno\U-probe\May 1 2017';
 monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, fixed DCI, fixed ITI'};
- 
+
 %% session 2
-monkeyInfo (end+1).monk_id = 51; 
+monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 2;
 monkeyInfo (end).coord.row = -8;
 monkeyInfo (end).coord.column = 16;
@@ -1665,7 +1687,7 @@ monkeyInfo (end).folder = 'Bruno\U-probe\May 2 2017';
 monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, fixed DCI, fixed ITI'};
 
 %% session 3
-monkeyInfo (end+1).monk_id = 51; 
+monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 3;
 monkeyInfo (end).coord.row = -4;
 monkeyInfo (end).coord.column = 19;
@@ -1677,7 +1699,7 @@ monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, fixed DCI, f
 'no 3D glasses today'};
 
 %% session 4
-monkeyInfo (end+1).monk_id = 51; 
+monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 4;
 monkeyInfo (end).coord.row = -7;
 monkeyInfo (end).coord.column = 20;
@@ -2098,4 +2120,26 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\Utah array\Aug 4 2017';
-monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI'}; 
+monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 42
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 42;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\Utah array\Aug 5 2017';
+monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI'};
+
+%% session 43
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 43;
+monkeyInfo (end).coord.row = -6;
+monkeyInfo (end).coord.column = 20;
+monkeyInfo (end).coord.depth = 2449;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\U-probe\Aug 14 2017';
+monkeyInfo (end).comments = {'fixed densities, no landmarks, perturbations, random DCI, random ITI'};
