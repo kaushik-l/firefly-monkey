@@ -14,10 +14,10 @@ t_end = events.TimeStampSec(events.UnparsedData==3);
 t_end = [0 t_end]; % add dummy entry
 for i=2:length(t_end)
     t_beg2 = t_beg(t_beg>t_end(i-1) & t_beg<t_end(i));
-    if length(t_beg2)>1
-        t_beg2(end) = [];
+    if length(t_beg2)>1 % takes care of incomplete trials - usually happens whenever an experiment is "STOPPED"
+        t_beg2(end) = []; % this is the correct t_beg
         for j=1:length(t_beg2)
-            t_beg(t_beg==t_beg2(j)) = [];
+            t_beg(t_beg==t_beg2(j)) = []; % remove t_beg that had no end
         end
     end
 end
