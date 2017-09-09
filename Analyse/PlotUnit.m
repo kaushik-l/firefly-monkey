@@ -133,5 +133,5 @@ switch plot_type
         ts = linspace(0,1,length(relnspk));
         figure(7); hold on;
         plot(ts,relnspk);
-        set(gca,'Ydir','normal'); axis off;
+        set(gca,'Ydir','normal'); %axis off;
 end

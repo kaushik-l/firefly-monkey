@@ -57,13 +57,12 @@ classdef session < handle
                 events_smr.t_beg = [this.behaviours.trials.t_beg];
                 events_smr.t_rew = [this.behaviours.trials.t_rew];
                 events_smr.t_end = [this.behaviours.trials.t_end];
-                events_smr.ntrls = [this.behaviours.tseries.smr.ntrls];
                 if length(this.behaviours.trials)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
                             %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
-                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,events_smr,prs);
+                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,prs);
                             this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
                         end
                     end
@@ -71,7 +70,7 @@ classdef session < handle
                         for i=1:length(mua)
                             %fetch multiunit
                             this.multiunits(end+1) = multiunit(mua(i));
-                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,events_smr,prs);
+                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,prs);
                             this.multiunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
                         end
                     end
