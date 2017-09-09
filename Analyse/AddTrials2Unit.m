@@ -1,22 +1,10 @@
-function [tseries, trials] = AddTrials2Unit(tspk,events_spk,events_smr,prs)
+function trials = AddTrials2Unit(tspk,events_spk,prs)
 
-ntrls = events_smr.ntrls;
-ntrls_cum = cumsum(ntrls);
-ntrls_tot = sum(ntrls);
+ntrls = length(events_spk.t_end);
 tspk = double(tspk)/prs.fs;
 
-%% tseries
-nsmr = length(ntrls);
-for i=1:nsmr
-    t_start = events_spk.t_start(i);
-    t_end = t_start + events_smr.t_end(ntrls(i));
-    tseries.smr(i).tspk = tspk(tspk>t_start & tspk<t_end) - t_start;
-end
-
 %% trials
-trials(ntrls_tot) = struct();
-for i=1:ntrls_tot
-    t_start = events_spk.t_start(find(i<=ntrls_cum,1));
-    trials(i).tspk = tspk(tspk > (t_start + events_smr.t_beg(i)) & tspk < (t_start + events_smr.t_end(i))) -...
-        (t_start + events_smr.t_beg(i));
+trials(ntrls) = struct();
+for i=1:ntrls
+    trials(i).tspk = tspk(tspk > (events_spk.t_beg(i)) & tspk < (events_spk.t_end(i))) - (events_spk.t_beg(i));
 end
