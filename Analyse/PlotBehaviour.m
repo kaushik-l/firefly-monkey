@@ -16,6 +16,7 @@ correct = logical(behv.stats.trlindx.correct);
 incorrect = logical(behv.stats.trlindx.incorrect);
 crazy = logical(behv.stats.trlindx.crazy);
 
+
 behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
 behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
 behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
@@ -387,4 +388,54 @@ switch plot_type
         axis([0 400 0 400]); plot(0:400,0:400,'--k');
         xlabel('gaze distance [monocular] (m)');
         ylabel('gaze distance [binocular] (m)');
+    case 'ptb_distance'
+        r_fly = behv.stats.pos_final.r_fly(~crazy);
+        r_monk = behv.stats.pos_final.r_monk(~crazy);
+        ptb_indx = [behv_all.ptb_delay] ~= 0;
+        ptb_lin = [behv_all.ptb_linear];
+        ptb_ang = [behv_all.ptb_angular];
+        % data without ptb
+        figure; hold on; 
+        plot(r_fly(~ptb_indx),r_monk(~ptb_indx),'.b');        
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+        % data with ptb
+        hold on;
+        plot(r_fly(ptb_indx),r_monk(ptb_indx),'.r');
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+    case 'ptb_angle'
+        theta_fly = behv.stats.pos_final.theta_fly(~crazy);
+        theta_monk = behv.stats.pos_final.theta_monk(~crazy);
+        ptb_indx = [behv_all.ptb_delay] ~= 0;
+        % data without ptb
+        figure; hold on;
+        plot(theta_fly(~ptb_indx),theta_monk(~ptb_indx),'.b');
+        axis([-40 40 -40 40]);
+        plot(-40:40,-40:40,'--k','Linewidth',1);
+        set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
+        xlabel('Target, \theta(deg)');
+        set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);
+        ylabel('Response, \theta(deg)');
+        hline(0, 'k'); vline(0, 'k');
+%         removeaxes;
+        % data with ptb
+        hold on;
+        plot(theta_fly(ptb_indx),theta_monk(ptb_indx),'.r');
+        axis([-40 40 -40 40]);
+        plot(-40:40,-40:40,'--k','Linewidth',1);
+        set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
+        xlabel('Target, \theta(deg)');
+        set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);
+        ylabel('Response, \theta(deg)');
+        hline(0, 'k'); vline(0, 'k');
+%         removeaxes;
 end

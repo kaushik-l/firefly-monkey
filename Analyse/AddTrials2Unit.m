@@ -6,5 +6,5 @@ tspk = double(tspk)/prs.fs;
 %% trials
 trials(ntrls) = struct();
 for i=1:ntrls
-    trials(i).tspk = tspk(tspk > (events_spk.t_beg(i)) & tspk < (events_spk.t_end(i))) - (events_spk.t_beg(i));
+    trials(i).tspk = tspk(tspk > (events_spk.t_beg(i) - prs.pretrial) & tspk < (events_spk.t_end(i) +  prs.posttrial)) - (events_spk.t_beg(i));
 end
