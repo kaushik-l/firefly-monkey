@@ -197,4 +197,76 @@ switch plot_type
 %         imagesc(ts,1:size(nspk_ptb,1),nspk_ptb,[0  max(mean(nspk_unptb))]);
 %         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
 %         set(gca,'Ydir','normal'); %axis([0 4 100 ntrls_all]); %axis off;
+    case 'rate_density'
+        stats = unit.stats;
+        clr = {'b','c','m','r'};
+        % aligned to start
+        figure; hold on;
+        for i=1:length(stats.density)
+            t = stats.density(i).nspk.t;
+            r_mu = stats.density(i).nspk.mu;
+            r_sig = stats.density(i).nspk.sig;
+            shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        end
+        xlim([0.2 2.2]);
+        % aligned to end
+        figure; hold on;
+        for i=1:length(stats.density)
+            t = stats.density(i).nspk2end.t;
+            r_mu = stats.density(i).nspk2end.mu;
+            r_sig = stats.density(i).nspk2end.sig;
+            shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        end
+        xlim([-2 0]);
+        % time rescaled
+        figure; hold on;
+        for i=1:length(stats.density)
+            t = stats.density(i).relnspk.t;
+            r_mu = stats.density(i).relnspk.mu;
+            r_sig = stats.density(i).relnspk.sig;
+            shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        end
+        xlim([0 1]);
+    case 'rate_reward'
+        stats = unit.stats;
+        clr = {'b','c','m','r'};
+        % aligned to start
+%         figure; hold on;
+%         for i=1:length(stats.reward)
+%             t = stats.reward(i).nspk.t;
+%             r_mu = stats.reward(i).nspk.mu;
+%             r_sig = stats.reward(i).nspk.sig;
+%             shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+%         end
+%         xlim([0 2]);
+        % aligned to end
+        figure; hold on;
+        for i=1:length(stats.reward)
+            t = stats.reward(i).nspk2end.t;
+            r_mu = stats.reward(i).nspk2end.mu;
+            r_sig = stats.reward(i).nspk2end.sig;
+            shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        end
+        xlim([-2 0]);
+    case 'rate_accuracy'
+        stats = unit.stats;
+        clr = {'b','c','m','r'};
+        % aligned to start
+        %         figure; hold on;
+        %         for i=1:length(stats.accuracy)
+        %             t = stats.accuracy(i).nspk.t;
+        %             r_mu = stats.accuracy(i).nspk.mu;
+        %             r_sig = stats.accuracy(i).nspk.sig;
+        %             shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        %         end
+        %         xlim([0 2]);
+        % aligned to end
+        figure; hold on;
+        for i=1:length(stats.accuracy)
+            t = stats.accuracy(i).nspk2end.t;
+            r_mu = stats.accuracy(i).nspk2end.mu;
+            r_sig = stats.accuracy(i).nspk2end.sig;
+            shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
+        end
+        xlim([-2 0]);
 end

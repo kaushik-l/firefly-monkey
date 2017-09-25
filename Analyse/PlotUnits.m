@@ -28,70 +28,72 @@ switch plot_type
             k = k+1;
             % neural data
             spks_all = units(j).trials(~crazy);
-            % order trials based on trial duration
             relnspk = nan(ntrls_all,ns_max);
+            ts = 1:ns_max;
             for i=1:ntrls_all
                 relnspk(i,:) = spks_all(i).relnspk;
             end
+            t_com(k) = nanmean(t_com_trial);
             trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
             relnspk = conv2(relnspk, trlkrnl, 'valid');
             relnspk = mean(relnspk)/binwidth_warp; % mean across trials
             relnspk = relnspk/max(relnspk); % normalise psth of individual neurons
             r(k,:) = relnspk;
-        end
-        imagesc(r); set(gca,'Ydir','normal'); axis off;
-    case 'crosscorr'
-        %% move to population analysis
-        spks_all = units(1).trials(~crazy);
-        spks_all = spks_all(indx_all);
-        ns_max = length(spks_all(1).relnspk);
-        % choose a pair of units
-        indx = prs.units;
-        spks1 = units(indx(1)).trials(~crazy); spks1 = spks1(indx_all);
-        spks2 = units(indx(2)).trials(~crazy); spks2 = spks2(indx_all);
-        r1 = []; r2 = [];
-        for i=1:ntrls_all
-            relnspk1 = [zeros(ns_max,1); spks1(i).relnspk; zeros(ns_max,1)];
-            r1 = [r1 ; relnspk1];
-            relnspk2 = [zeros(ns_max,1); spks2(i).relnspk; zeros(ns_max,1)];
-            r2 = [r2 ; relnspk2];
-        end
-        [C,lags] = xcorr(r1,r2,101);
-        hold on; plot(lags,C/max(C));        
-    case 'dynamicPCA_warp'
-        %% plot population activity as trajectries in a dynamic
-        %% state-space obtained by performing PCA oat each timestep
-        %% each trial gives one trajectory
-        spks_all = units(1).trials(~crazy);
-        spks_all = spks_all(indx_all);
-        ns_max = length(spks_all(1).relnspk);
-        % initialise response matrix (Trials x Time x Neurons)
-        r = nan(ntrls_all - trlkrnlwidth + 1,ns_max,length(prs.goodunits));
-        k = 0;
-        for j=prs.goodunits %1:nunits
-            k = k+1;
-            % neural data
-            spks_all = units(j).trials(~crazy);
-            % order trials based on trial duration
-            spks_all = spks_all(indx_all);
-            r_temp = nan(ntrls_all,ns_max);
-            for i=1:ntrls_all
-                r_temp(i,:) = spks_all(i).relnspk;
+        end        
+        % plot
+        figure; imagesc(r); set(gca,'Ydir','normal'); axis off;
+        
+    case 'density_scatter'
+        figure; hold on;
+        for i=1:nunits
+            stats = units(i).stats;
+            p(1) = stats.nspkpeak.density.p(1,2);
+            p(2) = stats.nspk2endpeak.density.p(1,2);
+            if p(1) < p(2)
+                if p(1)<0.005
+                    plot(stats.density(1).nspk.mupeak,stats.density(end).nspk.mupeak,'ok','MarkerFaceColor','k');
+                else
+                    plot(stats.density(1).nspk.mupeak,stats.density(end).nspk.mupeak,'ok');
+                end
+            else
+                if p(2)<0.005
+                    plot(stats.density(1).nspk2end.mupeak,stats.density(end).nspk2end.mupeak,'ok','MarkerFaceColor','k');
+                else
+                    plot(stats.density(1).nspk2end.mupeak,stats.density(end).nspk2end.mupeak,'ok');
+                end
             end
-            trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
-            r_temp = conv2(r_temp, trlkrnl, 'valid');
-            r_temp = r_temp/binwidth_warp;
-            % standardise and store response of each neuron
-            rmax_temp = max(nanmean(r_temp));
-            r(:,:,k) = r_temp/rmax_temp;
         end
-        % dynamic PCA
-        % get the top three components (w) and the corresponding activity (z)
-        [w,z] = dpca(r,3);
-        indx = randperm(ntrls_all);
-        plot3(squeeze(z(indx(1:100),:,1))',squeeze(z(indx(1:100),:,2))',squeeze(z(indx(1:100),:,3))','k');
-    case 'dynamic_tuning'
-        x=1;
+        plot(1:1:25,1:1:25,'r'); axis([1 25 1 25]);
+        set(gca, 'XScale', 'log');
+        set(gca, 'YScale', 'log');
+        set(gca,'XTick',[1 10 20]); set(gca,'YTick',[1 10 20]);
+        xlabel('log firing rate (lowest density)'); ylabel('log firing rate (highest density)');
+        
+    case 'reward_scatter'
+        figure; hold on;
+        for i=1:nunits
+            stats = units(i).stats;
+            p(1) = stats.nspkpeak.reward.p(1,2);
+            p(2) = stats.nspk2endpeak.reward.p(1,2);
+            if p(1) < p(2)
+                if p(1)<0.005
+                    plot(stats.reward(end).nspk.mupeak,stats.reward(1).nspk.mupeak,'ok','MarkerFaceColor','k');
+                else
+                    plot(stats.reward(end).nspk.mupeak,stats.reward(1).nspk.mupeak,'ok');
+                end
+            else
+                if p(2)<0.005
+                    plot(stats.reward(end).nspk2end.mupeak,stats.reward(1).nspk2end.mupeak,'ok','MarkerFaceColor','k');
+                else
+                    plot(stats.reward(end).nspk2end.mupeak,stats.reward(1).nspk2end.mupeak,'ok');
+                end
+            end
+        end
+        plot(1:1:25,1:1:25,'r'); axis([1 25 1 25]);
+        set(gca, 'XScale', 'log');
+        set(gca, 'YScale', 'log');
+        set(gca,'XTick',[1 10 20]); set(gca,'YTick',[1 10 20]);
+        xlabel('log firing rate (rewarded)'); ylabel('log firing rate (unrewarded)');
 end
 
 for j=1:nunits
@@ -152,7 +154,7 @@ for j=1:nunits
             % plot
             figure(4); hold on; SubplotArray('multiunits',units(j).channel_no);
             imagesc(nspk,[0  max(mean(nspk))]);
-            set(gca,'Ydir','normal'); axis off;
+            set(gca,'Ydir','normal'); %axis off;
             
         case 'rate_end'
             %% rate - aligned to end of trial
@@ -188,7 +190,7 @@ for j=1:nunits
             % plot
             figure(6); hold on; SubplotArray('multiunits',units(j).channel_no);
             imagesc(relnspk,[0 max(mean(relnspk))]);
-            set(gca,'Ydir','normal'); axis off;
+            set(gca,'Ydir','normal'); %axis off;
         case 'psth_warp'
             %% same as rate_warp but trial averaged
             ns_max = length(spks_all(1).relnspk);

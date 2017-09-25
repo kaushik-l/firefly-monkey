@@ -105,6 +105,7 @@ binwidth_abs = prs.binwidth_abs;
 binwidth_warp = prs.binwidth_warp;
 
 % trial-averaged responses for different ground plane densities
+temp = [];
 density = unique([trials_behv.floordensity]);
 for i=1:length(density)
    trial_indx = ([trials_behv.floordensity] == density(i));
@@ -114,19 +115,27 @@ for i=1:length(density)
    stats.density(i).nspk.mu = nanmean(nspk)/binwidth_abs;
    stats.density(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
    stats.density(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-   % peak within the first 2 seconds of trial onset
+   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
    [stats.density(i).nspk.mupeak,stats.density(i).nspk.tpeak] = ...
-       max(stats.density(i).nspk.mu(stats.density(i).nspk.t>0 & stats.density(i).nspk.t<2));
-   stats.density(i).nspk.tpeak = stats.density(i).nspk.tpeak*binwidth_abs;
+       max(stats.density(i).nspk.mu(stats.density(i).nspk.t>0.4 & stats.density(i).nspk.t<2));
+   stats.density(i).nspk.tpeak = stats.density(i).nspk.tpeak*binwidth_abs + 0.4;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).nspkpeak(j) = max(nspk(j,stats.density(i).nspk.t>0.4 & stats.density(i).nspk.t<2))/binwidth_abs;
+   end
    
    nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
    stats.density(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
    stats.density(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
    stats.density(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-   % peak within the last 2 seconds of trial end
+   % peak within [-2,-0.3] seconds of trial end
    [stats.density(i).nspk2end.mupeak,stats.density(i).nspk2end.tpeak] = ...
-       max(stats.density(i).nspk2end.mu(stats.density(i).nspk2end.t>-2 & stats.density(i).nspk2end.t<0));
+       max(stats.density(i).nspk2end.mu(stats.density(i).nspk2end.t>-2 & stats.density(i).nspk2end.t<-0.3));
    stats.density(i).nspk2end.tpeak = stats.density(i).nspk2end.tpeak*binwidth_abs - 2;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.density(i).nspk2end.t>-2 & stats.density(i).nspk2end.t<-0.3))/binwidth_abs;
+   end
    
    relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
    stats.density(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
@@ -135,9 +144,21 @@ for i=1:length(density)
    % peak anywhere during the trial
    [stats.density(i).relnspk.mupeak,stats.density(i).relnspk.tpeak] = max(stats.density(i).relnspk.mu);
    stats.density(i).relnspk.tpeak = stats.density(i).relnspk.tpeak*binwidth_warp;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
+   end
+end
+for i=1:length(density)
+    for j=1:length(density)
+        [~,stats.nspkpeak.density.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
+        [~,stats.nspk2endpeak.density.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
+        [~,stats.relnspkpeak.density.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
+    end
 end
 
 % trial-averaged responses for rewarded and unrewarded trials
+temp = [];
 reward = {'correct','incorrect'};
 for i=1:length(reward)
     trial_indx = behv_stats.trlindx.(reward{i});
@@ -147,19 +168,27 @@ for i=1:length(reward)
     stats.reward(i).nspk.mu = nanmean(nspk)/binwidth_abs;
     stats.reward(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
     stats.reward(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-    % peak within the first 2 seconds of trial onset
+   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
     [stats.reward(i).nspk.mupeak,stats.reward(i).nspk.tpeak] = ...
-        max(stats.reward(i).nspk.mu(stats.reward(i).nspk.t>0 & stats.reward(i).nspk.t<2));
-    stats.reward(i).nspk.tpeak = stats.reward(i).nspk.tpeak*binwidth_abs;
+        max(stats.reward(i).nspk.mu(stats.reward(i).nspk.t>0.4 & stats.reward(i).nspk.t<2));
+    stats.reward(i).nspk.tpeak = stats.reward(i).nspk.tpeak*binwidth_abs + 0.4;
+    % store vector of peak responses to calculate significance
+    for j=1:size(nspk,1)
+        temp(i).nspkpeak(j) = max(nspk(j,stats.reward(i).nspk.t>0.4 & stats.reward(i).nspk.t<2))/binwidth_abs;
+    end
     
     nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
     stats.reward(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
     stats.reward(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
     stats.reward(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-    % peak within the last 2 seconds of trial end
+   % peak within [-2,-0.3] seconds of trial end
     [stats.reward(i).nspk2end.mupeak,stats.reward(i).nspk2end.tpeak] = ...
-        max(stats.reward(i).nspk2end.mu(stats.reward(i).nspk2end.t>-2 & stats.reward(i).nspk2end.t<0));
+        max(stats.reward(i).nspk2end.mu(stats.reward(i).nspk2end.t>-2 & stats.reward(i).nspk2end.t<-0.3));
     stats.reward(i).nspk2end.tpeak = stats.reward(i).nspk2end.tpeak*binwidth_abs - 2;
+    % store vector of peak responses to calculate significance
+    for j=1:size(nspk,1)
+        temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.reward(i).nspk2end.t>-2 & stats.reward(i).nspk2end.t<-0.3))/binwidth_abs;
+    end
     
     relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
     stats.reward(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
@@ -168,9 +197,21 @@ for i=1:length(reward)
     % peak anywhere during the trial
     [stats.reward(i).relnspk.mupeak,stats.reward(i).relnspk.tpeak] = max(stats.reward(i).relnspk.mu);
     stats.reward(i).relnspk.tpeak = stats.reward(i).relnspk.tpeak*binwidth_warp;
+    % store vector of peak responses to calculate significance
+    for j=1:size(nspk,1)
+        temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
+    end
+end
+for i=1:length(reward)
+    for j=1:length(reward)
+        [~,stats.nspkpeak.reward.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
+        [~,stats.nspk2endpeak.reward.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
+        [~,stats.relnspkpeak.reward.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
+    end
 end
 
 % trial-averaged responses for different accuracies
+temp = [];
 dist2fly = zeros(1,ntrls);
 for i=1:ntrls
     dist2fly(i) = behv_stats.pos_rel.r_fly{i}(end);
@@ -184,19 +225,27 @@ for i=1:length(accuracy)
    stats.accuracy(i).nspk.mu = nanmean(nspk)/binwidth_abs;
    stats.accuracy(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
    stats.accuracy(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-   % peak within the first 2 seconds of trial onset
+   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
    [stats.accuracy(i).nspk.mupeak,stats.accuracy(i).nspk.tpeak] = ...
-       max(stats.accuracy(i).nspk.mu(stats.accuracy(i).nspk.t>0 & stats.accuracy(i).nspk.t<2));
-   stats.accuracy(i).nspk.tpeak = stats.accuracy(i).nspk.tpeak*binwidth_abs;
+       max(stats.accuracy(i).nspk.mu(stats.accuracy(i).nspk.t>0.4 & stats.accuracy(i).nspk.t<2));
+   stats.accuracy(i).nspk.tpeak = stats.accuracy(i).nspk.tpeak*binwidth_abs + 0.4;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).nspkpeak(j) = max(nspk(j,stats.accuracy(i).nspk.t>0.4 & stats.accuracy(i).nspk.t<2))/binwidth_abs;
+   end
    
    nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
    stats.accuracy(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
    stats.accuracy(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
    stats.accuracy(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-   % peak within the last 2 seconds of trial end
+   % peak within [-2,-0.3] seconds of trial end
    [stats.accuracy(i).nspk2end.mupeak,stats.accuracy(i).nspk2end.tpeak] = ...
-       max(stats.accuracy(i).nspk2end.mu(stats.accuracy(i).nspk2end.t>-2 & stats.accuracy(i).nspk2end.t<0));
+       max(stats.accuracy(i).nspk2end.mu(stats.accuracy(i).nspk2end.t>-2 & stats.accuracy(i).nspk2end.t<-0.3));
    stats.accuracy(i).nspk2end.tpeak = stats.accuracy(i).nspk2end.tpeak*binwidth_abs - 2;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.accuracy(i).nspk2end.t>-2 & stats.accuracy(i).nspk2end.t<-0.3))/binwidth_abs;
+   end
    
    relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
    stats.accuracy(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
@@ -205,6 +254,15 @@ for i=1:length(accuracy)
    % peak anywhere during the trial
    [stats.accuracy(i).relnspk.mupeak,stats.accuracy(i).relnspk.tpeak] = max(stats.accuracy(i).relnspk.mu);
    stats.accuracy(i).relnspk.tpeak = stats.accuracy(i).relnspk.tpeak*binwidth_warp;
+   % store vector of peak responses to calculate significance
+   for j=1:size(nspk,1)
+       temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
+   end
 end
-
-% check for time tuning
+for i=1:length(accuracy)
+    for j=1:length(accuracy)
+        [~,stats.nspkpeak.accuracy.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
+        [~,stats.nspk2endpeak.accuracy.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
+        [~,stats.relnspkpeak.accuracy.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
+    end
+end
