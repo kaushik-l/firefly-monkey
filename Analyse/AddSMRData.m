@@ -41,6 +41,7 @@ t.beg = t.events(markers ==2);
 t.end = t.events(markers ==3); 
 t.reward = t.events(markers ==4);
 t.beg = t.beg(1:length(t.end));
+t.ptb = t.events(markers ==5);
 
 %% define filter
 sig = prs.filtwidth; %filter width
@@ -128,6 +129,14 @@ for j=1:length(t.end)
         trl(j).reward = false;
         trl(j).t_rew = nan;
     end
+    % ptb time
+    if any(t.ptb>t.beg(j) & t.ptb<t.end(j))
+        trl(j).ptb = true;
+        trl(j).t_ptb = t.ptb(t.ptb>t.beg(j) & t.ptb<t.end(j));
+    else
+        trl(j).ptb = false;
+        trl(j).t_ptb = nan;
+    end
     % saccade time
     if j==1, t_ref = 0; else, t_ref = t.end(j-1); end
     if any(t.saccade>t_ref & t.saccade<t.end(j))
@@ -152,6 +161,8 @@ for i=1:length(trl)
     trl(i).t_beg = trl(i).t_beg - exp_beg;
     trl(i).t_end = trl(i).t_end - exp_beg;
     trl(i).t_rew = trl(i).t_rew - exp_beg;
+    trl(i).t_ptb = trl(i).t_ptb - exp_beg;
+    trl(i).t_ptb = trl(i).t_ptb - trl(i).t_beg; % who cares about absolute times?!
     trl(i).t_sac = trl(i).t_sac - trl(i).t_beg; % who cares about absolute times?!
     trl(i).t_stop = trl(i).t_stop - trl(i).t_beg; % who cares about absolute times?!
 end

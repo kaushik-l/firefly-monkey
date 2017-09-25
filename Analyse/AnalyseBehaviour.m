@@ -30,8 +30,6 @@ for i=1:length(trials)
     trials(i).yfp_rel = y_fly(i) - trials(i).ymp;
     trials(i).r_fly_rel = sqrt(trials(i).xfp_rel.^2 + trials(i).yfp_rel.^2);
     trials(i).theta_fly_rel = atan2d(trials(i).xfp_rel,trials(i).yfp_rel);
-    %% stimulus parameters
-%     floordensity(i) = trials(i).floordensity;
 end
 
 %% position - polar

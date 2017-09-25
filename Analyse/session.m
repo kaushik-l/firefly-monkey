@@ -51,9 +51,9 @@ classdef session < handle
                     end
                 end
             elseif ~isempty(file_nev) % data recorded using Cereplex
-                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv');
+                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv'); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
                 fprintf(['... reading events from ' file_nev.name '\n']);
-                [events_nev,prs] = GetEvents_nev(file_nev.name,prs);
+                [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
                 events_smr.t_beg = [this.behaviours.trials.t_beg];
                 events_smr.t_rew = [this.behaviours.trials.t_rew];
                 events_smr.t_end = [this.behaviours.trials.t_end];

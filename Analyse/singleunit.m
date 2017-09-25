@@ -4,7 +4,8 @@ classdef singleunit < handle
         channel_no
         spkwf
         trials
-        corrgrams
+        stats
+        weights
     end
     %%
     methods
@@ -19,8 +20,8 @@ classdef singleunit < handle
         end
         %% analyse spikes
         function AnalyseUnit(this,exp_name,behaviours,prs)
-            [this.trials,this.corrgrams] = ...
-                AnalyseUnit(exp_name,this.trials,behaviours.trials,prs);
+            [this.trials,this.stats] = AnalyseRates(exp_name,this.trials,behaviours.trials,behaviours.stats,prs);
+%             this.weights = ComputeWeights(exp_name,this.trials,behaviours.trials,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
         end
         %% destroy spike times
         function destroy_spks(this)
