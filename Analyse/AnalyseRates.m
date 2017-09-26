@@ -1,4 +1,4 @@
-function [trials_spks,stats] = AnalyseRates(exp_name,trials_spks,trials_behv,behv_stats,prs)
+function [trials_spks,stats] = AnalyseRates(trials_spks,trials_behv,behv_stats,prs)
 
 % nseries = length(tseries_behv.smr);
 ntrls = length(trials_behv);
@@ -8,7 +8,11 @@ for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     ts = trial_behv_temp.ts;
-    [nspk,~]=hist(trial_spks_temp.tspk,ts); nspk = nspk(:);
+    % add time points to the flanks to absorb spike counts outside
+    % the time period of interest
+    ts_hist = [ts(1)-prs.binwidth_abs ; ts(:) ; ts(end)+prs.binwidth_abs];
+    [nspk,~]=hist(trial_spks_temp.tspk,ts_hist); 
+    nspk = nspk(2:end-1); % discard spikes outside the time period of interest
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
     t2 = linspace(-sz/2, sz/2, sz);
@@ -32,8 +36,12 @@ for i=1:ntrls
     trial_spks_temp = trials_spks(i);
     trial_behv_temp = trials_behv(i);
     ts = trial_behv_temp.ts;
-    ts = ts - ts(end);
-    [nspk2end,~]=hist(trial_spks_temp.tspk2end,ts); nspk2end = nspk2end(:);
+    ts = ts - ts(end);    
+    % add time points to the flanks to absorb spike counts outside
+    % the time period of interest
+    ts_hist = [ts(1)-prs.binwidth_abs ; ts(:) ; ts(end)+prs.binwidth_abs];
+    [nspk2end,~]=hist(trial_spks_temp.tspk2end,ts_hist); 
+    nspk2end = nspk2end(2:end-1); % discard spikes outside the time period of interest
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
     t2 = linspace(-sz/2, sz/2, sz);
@@ -84,7 +92,11 @@ for i=1:ntrls
     trial_behv_temp = trials_behv(i);
     Td = trial_behv_temp.t_end - trial_behv_temp.t_beg;
     ts = linspace(0,1,(1/prs.binwidth_warp)+1);
-    [relnspk,~]=hist(trial_spks_temp.reltspk,ts); relnspk = relnspk(:)/Td;
+    % add time points to the flanks to absorb spike counts outside
+    % the time period of interest
+    ts_hist = [ts(1)-prs.binwidth_warp ; ts(:) ; ts(end)+prs.binwidth_warp];
+    [relnspk,~]=hist(trial_spks_temp.reltspk,ts_hist); 
+    relnspk = relnspk(2:end-1)/Td; % discard spikes outside the time period of interest
     sig = prs.spkkrnlwidth; %filter width
     sz = prs.spkkrnlsize; %filter size
     t2 = linspace(-sz/2, sz/2, sz);

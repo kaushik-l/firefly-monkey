@@ -76,7 +76,7 @@ switch plot_type
         figure; hold on;
         imagesc(ts,1:size(nspk,1),nspk,[0  max(mean(nspk))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([0 4 100 1400]); %axis off;
+        set(gca,'Ydir','normal'); axis([0 5 100 ntrls_all]); %axis off;
         
     case 'rate_end'
         %% psth - aligned to end of trial

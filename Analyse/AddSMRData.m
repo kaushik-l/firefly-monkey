@@ -1,6 +1,5 @@
 function trl = AddSMRData(data,prs)
 
-saccade_thresh = prs.saccade_thresh;
 %% check channel headers
 nch = length(data);
 hdr = {data.hdr};
@@ -80,45 +79,42 @@ ts = dt:dt:length(ch.(chnames{end}))*dt;
 
 %% detect saccade times
 % take derivative of eye position = eye velocity
-dzle = diff(ch.zle);
-dzre = diff(ch.zre);
-dyle = diff(ch.yle);
-dyre = diff(ch.yre);
+if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil
+    dze = diff(ch.zle);
+    dye = diff(ch.yle);
+else
+    dze = diff(ch.zre);
+    dye = diff(ch.yre);
+end
+de = sqrt(dze.^2 + dye.^2); % speed of eye movement
 
-% apply threshold on eye velocity
-thresh = prs.saccade_thresh/prs.fs_smr;
-indx_thresh = (abs(dzle)>thresh & abs(dyle)>thresh);
+% apply threshold on eye speed
+saccade_thresh = prs.saccade_thresh;
+thresh = saccade_thresh/prs.fs_smr; % threshold in units of deg/sample
+indx_thresh = de>thresh;
 dindx_thresh = diff(indx_thresh);
 t_saccade = find(dindx_thresh>0)/prs.fs_smr;
 
-% remove duplicates by applying a saccade refractory period (200ms)
-count = length(t_saccade); t.saccade = [];
-if count>0
-    i=1; t.saccade = t_saccade(i);
-    while i < count
-        i = i+1;
-        if t_saccade(i) - t.saccade(end) > 0.2
-            t.saccade(end+1) = t_saccade(i);
-        end
-    end
-end
+% remove duplicates by applying a saccade refractory period
+min_isi = prs.min_intersaccade;
+t_saccade(diff(t_saccade)<min_isi) = [];
+t.saccade = t_saccade;
 
 %% detect stopping times
 indx_v = ch.v > 1;
 dindx_v = diff(indx_v);
 t.stop = find(dindx_v<0)/prs.fs_smr;
 
-%% extract trials
-t_saccade = t.saccade;
+%% extract trials and downsample for storage
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
-            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j) & ts<t.end(j));
+            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-prs.pretrial & ts<t.end(j)+prs.posttrial);
             trl(j).(chnames{i}) = downsample(trl(j).(chnames{i}),prs.factor_downsample);
         end
     end
-    trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)';
+    trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)' - prs.pretrial;
     trl(j).t_beg = t.beg(j);
     trl(j).t_end = t.end(j);
     % reward time

@@ -19,8 +19,8 @@ classdef singleunit < handle
             this.trials = AddTrials2Unit(tspk,events_spk,prs);
         end
         %% analyse spikes
-        function AnalyseUnit(this,exp_name,behaviours,prs)
-            [this.trials,this.stats] = AnalyseRates(exp_name,this.trials,behaviours.trials,behaviours.stats,prs);
+        function AnalyseUnit(this,behaviours,prs)
+            [this.trials,this.stats] = AnalyseRates(this.trials,behaviours.trials,behaviours.stats,prs);
 %             this.weights = ComputeWeights(exp_name,this.trials,behaviours.trials,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
         end
         %% destroy spike times

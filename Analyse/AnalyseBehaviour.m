@@ -3,6 +3,15 @@ function stats = AnalyseBehaviour(trials,prs)
 maxrewardwin = prs.maxrewardwin;
 bootstrap_trl = prs.bootstrap_trl;
 
+%% preallocate for speed
+ntrls = length(trials);
+v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls);
+x0_monk = zeros(1,ntrls); y0_monk = zeros(1,ntrls);
+x_monk = zeros(1,ntrls); y_monk = zeros(1,ntrls);
+x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
+crazy = false(1,ntrls); correct = false(1,ntrls); incorrect = false(1,ntrls);
+
+%% compute
 for i=1:length(trials)
     %% final velocity
     v_monk(i) = (trials(i).v(end));
@@ -52,9 +61,6 @@ theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 stats.trlindx.correct = correct; 
 stats.trlindx.incorrect = incorrect; 
 stats.trlindx.crazy = crazy;
-
-% % stimulus parameters
-% behaviour.prs.floordensity = floordensity;
 
 % final position - monkey and fly
 stats.pos_final.r_monk = rf_monk; stats.pos_final.theta_monk = thetaf_monk;

@@ -20,8 +20,6 @@ prs.factor_downsample = 10; % select every nth sample
 prs.screendist = 32.5;
 prs.height = 10;
 prs.framerate = 60;
-prs.pretrial = 1; %1s pre-trial
-prs.posttrial = 1; %1s post-trial
 
 %% data analysis parameters
 prs.binwidth = 1/(prs.fs_smr/prs.factor_downsample); % binwidth for neural data analysis (s)
@@ -33,15 +31,16 @@ prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
 prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
 prs.saccade_thresh = 120; % deg/s
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0.25; % (s)
-prs.posttrial = 0.25; % (s)
+prs.pretrial = 0; % (s)
+prs.posttrial = 0; % (s)
+prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 
 %% plotting parameters
 prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
 prs.trlkrnlwidth = 100; % width of the gaussian kernel for trial averaging (number of trials)
 prs.maxtrls = 5000; % maximum #trials to plot at once.
-prs.rewardwin = 65; % size of reward window
+prs.rewardwin = 65; % size of reward window (cm)
 prs.maxrewardwin = 400; % maximum reward window for ROC analysis
 
 %% temporary testing
