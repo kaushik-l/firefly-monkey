@@ -41,12 +41,12 @@ classdef session < handle
                     units = GetUnits_plx(file_plx.name,prs.units,j);
                     %fetch multiunit
                     this.multiunits(end+1) = multiunit(units(1));
-                    this.multiunits(end).AddTrials(units(1).tspk,t_events,prs);
+                    this.multiunits(end).AddTrials(units(1).tspk,t_events,this.behaviours,prs);
                     %fetch singleunits
                     if length(units)>1
                         for k=2:length(units)
                             this.singleunits(end+1) = singleunit(units(k));
-                            this.singleunits(end).AddTrials(units(k).tspk,t_events,prs);
+                            this.singleunits(end).AddTrials(units(k).tspk,t_events,this.behaviours,prs);
                         end
                     end
                 end
@@ -62,7 +62,7 @@ classdef session < handle
                         for i=1:length(sua)
                             %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
-                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,prs);
+                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
                             this.singleunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
@@ -70,7 +70,7 @@ classdef session < handle
                         for i=1:length(mua)
                             %fetch multiunit
                             this.multiunits(end+1) = multiunit(mua(i));
-                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,prs);
+                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
                             this.multiunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end

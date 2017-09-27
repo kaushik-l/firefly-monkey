@@ -64,8 +64,10 @@ switch plot_type
         xlim([0 1]); axis off;
         
     case 'rate_start'
+        alignpos = zeros(1,ntrls_all);
+%         for i=1:ntrls_all, alignpos(i) = find(behv_all(i).ts>0,1); end
         %% psth - aligned to start of trial
-        nspk = struct2mat(spks_all,'nspk','start');
+        nspk = struct2mat(spks_all,'nspk',alignpos);
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk = conv2nan(nspk, trlkrnl);
         % plot
@@ -79,9 +81,10 @@ switch plot_type
         set(gca,'Ydir','normal'); axis([0 5 100 ntrls_all]); %axis off;
         
     case 'rate_end'
+        alignpos = zeros(1,ntrls_all);
         %% psth - aligned to end of trial
         % find longest trial
-        nspk2end = struct2mat(spks_all,'nspk2end','end');
+        nspk2end = struct2mat(spks_all,'nspk2end',alignpos);
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk2end = conv2nan(nspk2end, trlkrnl);
         % plot
@@ -92,8 +95,7 @@ switch plot_type
         figure; hold on;
         imagesc(ts,1:size(nspk2end,1),nspk2end,[0 max(mean(nspk2end))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); axis off;
-        plot(t_com,1:size(nspk2end,1));
+        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); %axis off;
         
     case 'rate_warp'
         %% psth - normalised by trial duration

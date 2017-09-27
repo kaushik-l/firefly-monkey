@@ -64,7 +64,7 @@ else
    error('channels must all have identical sampling rates');
 end
 
-%% filter position and speed channels
+%% filter position and velocity channels
 for i=1:length(chnames)
     if ~any(strcmp(chnames{i},{'mrk','yle','yre','zle','zre'}))
         ch.(chnames{i}) = conv(ch.(chnames{i})(1:MAX_LENGTH),h,'same');
@@ -100,23 +100,53 @@ min_isi = prs.min_intersaccade;
 t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
-%% detect stopping times
-indx_v = ch.v > 1;
-dindx_v = diff(indx_v);
-t.stop = find(dindx_v<0)/prs.fs_smr;
+%% replace the broken eye coil (if any) with NaNs
+if var(ch.zle) > 2*var(ch.zre)
+    ch.zre(:) = nan;
+    ch.yre(:) = nan;
+elseif var(ch.zre) > 2*var(ch.zle)
+    ch.zle(:) = nan;
+    ch.yle(:) = nan;
+end
+
+%% detect start-of-movement and end-of-movement times for each trial
+v_thresh = prs.v_thresh;
+v_time2thresh = prs.v_time2thresh;
+v = ch.v;
+for j=1:length(t.end)
+   % start-of-movement
+   if j==1, t.begmovement(j) = t.beg(j); % first trial is special because there is no pre-trial period
+   else
+       indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
+       if ~isempty(indx), t.begmovement(j) = t.end(j-1) + indx*dt;
+       else, t.begmovement(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+   end
+   % end-of-movement
+   indx = find(v(ts>t.begmovement(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+   if ~isempty(indx), t.endmovement(j) = t.begmovement(j) + indx*dt;
+   else, t.endmovement(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+   % if monkey stopped prematurely, set movement end = trial end
+   if (t.endmovement(j)<t.beg(j) || t.endmovement(j)-t.begmovement(j)<0.5), t.endmovement(j) = t.end(j); end
+end
 
 %% extract trials and downsample for storage
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
+    % define pretrial period
+    pretrial = max(t.beg(j) - t.begmovement(j),0); % if movement onset follows target, no pretrial
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
-            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-prs.pretrial & ts<t.end(j)+prs.posttrial);
+            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j));
             trl(j).(chnames{i}) = downsample(trl(j).(chnames{i}),prs.factor_downsample);
         end
     end
-    trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)' - prs.pretrial;
+    trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)' - pretrial;
     trl(j).t_beg = t.beg(j);
     trl(j).t_end = t.end(j);
+    trl(j).t_begmovement = t.begmovement(j);
+    trl(j).t_endmovement = t.endmovement(j);
+    % saccade time
+    trl(j).t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
     % reward time
     if any(t.reward>t.beg(j) & t.reward<t.end(j))
         trl(j).reward = true;
@@ -133,34 +163,35 @@ for j=1:length(t.end)
         trl(j).ptb = false;
         trl(j).t_ptb = nan;
     end
-    % saccade time
-    if j==1, t_ref = 0; else, t_ref = t.end(j-1); end
-    if any(t.saccade>t_ref & t.saccade<t.end(j))
-        trl(j).t_sac = t.saccade(t.saccade>t_ref & t.saccade<t.end(j));
-    else
-        trl(j).t_sac = [];
-    end
-    % stop time
-    if any(t.stop>t.beg(j) & t.stop<t.end(j))
-        trl(j).t_stop = t.stop(t.stop>t.beg(j) & t.stop<t.end(j));
-        trl(j).t_stop = trl(j).t_stop(1);
-    else
-        trl(j).t_stop = [];
+end
+
+%% set position values prior to target onset to nan
+for j=1:length(trl)
+    for i=1:length(chnames)
+        if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'}))
+            trl(j).(chnames{i})(trl(j).ts<0.2) = nan; % remember to change 0.2 to the actual target onset time
+        end
     end
 end
 
+%% timestamps referenced relative to exp_beg
 exp_beg = t.events(find(markers==1,1,'first'));
 exp_end = t.events(find(markers==3,1,'last'));
 
-%% timestamps referenced relative to exp_beg
 for i=1:length(trl)
     trl(i).t_beg = trl(i).t_beg - exp_beg;
-    trl(i).t_end = trl(i).t_end - exp_beg;
     trl(i).t_rew = trl(i).t_rew - exp_beg;
+    trl(i).t_end = trl(i).t_end - exp_beg;
+    
+    trl(i).t_sac = trl(i).t_sac - exp_beg;
+    trl(i).t_begmovement = trl(i).t_begmovement - exp_beg;
+    trl(i).t_endmovement = trl(i).t_endmovement - exp_beg;
     trl(i).t_ptb = trl(i).t_ptb - exp_beg;
-    trl(i).t_ptb = trl(i).t_ptb - trl(i).t_beg; % who cares about absolute times?!
-    trl(i).t_sac = trl(i).t_sac - trl(i).t_beg; % who cares about absolute times?!
-    trl(i).t_stop = trl(i).t_stop - trl(i).t_beg; % who cares about absolute times?!
+        
+    trl(i).t_sac = trl(i).t_sac - trl(i).t_beg; % who cares about absolute time?!
+    trl(i).t_begmovement = trl(i).t_begmovement - trl(i).t_beg; % who cares about absolute time?!
+    trl(i).t_endmovement = trl(i).t_endmovement - trl(i).t_beg; % who cares about absolute time?!
+    trl(i).t_ptb = trl(i).t_ptb - trl(i).t_beg; % who cares about absolute time?!
 end
 
 %% downsample continuous data

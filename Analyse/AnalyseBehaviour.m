@@ -2,11 +2,12 @@ function stats = AnalyseBehaviour(trials,prs)
 
 maxrewardwin = prs.maxrewardwin;
 bootstrap_trl = prs.bootstrap_trl;
+monk_startpos = prs.monk_startpos;
+x0_monk = monk_startpos(1); y0_monk = monk_startpos(2);
 
 %% preallocate for speed
 ntrls = length(trials);
 v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls);
-x0_monk = zeros(1,ntrls); y0_monk = zeros(1,ntrls);
 x_monk = zeros(1,ntrls); y_monk = zeros(1,ntrls);
 x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
 crazy = false(1,ntrls); correct = false(1,ntrls); incorrect = false(1,ntrls);
@@ -17,9 +18,9 @@ for i=1:length(trials)
     v_monk(i) = (trials(i).v(end));
     w_monk(i) = (trials(i).w(end));
     %% initial & final position - cartesian
-    x0_monk(i) = trials(i).xmp(1); y0_monk(i) = trials(i).ymp(1);
+    indx_beg = find(trials(i).ts > 0,1); % sample number of target onset
     x_monk(i) = trials(i).xmp(end); y_monk(i) = trials(i).ymp(end);
-    x_fly(i) = median(trials(i).xfp(:)); y_fly(i) = median(trials(i).yfp(:));
+    x_fly(i) = nanmedian(trials(i).xfp(indx_beg:end)); y_fly(i) = nanmedian(trials(i).yfp(indx_beg:end));
     %% eye position relative to monkey - cartesian
     trials(i).yrep = prs.height./tand(-trials(i).zre); trials(i).yrep(trials(i).yrep<0) = nan;
     trials(i).ylep = prs.height./tand(-trials(i).zle); trials(i).ylep(trials(i).ylep<0) = nan;
@@ -94,3 +95,6 @@ stats.pos_regress = pos_regress;
 stats.accuracy.rewardwin = rewardwin;
 stats.accuracy.pCorrect = pCorrect;
 stats.accuracy.pcorrect_shuffled_mu = pcorrect_shuffled_mu;
+
+% time
+stats.time = {trials.ts};

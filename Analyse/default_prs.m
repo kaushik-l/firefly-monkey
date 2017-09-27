@@ -20,6 +20,7 @@ prs.factor_downsample = 10; % select every nth sample
 prs.screendist = 32.5;
 prs.height = 10;
 prs.framerate = 60;
+prs.monk_startpos = [0 -30];
 
 %% data analysis parameters
 prs.binwidth = 1/(prs.fs_smr/prs.factor_downsample); % binwidth for neural data analysis (s)
@@ -30,6 +31,8 @@ prs.corr_lag = 1; % timescale of correlograms (s)
 prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
 prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
 prs.saccade_thresh = 120; % deg/s
+prs.v_thresh = 5; % cm/s
+prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
 prs.pretrial = 0; % (s)
 prs.posttrial = 0; % (s)

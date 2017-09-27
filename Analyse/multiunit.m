@@ -5,7 +5,7 @@ classdef multiunit < handle
         spkwf
         trials
         stats
-        corrgrams
+        weights
     end
     %%
     methods
@@ -15,8 +15,8 @@ classdef multiunit < handle
             this.spkwf = []; %mean(unit.spkwf);
         end
         %% add spike times
-        function AddTrials(this,tspk,events_spk,prs)
-            this.trials = AddTrials2Unit(tspk,events_spk,prs);
+        function AddTrials(this,tspk,events_spk,behaviours,prs)
+            this.trials = AddTrials2Unit(tspk,events_spk,behaviours.trials,prs);
         end
         %% analyse spikes
         function AnalyseUnit(this,behaviours,prs)
