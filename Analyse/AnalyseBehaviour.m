@@ -40,6 +40,11 @@ for i=1:length(trials)
     trials(i).yfp_rel = y_fly(i) - trials(i).ymp;
     trials(i).r_fly_rel = sqrt(trials(i).xfp_rel.^2 + trials(i).yfp_rel.^2);
     trials(i).theta_fly_rel = atan2d(trials(i).xfp_rel,trials(i).yfp_rel);
+    %% final stopping position relative to monkey
+    trials(i).xsp_rel = trials(i).xmp(end) - trials(i).xmp;
+    trials(i).ysp_rel = trials(i).ymp(end) - trials(i).ymp;
+    trials(i).r_stop_rel = sqrt(trials(i).xsp_rel.^2 + trials(i).ysp_rel.^2);
+    trials(i).theta_stop_rel = atan2d(trials(i).xsp_rel,trials(i).ysp_rel);
 end
 
 %% position - polar
@@ -77,7 +82,7 @@ stats.pos_abs.y_leye =  {trials.ylep_scr};
 stats.pos_abs.z_reye =  {trials.zrep_scr};
 stats.pos_abs.y_reye =  {trials.yrep_scr};
 
-% relative position - fly, eye
+% relative position - fly, eye, stop
 stats.pos_rel.x_fly = {trials.xfp_rel};
 stats.pos_rel.y_fly = {trials.yfp_rel};
 stats.pos_rel.r_fly = {trials.r_fly_rel};
@@ -87,6 +92,11 @@ stats.pos_rel.x_leye = {trials.xlep};
 stats.pos_rel.y_leye = {trials.ylep};
 stats.pos_rel.x_reye = {trials.xrep};
 stats.pos_rel.y_reye = {trials.yrep};
+
+stats.pos_rel.x_stop = {trials.xsp_rel};
+stats.pos_rel.y_stop = {trials.ysp_rel};
+stats.pos_rel.r_stop = {trials.r_stop_rel};
+stats.pos_rel.theta_stop = {trials.theta_stop_rel};
 
 % regression results
 stats.pos_regress = pos_regress;

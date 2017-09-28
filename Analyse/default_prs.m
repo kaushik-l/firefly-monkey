@@ -20,7 +20,10 @@ prs.factor_downsample = 10; % select every nth sample
 prs.screendist = 32.5;
 prs.height = 10;
 prs.framerate = 60;
+
+%% static stimulus parameters
 prs.monk_startpos = [0 -30];
+prs.fly_ONduration = 0.3;
 
 %% data analysis parameters
 prs.binwidth = 1/(prs.fs_smr/prs.factor_downsample); % binwidth for neural data analysis (s)
@@ -37,6 +40,15 @@ prs.ncorrbins = 100; % 100 bins of data in each trial
 prs.pretrial = 0; % (s)
 prs.posttrial = 0; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
+
+%% GLM fitting parameters
+prs.velkrnlwidth = 2; %seconds
+prs.eyekrnlwidth = 2;
+prs.distkrnlwidth = 2;
+prs.targetkrnlwidth = 0.5;
+prs.postspikekrnlwidth = 0.5;
+prs.use_dist2fly = 0;
+prs.use_dist2stop = 0;
 
 %% plotting parameters
 prs.binwidth_abs = prs.binwidth; % use same width as for the analysis

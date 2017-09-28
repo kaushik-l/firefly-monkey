@@ -21,7 +21,7 @@ classdef multiunit < handle
         %% analyse spikes
         function AnalyseUnit(this,behaviours,prs)
             [this.trials,this.stats] = AnalyseRates(this.trials,behaviours.trials,behaviours.stats,prs);
-%             this.weights = ComputeWeights(exp_name,this.trials,behaviours.trials,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
+            this.weights = ComputeWeights(this.trials,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
         end
         %% destroy spike times
         function destroy_spks(this)
