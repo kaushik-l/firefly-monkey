@@ -42,18 +42,28 @@ prs.posttrial = 0; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 
 %% GLM fitting parameters
-prs.velkrnlwidth = 2; %seconds
-prs.eyekrnlwidth = 2;
-prs.distkrnlwidth = 2;
+prs.eyekrnlwidth = 0.5; %seconds
+prs.velkrnlwidth = 0.5;
+prs.distkrnlwidth = 0.5;
 prs.targetkrnlwidth = 0.5;
-prs.postspikekrnlwidth = 0.5;
-prs.use_dist2fly = 0;
-prs.use_dist2stop = 0;
+prs.spikehistkrnlwidth = 0.5;
+prs.vars = {'horeye','vereye','linvel','angvel','firefly','spikehist'};%,'dist2fly','dist2stop'};
+
+% hash table to map variable names used in behaviour structure to the
+% ones used in the GLM model (why don't we use the same names??? you won't understand)
+prs.varlookup = containers.Map;
+prs.varlookup('horeye') = 'yle';
+prs.varlookup('vereye') = 'zle';
+prs.varlookup('linvel') = 'v';
+prs.varlookup('angvel') = 'w';
+prs.varlookup('firefly') = 'firefly';
+prs.varlookup('dist2fly') = 'dist2fly';
+prs.varlookup('dist2stop') = 'dist2stop';
 
 %% plotting parameters
 prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
-prs.trlkrnlwidth = 100; % width of the gaussian kernel for trial averaging (number of trials)
+prs.trlkrnlwidth = 10; % width of the gaussian kernel for trial averaging (number of trials)
 prs.maxtrls = 5000; % maximum #trials to plot at once.
 prs.rewardwin = 65; % size of reward window (cm)
 prs.maxrewardwin = 400; % maximum reward window for ROC analysis

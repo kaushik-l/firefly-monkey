@@ -21,12 +21,8 @@ classdef singleunit < handle
         %% analyse spikes
         function AnalyseUnit(this,behaviours,prs)
             [this.trials,this.stats] = AnalyseRates(this.trials,behaviours.trials,behaviours.stats,prs);
-            this.weights = ComputeWeights(this.trials,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
-        end
-        %% destroy spike times
-        function destroy_spks(this)
-            this.spks = [];
-            this.tspk = [];
+            this.weights = FitGLM(this.trials,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
+            [this.trials,this.stats] = PredictGLM(this.weights,this.trials,this.stats,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
         end
     end
 end
