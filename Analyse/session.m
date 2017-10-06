@@ -41,12 +41,12 @@ classdef session < handle
                     units = GetUnits_plx(file_plx.name,prs.units,j);
                     %fetch multiunit
                     this.multiunits(end+1) = multiunit(units(1));
-                    this.multiunits(end).AddTrials(units(1).tspk,t_events,prs);
+                    this.multiunits(end).AddTrials(units(1).tspk,t_events,this.behaviours,prs);
                     %fetch singleunits
                     if length(units)>1
                         for k=2:length(units)
                             this.singleunits(end+1) = singleunit(units(k));
-                            this.singleunits(end).AddTrials(units(k).tspk,t_events,prs);
+                            this.singleunits(end).AddTrials(units(k).tspk,t_events,this.behaviours,prs);
                         end
                     end
                 end
@@ -57,21 +57,23 @@ classdef session < handle
                 events_smr.t_beg = [this.behaviours.trials.t_beg];
                 events_smr.t_rew = [this.behaviours.trials.t_rew];
                 events_smr.t_end = [this.behaviours.trials.t_end];
-                if length(this.behaviours.trials)==length(events_nev.t_end)
+                if length(events_smr.t_end)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
                             %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
-                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,prs);
-                            this.singleunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
+                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
+                            fprintf(['... Analysing singleunit ' num2str(i) '\n']);
+                            this.singleunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
                     if ~isempty(mua)
                         for i=1:length(mua)
                             %fetch multiunit
                             this.multiunits(end+1) = multiunit(mua(i));
-                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,prs);
-                            this.multiunits(end).AnalyseUnit('firefly-monkey',this.behaviours,prs);
+                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
+                            fprintf(['... Analysing multiunit ' num2str(i) '\n']);
+                            this.multiunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
                 else

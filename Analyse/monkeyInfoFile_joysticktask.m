@@ -2088,7 +2088,7 @@ monkeyInfo (end).folder = 'Bruno\Utah array\Aug 1 2017';
 monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI' ...
 'monkey did not work well'};
 
-%% session 38
+%% session 39
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 39;
 monkeyInfo (end).coord.row = nan;

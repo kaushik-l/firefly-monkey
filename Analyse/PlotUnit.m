@@ -64,6 +64,8 @@ switch plot_type
         xlim([0 1]); axis off;
         
     case 'rate_start'
+        alignpos = zeros(1,ntrls_all);
+%         for i=1:ntrls_all, alignpos(i) = find(behv_all(i).ts>0,1); end
         %% psth - aligned to start of trial
         nspk = struct2mat(spks_all,'nspk','start');
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
@@ -76,12 +78,13 @@ switch plot_type
         figure; hold on;
         imagesc(ts,1:size(nspk,1),nspk,[0  max(mean(nspk))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([0 4 100 1400]); %axis off;
+        set(gca,'Ydir','normal'); axis([0 5 100 ntrls_all]); %axis off;
         
     case 'rate_end'
+        alignpos = zeros(1,ntrls_all);
         %% psth - aligned to end of trial
         % find longest trial
-        nspk2end = struct2mat(spks_all,'nspk2end','end');
+        nspk2end = struct2mat(spks_all,'nspk2end',alignpos);
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk2end = conv2nan(nspk2end, trlkrnl);
         % plot
@@ -92,8 +95,7 @@ switch plot_type
         figure; hold on;
         imagesc(ts,1:size(nspk2end,1),nspk2end,[0 max(mean(nspk2end))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); axis off;
-        plot(t_com,1:size(nspk2end,1));
+        set(gca,'Ydir','normal'); axis([-4 0 100 ntrls_all]); %axis off;
         
     case 'rate_warp'
         %% psth - normalised by trial duration
@@ -269,4 +271,78 @@ switch plot_type
             shadedErrorBar(t,r_mu,r_sig,'lineprops',clr{i});
         end
         xlim([-2 0]);
+    case 'kernels_glm'
+        vars = fields(unit.weights.mu);
+        figure; hold on;
+        for i=1:length(vars)
+            subplot(length(vars)+1,1,i+1);
+            plot(unit.weights.mu.(vars{i}).tr,unit.weights.mu.(vars{i}).data,'LineWidth',2);
+            hline(0,'k');
+            ymax = 1.5*max(max(abs(unit.weights.mu.(vars{i}).data)));
+            title(vars{i}); axis([0 2 -ymax +ymax]);
+        end
+        set(gcf,'Position',[85 -676 503 1543]);
+    case 'predict_glm'        
+        % plot one trial
+        trialindx = randperm(ntrls_correct); trialindx = trialindx(1); % pick a random trial to plot
+        % stimulus
+        vars = {'yle','zle','v','w','firefly','spk'};
+        figure; hold on;        
+        for i=1:length(vars)-1
+            subplot(length(vars),1,i);
+            plot(behv_correct(trialindx).ts,behv_correct(trialindx).(vars{i}),'LineWidth',2);
+            hline(0,'k');
+            ymax = 1.5*max(max(abs(behv_correct(trialindx).(vars{i}))));
+            title(vars{i}); axis([behv_correct(trialindx).ts(1) behv_correct(trialindx).ts(end) -ymax ymax]);
+        end
+        subplot(length(vars),1,length(vars));
+        stem(spks_correct(trialindx).tspk,ones(length(spks_correct(trialindx).tspk)));
+        axis([behv_correct(trialindx).ts(1) behv_correct(trialindx).ts(end) 0 2]);
+        set(gcf,'Position',[85 -676 503 1543]);
+        
+        % prediction
+        vars = fields(r_pred(trialindx));
+        figure; hold on;        
+        for i=1:length(vars)
+            subplot(length(vars),1,i);
+            plot(behv_correct(trialindx).ts,(r_pred(trialindx).(vars{i})),'LineWidth',2);
+            hline(1,'k');
+            ymax = 1.5*max(max(abs((r_pred(trialindx).total))));
+            title(vars{i}); axis([behv_correct(trialindx).ts(1) behv_correct(trialindx).ts(end) -ymax ymax]);
+        end
+        set(gcf,'Position',[85 -676 503 1543]);
+        
+        % plot all trials (data)
+        nspk = struct2mat(spks_correct,'nspk','start');
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+        nspk = conv2nan(nspk, trlkrnl);
+        % plot
+        ns_max = size(nspk,2);
+        ts = binwidth_abs:binwidth_abs:ns_max*binwidth_abs;
+        nspk = nspk/binwidth_abs;
+        nspk = nspk./repmat(nanmean(nspk,2),[1 size(nspk,2)]);
+        nspk(isnan(nspk)) = 0; % display nan as white pixels
+        figure; hold on;
+        imagesc(ts,1:size(nspk,1),nspk,[0  1.5]);
+%         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); axis([0 4 1 ntrls_correct]); %axis off;
+        xlabel('Time (s)'); ylabel('Trial #');
+        set(gcf,'Position',[85 -676 503 1543]);
+        
+        % plot all trials (prediction)
+        nspk = struct2mat(r_pred,'total','start');
+        trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+        nspk = conv2nan(nspk, trlkrnl);
+        % plot
+        ns_max = size(nspk,2);
+        ts = binwidth_abs:binwidth_abs:ns_max*binwidth_abs;
+%         nspk = nspk/binwidth_abs;
+        nspk = exp(nspk);
+        nspk(isnan(nspk)) = 0; % display nan as white pixels
+        figure; hold on;
+        imagesc(ts,1:size(nspk,1),nspk,[0  1.5]);
+%         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal'); axis([0 4 1 ntrls_correct]); %axis off;
+        xlabel('Time (s)'); ylabel('Trial #');
+        set(gcf,'Position',[85 -676 503 1543]);
 end

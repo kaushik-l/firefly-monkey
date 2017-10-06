@@ -5,14 +5,16 @@ binwidth_abs = prs.binwidth_abs;
 binwidth_warp = prs.binwidth_warp;
 trlkrnlwidth = prs.trlkrnlwidth;
 nunits = length(units);
+
+correct = behv.stats.trlindx.correct;
+incorrect = behv.stats.trlindx.incorrect;
 crazy = behv.stats.trlindx.crazy;
+indx_all = ~crazy;
 
 % behavioural data
 behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
-% order trials based on trial duration
-Td = [behv_all.t_end] - [behv_all.t_beg];
-[~,indx_all] = sort(Td);
-behv_all = behv_all(indx_all);
+behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
+behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
 
 %% population dynamics
 switch plot_type
@@ -100,7 +102,7 @@ for j=1:nunits
     % neural data
     spks_all = units(j).trials(~crazy);    
     % order trials based on trial duration
-    spks_all = spks_all(indx_all);
+%     spks_all = spks_all(indx_all);
     switch plot_type
         case 'raster_start'
             %% raster plot - aligned to start of trial
@@ -206,5 +208,99 @@ for j=1:nunits
             ts = linspace(0,1,length(relnspk));
             figure(7); hold on;
             plot(ts,relnspk,'b'); axis off;
+        case 'variance_explained'
+            for k=1:length(units)
+                unit = units(k);
+                
+                % neural data
+                spks_correct = unit.trials(correct);
+                
+                vars = fields(unit.weights.mu);
+                for i=1:length(vars)
+                    weights.(vars{i}) = unit.weights.mu.(vars{i}).data;
+                end
+                weights.hist = interp1(unit.weights.mu.hist.tr,unit.weights.mu.hist.data,unit.weights.mu.firefly.tr);
+                weights.hist(isnan(weights.hist)) = 0;
+                % predict
+                for i = 1:ntrls_correct
+                    % horizontal eye position
+                    r_pred(i).eyeh = conv(behv_correct(i).yle,weights.eyepos(:,1),'same');
+                    % vertical eye position
+                    r_pred(i).eyev = conv(behv_correct(i).zle,weights.eyepos(:,2),'same');
+                    % linear velocity
+                    r_pred(i).linvel = conv(behv_correct(i).v,weights.linvel,'same');
+                    % angular velocity
+                    r_pred(i).angvel = conv(behv_correct(i).w,weights.angvel,'same');
+                    % target
+                    behv_correct(i).firefly = zeros(length(behv_correct(i).ts),1);
+                    behv_correct(i).firefly(behv_correct(i).ts>0.2 & behv_correct(i).ts<0.5) = 1;
+                    r_pred(i).firefly = conv(behv_correct(i).firefly,weights.firefly,'same');
+                    % spike history
+                    ts = behv_correct(i).ts;
+                    spktrain = zeros(length(behv_correct(i).ts),1);
+                    tspk = spks_correct(i).tspk;
+                    for j=1:length(tspk)
+                        spktrain(abs(ts-tspk(j)) == min(abs(ts-tspk(j)))) = 1;
+                    end
+                    r_pred(i).hist = conv(spktrain,weights.hist,'same');
+                    % full prediction
+                    r_pred(i).total = r_pred(i).eyeh + r_pred(i).eyev + r_pred(i).linvel + r_pred(i).angvel + r_pred(i).firefly + r_pred(i).hist;
+                end
+                
+                % data
+                nspk = struct2mat(spks_correct,'nspk','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk = conv2nan(nspk, trlkrnl);
+                nspk_true = nspk./repmat(nanmean(nspk,2),[1 size(nspk,2)]);
+                
+                % prediction total
+                nspk = struct2mat(r_pred,'total','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);                
+                % variance explained
+                varexp_total(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+                
+                % prediction linvel
+                nspk = struct2mat(r_pred,'firefly','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);
+                % variance explained
+                varexp_ff(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+                
+                % prediction linvel
+                nspk = struct2mat(r_pred,'linvel','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);
+                % variance explained
+                varexp_v(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+                
+                % prediction angvel
+                nspk = struct2mat(r_pred,'angvel','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);
+                % variance explained
+                varexp_w(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+                
+                % prediction eye horz
+                nspk = struct2mat(r_pred,'eyeh','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);
+                % variance explained
+                varexp_eyeh(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+                
+                % prediction eye vert
+                nspk = struct2mat(r_pred,'eyev','start');
+                trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
+                nspk_pred = conv2nan(nspk, trlkrnl);
+                nspk_pred = exp(nspk_pred);
+                % variance explained
+                varexp_eyev(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
+            end
+            x=1;
     end
 end

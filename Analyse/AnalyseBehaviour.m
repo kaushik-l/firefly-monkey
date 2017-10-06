@@ -2,15 +2,25 @@ function stats = AnalyseBehaviour(trials,prs)
 
 maxrewardwin = prs.maxrewardwin;
 bootstrap_trl = prs.bootstrap_trl;
+monk_startpos = prs.monk_startpos;
+x0_monk = monk_startpos(1); y0_monk = monk_startpos(2);
 
+%% preallocate for speed
+ntrls = length(trials);
+v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls);
+x_monk = zeros(1,ntrls); y_monk = zeros(1,ntrls);
+x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
+crazy = false(1,ntrls); correct = false(1,ntrls); incorrect = false(1,ntrls);
+
+%% compute
 for i=1:length(trials)
     %% final velocity
     v_monk(i) = (trials(i).v(end));
     w_monk(i) = (trials(i).w(end));
     %% initial & final position - cartesian
-    x0_monk(i) = trials(i).xmp(1); y0_monk(i) = trials(i).ymp(1);
+    indx_beg = find(trials(i).ts > 0,1); % sample number of target onset
     x_monk(i) = trials(i).xmp(end); y_monk(i) = trials(i).ymp(end);
-    x_fly(i) = median(trials(i).xfp(:)); y_fly(i) = median(trials(i).yfp(:));
+    x_fly(i) = nanmedian(trials(i).xfp(indx_beg:end)); y_fly(i) = nanmedian(trials(i).yfp(indx_beg:end));
     %% eye position relative to monkey - cartesian
     trials(i).yrep = prs.height./tand(-trials(i).zre); trials(i).yrep(trials(i).yrep<0) = nan;
     trials(i).ylep = prs.height./tand(-trials(i).zle); trials(i).ylep(trials(i).ylep<0) = nan;
@@ -30,6 +40,11 @@ for i=1:length(trials)
     trials(i).yfp_rel = y_fly(i) - trials(i).ymp;
     trials(i).r_fly_rel = sqrt(trials(i).xfp_rel.^2 + trials(i).yfp_rel.^2);
     trials(i).theta_fly_rel = atan2d(trials(i).xfp_rel,trials(i).yfp_rel);
+    %% final stopping position relative to monkey
+    trials(i).xsp_rel = trials(i).xmp(end) - trials(i).xmp;
+    trials(i).ysp_rel = trials(i).ymp(end) - trials(i).ymp;
+    trials(i).r_stop_rel = sqrt(trials(i).xsp_rel.^2 + trials(i).ysp_rel.^2);
+    trials(i).theta_stop_rel = atan2d(trials(i).xsp_rel,trials(i).ysp_rel);
 end
 
 %% position - polar
@@ -53,9 +68,6 @@ stats.trlindx.correct = correct;
 stats.trlindx.incorrect = incorrect; 
 stats.trlindx.crazy = crazy;
 
-% % stimulus parameters
-% behaviour.prs.floordensity = floordensity;
-
 % final position - monkey and fly
 stats.pos_final.r_monk = rf_monk; stats.pos_final.theta_monk = thetaf_monk;
 stats.pos_final.r_fly = r_fly; stats.pos_final.theta_fly = theta_fly;
@@ -70,7 +82,7 @@ stats.pos_abs.y_leye =  {trials.ylep_scr};
 stats.pos_abs.z_reye =  {trials.zrep_scr};
 stats.pos_abs.y_reye =  {trials.yrep_scr};
 
-% relative position - fly, eye
+% relative position - fly, eye, stop
 stats.pos_rel.x_fly = {trials.xfp_rel};
 stats.pos_rel.y_fly = {trials.yfp_rel};
 stats.pos_rel.r_fly = {trials.r_fly_rel};
@@ -81,6 +93,11 @@ stats.pos_rel.y_leye = {trials.ylep};
 stats.pos_rel.x_reye = {trials.xrep};
 stats.pos_rel.y_reye = {trials.yrep};
 
+stats.pos_rel.x_stop = {trials.xsp_rel};
+stats.pos_rel.y_stop = {trials.ysp_rel};
+stats.pos_rel.r_stop = {trials.r_stop_rel};
+stats.pos_rel.theta_stop = {trials.theta_stop_rel};
+
 % regression results
 stats.pos_regress = pos_regress;
 
@@ -88,3 +105,6 @@ stats.pos_regress = pos_regress;
 stats.accuracy.rewardwin = rewardwin;
 stats.accuracy.pCorrect = pCorrect;
 stats.accuracy.pcorrect_shuffled_mu = pcorrect_shuffled_mu;
+
+% time
+stats.time = {trials.ts};
