@@ -67,7 +67,7 @@ switch plot_type
         alignpos = zeros(1,ntrls_all);
 %         for i=1:ntrls_all, alignpos(i) = find(behv_all(i).ts>0,1); end
         %% psth - aligned to start of trial
-        nspk = struct2mat(spks_all,'nspk',alignpos);
+        nspk = struct2mat(spks_all,'nspk','start');
         trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
         nspk = conv2nan(nspk, trlkrnl);
         % plot

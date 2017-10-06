@@ -63,6 +63,7 @@ classdef session < handle
                             %fetch singleunit
                             this.singleunits(end+1) = singleunit(sua(i));
                             this.singleunits(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
+                            fprintf(['... Analysing singleunit ' num2str(i) '\n']);
                             this.singleunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
@@ -71,6 +72,7 @@ classdef session < handle
                             %fetch multiunit
                             this.multiunits(end+1) = multiunit(mua(i));
                             this.multiunits(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
+                            fprintf(['... Analysing multiunit ' num2str(i) '\n']);
                             this.multiunits(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end

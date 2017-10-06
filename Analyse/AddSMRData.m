@@ -141,6 +141,7 @@ for j=1:length(t.end)
         end
     end
     trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)' - pretrial;
+    trl(j).firefly = trl(j).ts>=0.2 & trl(j).ts<0.2+prs.fly_ONduration;
     trl(j).t_beg = t.beg(j);
     trl(j).t_end = t.end(j);
     trl(j).t_begmovement = t.begmovement(j);
