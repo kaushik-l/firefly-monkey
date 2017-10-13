@@ -16,13 +16,13 @@ classdef behaviour < handle
             cd(prs.filepath_behv);
             this.trials = AddTrials2Behaviour(prs);
         end
-        %% change datatype (to save memory)
-        function UseDatatype(this,data_type)
-            UseDatatype_behv(this,data_type);
-        end
         %% analyse behaviour
         function AnalyseBehaviour(this,prs)
             this.stats = AnalyseBehaviour(this.trials,prs);
+        end
+        %% change datatype (to save memory)
+        function UseDatatype(this,data_type)
+            UseDatatype_behv(this,data_type);
         end
     end
 end

@@ -2,6 +2,7 @@ function trl = AddSMRData(data,prs)
 
 %% check channel headers
 nch = length(data);
+ch_title = cell(1,nch);
 hdr = {data.hdr};
 for i=1:nch
     if ~isempty(hdr{i})
@@ -40,7 +41,7 @@ t.beg = t.events(markers ==2);
 t.end = t.events(markers ==3); 
 t.reward = t.events(markers ==4);
 t.beg = t.beg(1:length(t.end));
-t.ptb = t.events(markers ==5);
+t.ptb = t.events(markers==5 | markers==8);
 
 %% define filter
 sig = prs.filtwidth; %filter width
@@ -115,54 +116,54 @@ v_time2thresh = prs.v_time2thresh;
 v = ch.v;
 for j=1:length(t.end)
    % start-of-movement
-   if j==1, t.begmovement(j) = t.beg(j); % first trial is special because there is no pre-trial period
+   if j==1, t.move(j) = t.beg(j); % first trial is special because there is no pre-trial period
    else
        indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
-       if ~isempty(indx), t.begmovement(j) = t.end(j-1) + indx*dt;
-       else, t.begmovement(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+       if ~isempty(indx), t.move(j) = t.end(j-1) + indx*dt;
+       else, t.move(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
    end
    % end-of-movement
-   indx = find(v(ts>t.begmovement(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
-   if ~isempty(indx), t.endmovement(j) = t.begmovement(j) + indx*dt;
-   else, t.endmovement(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+   indx = find(v(ts>t.move(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+   if ~isempty(indx), t.stop(j) = t.move(j) + indx*dt;
+   else, t.stop(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
    % if monkey stopped prematurely, set movement end = trial end
-   if (t.endmovement(j)<t.beg(j) || t.endmovement(j)-t.begmovement(j)<0.5), t.endmovement(j) = t.end(j); end
+   if (t.stop(j)<t.beg(j) || t.stop(j)-t.move(j)<0.5), t.stop(j) = t.end(j); end
 end
 
 %% extract trials and downsample for storage
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
     % define pretrial period
-    pretrial = max(t.beg(j) - t.begmovement(j),0); % if movement onset follows target, no pretrial
+    pretrial = max(t.beg(j) - t.move(j),0); % extract everything from movement onset or target onset - whichever is first
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
-            trl(j).(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j));
-            trl(j).(chnames{i}) = downsample(trl(j).(chnames{i}),prs.factor_downsample);
+            trl(j).continuous.(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j));
+            trl(j).continuous.(chnames{i}) = downsample(trl(j).continuous.(chnames{i}),prs.factor_downsample);
         end
     end
-    trl(j).ts = (dt:dt:length(trl(j).(chnames{2}))*dt)' - pretrial;
-    trl(j).firefly = trl(j).ts>=0.2 & trl(j).ts<0.2+prs.fly_ONduration;
-    trl(j).t_beg = t.beg(j);
-    trl(j).t_end = t.end(j);
-    trl(j).t_begmovement = t.begmovement(j);
-    trl(j).t_endmovement = t.endmovement(j);
+    trl(j).continuous.ts = (dt:dt:length(trl(j).continuous.(chnames{2}))*dt)' - pretrial;
+    trl(j).continuous.firefly = trl(j).continuous.ts>=0 & trl(j).continuous.ts<(0+prs.fly_ONduration);
+    trl(j).events.t_beg = t.beg(j);
+    trl(j).events.t_end = t.end(j);
+    trl(j).events.t_move = t.move(j);
+    trl(j).events.t_stop = t.stop(j);
     % saccade time
-    trl(j).t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
+    trl(j).events.t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
     % reward time
     if any(t.reward>t.beg(j) & t.reward<t.end(j))
-        trl(j).reward = true;
-        trl(j).t_rew = t.reward(t.reward>t.beg(j) & t.reward<t.end(j));
+        trl(j).logical.reward = true;
+        trl(j).events.t_rew = t.reward(t.reward>t.beg(j) & t.reward<t.end(j));
     else
-        trl(j).reward = false;
-        trl(j).t_rew = nan;
+        trl(j).logical.reward = false;
+        trl(j).events.t_rew = nan;
     end
     % ptb time
     if any(t.ptb>t.beg(j) & t.ptb<t.end(j))
-        trl(j).ptb = true;
-        trl(j).t_ptb = t.ptb(t.ptb>t.beg(j) & t.ptb<t.end(j));
+        trl(j).logical.ptb = true;
+        trl(j).events.t_ptb = t.ptb(t.ptb>t.beg(j) & t.ptb<t.end(j));
     else
-        trl(j).ptb = false;
-        trl(j).t_ptb = nan;
+        trl(j).logical.ptb = false;
+        trl(j).events.t_ptb = nan;
     end
 end
 
@@ -170,7 +171,7 @@ end
 for j=1:length(trl)
     for i=1:length(chnames)
         if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'}))
-            trl(j).(chnames{i})(trl(j).ts<0.2) = nan; % remember to change 0.2 to the actual target onset time
+            trl(j).continuous.(chnames{i})(trl(j).continuous.ts<0.2) = nan; % remember to change 0.2 to the actual target onset time
         end
     end
 end
@@ -180,19 +181,13 @@ exp_beg = t.events(find(markers==1,1,'first'));
 exp_end = t.events(find(markers==3,1,'last'));
 
 for i=1:length(trl)
-    trl(i).t_beg = trl(i).t_beg - exp_beg;
-    trl(i).t_rew = trl(i).t_rew - exp_beg;
-    trl(i).t_end = trl(i).t_end - exp_beg;
-    
-    trl(i).t_sac = trl(i).t_sac - exp_beg;
-    trl(i).t_begmovement = trl(i).t_begmovement - exp_beg;
-    trl(i).t_endmovement = trl(i).t_endmovement - exp_beg;
-    trl(i).t_ptb = trl(i).t_ptb - exp_beg;
-        
-    trl(i).t_sac = trl(i).t_sac - trl(i).t_beg; % who cares about absolute time?!
-    trl(i).t_begmovement = trl(i).t_begmovement - trl(i).t_beg; % who cares about absolute time?!
-    trl(i).t_endmovement = trl(i).t_endmovement - trl(i).t_beg; % who cares about absolute time?!
-    trl(i).t_ptb = trl(i).t_ptb - trl(i).t_beg; % who cares about absolute time?!
+    trl(i).events.t_beg = trl(i).events.t_beg - exp_beg;
+    trl(i).events.t_rew = trl(i).events.t_rew - exp_beg - trl(i).events.t_beg; % who cares about absolute time?!
+    trl(i).events.t_end = trl(i).events.t_end - exp_beg - trl(i).events.t_beg;    
+    trl(i).events.t_sac = trl(i).events.t_sac - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;
 end
 
 %% downsample continuous data

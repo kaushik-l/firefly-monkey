@@ -27,20 +27,37 @@ prs.fly_ONduration = 0.3;
 prs.saccadeduration = 0.05; % saccades last ~50ms
 
 %% data analysis parameters
-prs.binwidth = 1/(prs.fs_smr/prs.factor_downsample); % binwidth for neural data analysis (s)
-prs.spkkrnlwidth = 0.05; % width of the gaussian kernel convolved with spike trains (s)
-prs.spkkrnlwidth = prs.spkkrnlwidth/prs.binwidth; % width in samples
-prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
-prs.corr_lag = 1; % timescale of correlograms (s)
-prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
-prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
+% behavioural analysis
+prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
+prs.bootstrap_trl = 50; % number of bootstraps for trial-shuffled estimates
 prs.saccade_thresh = 120; % deg/s
 prs.v_thresh = 5; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0; % (s)
-prs.posttrial = 0; % (s)
+prs.pretrial = 0.25; % (s)
+prs.posttrial = 0.25; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
+
+% time window for psth of event aligned responses
+prs.temporal_binwidth = 0.02; % time binwidth for neural data analysis (s)
+prs.spkkrnlwidth = 0.05; % width of the gaussian kernel convolved with spike trains (s)
+prs.spkkrnlwidth = prs.spkkrnlwidth/prs.temporal_binwidth; % width in samples
+prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
+prs.ts.movementaligned = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.targetaligned = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.stopaligned = -3.5:prs.temporal_binwidth:0.5;
+prs.ts.rewardaligned = -3.5:prs.temporal_binwidth:0.5;
+prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
+
+% correlogram
+prs.duration_zeropad = 0.05; % (s)
+prs.corr_lag = 1; % timescale of correlograms +/-(s)
+
+% define bin edges for tuning curves
+prs.tuning_binedges.v = 0:20:200; % cm/s
+prs.tuning_binedges.w = -90:18:90; % deg/s
+prs.tuning_binedges.a = [];
+prs.tuning_binedges.alpha = []; 
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds
@@ -68,7 +85,7 @@ prs.varlookup('dist2fly') = 'r_fly';
 prs.varlookup('dist2stop') = 'r_stop';
 
 %% plotting parameters
-prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
+prs.binwidth_abs = prs.temporal_binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
 prs.trlkrnlwidth = 50; % width of the gaussian kernel for trial averaging (number of trials)
 prs.maxtrls = 5000; % maximum #trials to plot at once.
