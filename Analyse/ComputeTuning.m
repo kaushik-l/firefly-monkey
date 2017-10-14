@@ -54,20 +54,21 @@ else % get both mean and std of response by bootstrapping (slow)
     stim_mu = zeros(nbootstraps,nbins-1);
     for i=1:nbins-1
         indx = find(xt>binedges(i) & xt<binedges(i+1));
-        for j=1:nbootstraps
-            if length(indx)>bootstrap_samp
+        if length(indx)>bootstrap_samp
+            for j=1:nbootstraps
                 randindx = randperm(length(indx)); randindx = randindx(1:bootstrap_samp); indx2 = indx(randindx);
                 rate_mu(j,i) = mean(yt(indx2)/temporal_binwidth);
                 stim_mu(j,i) = mean(xt(indx2));
-            else
-                rate_mu(j,i) = mean(yt(indx)/temporal_binwidth);
-                stim_mu(j,i) = mean(xt(indx));
             end
+        else % in case there aren't enough samples to bootstrap
+            rate_mu(:,i) = mean(yt(indx)/temporal_binwidth);
+            stim_mu(:,i) = mean(xt(indx));
         end
     end
-    tuningstats.tuning.rate.mu = mean(rate_mu);
-    tuningstats.tuning.rate.sig = std(rate_mu);
-    tuningstats.tuning.stim.mu = mean(stim_mu);
-    tuningstats.tuning.stim.sig = std(stim_mu);
-    tuningstats.tuning.pval = anova1(rate_mu,[],'off');  % one-way balanced anova
+end
+tuningstats.tuning.rate.mu = mean(rate_mu);
+tuningstats.tuning.rate.sem = std(rate_mu)/sqrt(nbootstraps);
+tuningstats.tuning.stim.mu = mean(stim_mu);
+tuningstats.tuning.stim.sem = std(stim_mu)/sqrt(nbootstraps);
+tuningstats.tuning.pval = anova1(rate_mu,[],'off');  % one-way balanced anova
 end

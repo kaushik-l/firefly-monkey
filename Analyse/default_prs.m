@@ -17,9 +17,12 @@ prs.fs_smr = 5000/6; % sampling rate of smr file
 prs.filtwidth = 10; % width in samples (10 samples @ fs_smr = 10x0.0012 = 12 ms)
 prs.filtsize = 10*prs.filtwidth; % size in samples
 prs.factor_downsample = 10; % select every nth sample
+prs.dt = 10/(prs.fs_smr);
 prs.screendist = 32.5;
 prs.height = 10;
 prs.framerate = 60;
+prs.x0 = 0; % x-position at trial onset (cm)
+prs.y0 = -32.5; %y-position at trial onset (cm)
 
 %% static stimulus parameters
 prs.monk_startpos = [0 -30];
@@ -48,16 +51,29 @@ prs.ts.targetaligned = -0.5:prs.temporal_binwidth:3.5;
 prs.ts.stopaligned = -3.5:prs.temporal_binwidth:0.5;
 prs.ts.rewardaligned = -3.5:prs.temporal_binwidth:0.5;
 prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
+prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
 
 % correlogram
 prs.duration_zeropad = 0.05; % (s)
 prs.corr_lag = 1; % timescale of correlograms +/-(s)
 
 % define bin edges for tuning curves
-prs.tuning_binedges.v = 0:20:200; % cm/s
-prs.tuning_binedges.w = -90:18:90; % deg/s
-prs.tuning_binedges.a = [];
-prs.tuning_binedges.alpha = []; 
+prs.tuning_binedges.v = 0:20:200; % linear velocity (cm/s)
+prs.tuning_binedges.w = -90:18:90; % angular velocity (deg/s)
+prs.tuning_binedges.a = -1500:300:1500; % linear acceleration (cm/s/s)
+prs.tuning_binedges.alpha = -500:100:500; % angular acceleration (deg/s/s)
+prs.tuning_binedges.v_abs = 0:20:200; % linear speed (cm/s)
+prs.tuning_binedges.w_abs = 0:9:90; % angular speed (deg/s)
+prs.tuning_binedges.a_abs = 0:150:1500; % absolute linear acceleration (cm/s/s)
+prs.tuning_binedges.alpha_abs = 0:50:500; % absolute angular acceleration (deg/s/s)
+prs.tuning_binedges.heye = -30:6:30; % horizontal eye position (deg)
+prs.tuning_binedges.veye = -30:6:30; % vertical eye position (deg)
+prs.tuning_binedges.r = 0:40:400; % displacement from starting point (cm)
+prs.tuning_binedges.theta = -40:8:40; % bearing angle relative to starting point (deg)
+prs.tuning_binedges.d = 0:50:500; % distance moved (cm)
+prs.tuning_binedges.phi = -60:12:60; % angle turned (deg)
+prs.tuning_binedges.dist2fly = 0:40:400; % distance to target (cm)
+prs.tuning_binedges.dist2stop = 0:40:400; % distance to stopping point (cm)
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds

@@ -171,7 +171,7 @@ end
 for j=1:length(trl)
     for i=1:length(chnames)
         if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'}))
-            trl(j).continuous.(chnames{i})(trl(j).continuous.ts<0.2) = nan; % remember to change 0.2 to the actual target onset time
+            trl(j).continuous.(chnames{i})(trl(j).continuous.ts<0) = nan; % target onset happens exactly at t_beg ?????
         end
     end
 end

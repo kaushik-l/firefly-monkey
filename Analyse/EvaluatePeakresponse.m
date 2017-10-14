@@ -1,4 +1,4 @@
-function peakresp = EvaluatePeakresponse(trials,timepoints,binwidth,peaktimewindow,bootstrap_trl)
+function peakresp = EvaluatePeakresponse(trials,timepoints,binwidth,peaktimewindow,minpeakprominence,bootstrap_trl)
 
 preevent_nanflag = false;
 postevent_nanflag = false;
@@ -20,7 +20,7 @@ else
     nspk_mu = mean(nspk);
     
     %% detect peaks
-    [peakVals,peakLocs]=findpeaks(nspk_mu,'MinPeakProminence',2,'SortStr','descend'); % peak must be at least 2 spikes/s greater than the closest valley
+    [peakVals,peakLocs]=findpeaks(nspk_mu,'MinPeakProminence',minpeakprominence,'SortStr','descend'); % peaks > nearest_valley + minpeakprominence
     if length(peakLocs)>4 % consider only the four most prominent peaks
         peakVals = peakVals(1:4);
         peakLocs = peakLocs(1:4);
