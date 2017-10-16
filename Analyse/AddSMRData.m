@@ -188,6 +188,7 @@ for i=1:length(trl)
     trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_targ = 0;
 end
 
 %% downsample continuous data

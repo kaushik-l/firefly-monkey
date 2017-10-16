@@ -61,77 +61,90 @@ for i=1:length(trialtypes)
         events_temp = events(trlindx);
         continuous_temp = continuous(trlindx);
         trials_spks_temp = trials_spks(trlindx);
-        %% define time window for tuning
-        timewindow(:,1) = [events_temp.t_move]'; timewindow(:,2) = [events_temp.t_stop]'; % when the subject is moving
-        %% linear velocity
+        %% define time windows for computing tuning
+        timewindow_move(:,1) = [events_temp.t_move]'; timewindow_move(:,2) = [events_temp.t_stop]'; % when the subject is moving
+        timewindow_path(:,1) = [events_temp.t_targ]'; timewindow_path(:,2) = [events_temp.t_stop]'; % when the subject is integrating path
+        timewindow_full(:,1) = [events_temp.t_move]'; timewindow_full(:,2) = [events_temp.t_end]'; % from movement onset to end of trial
+        %% linear velocity, v
         stats.trialtype.(trialtypes{i})(j).continuous.v = ...
-            ComputeTuning({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.v,bootstrap_trl);
-        %% angular velocity
+            ComputeTuning({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.v,bootstrap_trl);
+        %% angular velocity, w
         stats.trialtype.(trialtypes{i})(j).continuous.w = ...
-            ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.w,bootstrap_trl);
-        %% linear acceleration
+            ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.w,bootstrap_trl);
+        %% velocity, vw (two dimensional)
+        stats.trialtype.(trialtypes{i})(j).continuous.vw = ...
+            ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.vw);
+        %% linear acceleration, a
         a = cellfun(@(x) diff(x)/dt,{continuous_temp.v},'UniformOutput',false);
         a_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.a = ...
-            ComputeTuning(a,a_ts,{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.a,bootstrap_trl);
-        %% angular acceleration
+            ComputeTuning(a,a_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.a,bootstrap_trl);
+        %% angular acceleration, alpha
         alpha = cellfun(@(x) diff(x)/dt,{continuous_temp.w},'UniformOutput',false);
         alpha_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.alpha = ...
-            ComputeTuning(alpha,alpha_ts,{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.alpha,bootstrap_trl);
-        %% magnitude of linear velocity
+            ComputeTuning(alpha,alpha_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.alpha,bootstrap_trl);
+        %% acceleration, aalpha (two dimensional)
+        stats.trialtype.(trialtypes{i})(j).continuous.aalpha = ...
+            ComputeTuning2D(a,alpha,a_ts,{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.aalpha);
+        %% magnitude of linear velocity, |v|
         v_abs = cellfun(@abs,{continuous_temp.v},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.v_abs = ...
-            ComputeTuning(v_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.v_abs,bootstrap_trl);
-        %% magnitude of angular velocity
+            ComputeTuning(v_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.v_abs,bootstrap_trl);
+        %% magnitude of angular velocity, |w|
         w_abs = cellfun(@abs,{continuous_temp.w},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.w_abs = ...
-            ComputeTuning(w_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.w_abs,bootstrap_trl);
-        %% magnitude of linear acceleration
+            ComputeTuning(w_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.w_abs,bootstrap_trl);
+        %% magnitude of linear acceleration, |a|
         a_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.v},'UniformOutput',false);
         a_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.a_abs = ...
-            ComputeTuning(a_abs,a_abs_ts,{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.a_abs,bootstrap_trl);
-        %% magnitude of angular acceleration
+            ComputeTuning(a_abs,a_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.a_abs,bootstrap_trl);
+        %% magnitude of angular acceleration, |alpha|
         alpha_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.w},'UniformOutput',false);
         alpha_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.alpha_abs = ...
-            ComputeTuning(alpha_abs,alpha_abs_ts,{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.alpha_abs,bootstrap_trl);
-        %% horizontal eye position
-        heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
-        stats.trialtype.(trialtypes{i})(j).continuous.heye = ...
-            ComputeTuning(heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.heye,bootstrap_trl);
-        %% vertical eye position
+            ComputeTuning(alpha_abs,alpha_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.alpha_abs,bootstrap_trl);
+        %% vertical eye position, veye
         veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
         stats.trialtype.(trialtypes{i})(j).continuous.veye = ...
-            ComputeTuning(veye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.veye,bootstrap_trl);
-        %% define time window for tuning (refine this -- use t_targ instead of 0?)
-        timewindow(:,2) = [events_temp.t_stop]'; timewindow(:,1) = 0; % when the subject is integrating path
-        %% displacement
+            ComputeTuning(veye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.veye,bootstrap_trl);
+        %% horizontal eye position, heye
+        heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
+        stats.trialtype.(trialtypes{i})(j).continuous.heye = ...
+            ComputeTuning(heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.heye,bootstrap_trl);
+        %% eye position, vheye (two dimensional)
+        stats.trialtype.(trialtypes{i})(j).continuous.vheye = ...
+            ComputeTuning2D(veye,heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.vheye);
+        %% displacement, r
         r = cellfun(@(x,y) sqrt((x(:)-x0).^2 + (y(:)-y0).^2),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.r = ...
-            ComputeTuning(r,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.r,bootstrap_trl);
-        %% bearing
+            ComputeTuning(r,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r,bootstrap_trl);
+        %% bearing, theta
         theta = cellfun(@(x,y) atan2d(x(:)-x0,y(:)-y0),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.theta = ...
-            ComputeTuning(theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.theta,bootstrap_trl);
-        %% distance (refine -- use t_targ instead of 0?)
+            ComputeTuning(theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.theta,bootstrap_trl);
+        %% position, rtheta (two dimensional)
+        stats.trialtype.(trialtypes{i})(j).continuous.rtheta = ...
+            ComputeTuning2D(r,theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning_binedges.rtheta);
+        %% distance, d (refine -- use t_targ instead of 0?)
         d = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.d = ...
-            ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.d,bootstrap_trl);
-        %% heading
+            ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.d,bootstrap_trl);
+        %% heading, phi
         phi = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
         stats.trialtype.(trialtypes{i})(j).continuous.phi = ...
-            ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.phi,bootstrap_trl);
-        %% distance to target
-        dist2fly = behv_stats.pos_rel.r_fly(trlindx);
-        stats.trialtype.(trialtypes{i})(j).continuous.dist2fly = ...
-            ComputeTuning(dist2fly,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.dist2fly,bootstrap_trl);
-        %% distance to stop
-        dist2stop = behv_stats.pos_rel.r_stop(trlindx);
-        stats.trialtype.(trialtypes{i})(j).continuous.dist2stop = ...
-            ComputeTuning(dist2stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow,duration_zeropad,corr_lag,prs.tuning_binedges.dist2stop,bootstrap_trl);
-        %% 
-        y=1;
+            ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.phi,bootstrap_trl);
+        %% path, dphi (two dimensional)
+        stats.trialtype.(trialtypes{i})(j).continuous.dphi = ...
+            ComputeTuning2D(d,phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning_binedges.dphi);
+        %% distance to target, r_targ
+        r_targ = behv_stats.pos_rel.r_fly(trlindx);
+        stats.trialtype.(trialtypes{i})(j).continuous.r_targ = ...
+            ComputeTuning(r_targ,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r_targ,bootstrap_trl);
+        %% distance to stop, r_stop
+        r_stop = behv_stats.pos_rel.r_stop(trlindx);
+        stats.trialtype.(trialtypes{i})(j).continuous.r_stop = ...
+            ComputeTuning(r_stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r_stop,bootstrap_trl);
     end
 end

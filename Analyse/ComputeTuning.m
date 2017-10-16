@@ -9,7 +9,7 @@ xt_pad = []; yt_pad = [];
 for i=1:ntrls
     t_i = ts{i};
     x_i = x{i};
-    y_i = hist(tspk{i},t_i);
+    y_i = hist(tspk{i},t_i); % rasterise spike times into bins --- 1001101000111
     % throw away histogram edges
     t_i = t_i(2:end-1);
     x_i = x_i(2:end-1);
@@ -54,13 +54,13 @@ else % get both mean and std of response by bootstrapping (slow)
     stim_mu = zeros(nbootstraps,nbins-1);
     for i=1:nbins-1
         indx = find(xt>binedges(i) & xt<binedges(i+1));
-        if length(indx)>bootstrap_samp
+        if length(indx)>bootstrap_samp % are there enough observations to bootstrap?
             for j=1:nbootstraps
                 randindx = randperm(length(indx)); randindx = randindx(1:bootstrap_samp); indx2 = indx(randindx);
                 rate_mu(j,i) = mean(yt(indx2)/temporal_binwidth);
                 stim_mu(j,i) = mean(xt(indx2));
             end
-        else % in case there aren't enough samples to bootstrap
+        else % in case there aren't enough observations to bootstrap
             rate_mu(:,i) = mean(yt(indx)/temporal_binwidth);
             stim_mu(:,i) = mean(xt(indx));
         end

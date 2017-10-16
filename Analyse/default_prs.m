@@ -70,10 +70,17 @@ prs.tuning_binedges.heye = -30:6:30; % horizontal eye position (deg)
 prs.tuning_binedges.veye = -30:6:30; % vertical eye position (deg)
 prs.tuning_binedges.r = 0:40:400; % displacement from starting point (cm)
 prs.tuning_binedges.theta = -40:8:40; % bearing angle relative to starting point (deg)
-prs.tuning_binedges.d = 0:50:500; % distance moved (cm)
+prs.tuning_binedges.d = 0:50:500; % distance moved along path (cm)
 prs.tuning_binedges.phi = -60:12:60; % angle turned (deg)
-prs.tuning_binedges.dist2fly = 0:40:400; % distance to target (cm)
-prs.tuning_binedges.dist2stop = 0:40:400; % distance to stopping point (cm)
+prs.tuning_binedges.r_targ = 0:40:400; % distance to target (cm)
+prs.tuning_binedges.r_stop = 0:40:400; % distance to stopping point (cm)
+
+% define bin edges for 2-D tuning curves
+prs.tuning_binedges.vw = [prs.tuning_binedges.v; prs.tuning_binedges.w];
+prs.tuning_binedges.aalpha = [prs.tuning_binedges.a; prs.tuning_binedges.alpha];
+prs.tuning_binedges.vheye = [prs.tuning_binedges.veye; prs.tuning_binedges.heye];
+prs.tuning_binedges.rtheta = [prs.tuning_binedges.r; prs.tuning_binedges.theta];
+prs.tuning_binedges.dphi = [prs.tuning_binedges.d; prs.tuning_binedges.phi];
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds
