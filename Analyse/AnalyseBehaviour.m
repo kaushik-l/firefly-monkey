@@ -87,12 +87,12 @@ goodtrls = ~((y_monk<0) | (abs(v_monk)>1)); % remove trials in which monkey did 
 stats.trialtype.all.trlindx  = goodtrls;
 stats.trialtype.all.val = 'all';
 
-% rewarded trials
-stats.trialtype.reward(1).trlindx = [logical.reward] & goodtrls;
-stats.trialtype.reward(1).val = 'rewarded';
 % unrewarded trials
-stats.trialtype.reward(2).trlindx = ~[logical.reward] & goodtrls;
-stats.trialtype.reward(2).val = 'unrewarded';
+stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls;
+stats.trialtype.reward(1).val = 'unrewarded';
+% rewarded trials
+stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls;
+stats.trialtype.reward(2).val = 'rewarded';
 
 % different densities
 density = [trialparams.floordensity];
@@ -102,19 +102,33 @@ for i=1:length(densities)
     stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls);    
 end
 
-% trials with perturbation
-stats.trialtype.ptb(1).trlindx = [logical.ptb] & goodtrls;
-stats.trialtype.ptb(1).val = 'with perturbation';
+stats.trialtype.ptb = [];
 % trials without perturbation
-stats.trialtype.ptb(2).trlindx = ~[logical.ptb] & goodtrls;
-stats.trialtype.ptb(2).val = 'without perturbation';
+trlindx = ~[logical.ptb] & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.ptb(end+1).trlindx = trlindx;
+    stats.trialtype.ptb(end).val = 'without perturbation';
+end
+% trials with perturbation
+trlindx = [logical.ptb] & goodtrls;
+if sum(trlindx)>1 
+    stats.trialtype.ptb(end+1).trlindx = trlindx;
+    stats.trialtype.ptb(end).val = 'with perturbation';
+end
 
+stats.trialtype.landmark = [];
 % trials with landmarks
-stats.trialtype.landmark(1).trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
-stats.trialtype.landmark(1).val = 'with landmark';
+trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.landmark(end+1).trlindx = trlindx;
+    stats.trialtype.landmark(end).val = 'with landmark';
+end
 % trials without landmarks
-stats.trialtype.landmark(2).trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
-stats.trialtype.landmark(2).val = 'without landmark';
+trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.landmark(end+1).trlindx = trlindx;
+    stats.trialtype.landmark(end).val = 'without landmark';
+end
 
 %% linear regression and ROC analysis
 trialtypes = fields(stats.trialtype);

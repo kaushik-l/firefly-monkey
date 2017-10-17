@@ -54,7 +54,7 @@ prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to
 prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
 
 % correlogram
-prs.duration_zeropad = 0.05; % (s)
+prs.duration_zeropad = 0.05; % zeros to pad to end of trial before concatenating (s)
 prs.corr_lag = 1; % timescale of correlograms +/-(s)
 
 % define bin edges for tuning curves
@@ -81,6 +81,10 @@ prs.tuning_binedges.aalpha = [prs.tuning_binedges.a; prs.tuning_binedges.alpha];
 prs.tuning_binedges.vheye = [prs.tuning_binedges.veye; prs.tuning_binedges.heye];
 prs.tuning_binedges.rtheta = [prs.tuning_binedges.r; prs.tuning_binedges.theta];
 prs.tuning_binedges.dphi = [prs.tuning_binedges.d; prs.tuning_binedges.phi];
+
+% specify which tunings are needed (to save computing time ---> especially important for continuous variables)
+prs.gettuning_events = {'move','target','stop','reward'};
+prs.gettuning_continuous = {'v','w','r_targ','r_stop','r','theta'};
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds

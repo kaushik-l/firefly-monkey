@@ -1,6 +1,11 @@
 function tuningstats = ComputeTuning(x,ts,tspk,timewindow,duration_zeropad,corr_lag,binedges,bootstrap_samp)
 
 ntrls = length(x);
+if ntrls < bootstrap_samp % not enough trials
+    tuningstats = [];
+    return;
+end
+
 temporal_binwidth = median(diff(ts{1}));
 padding = zeros(round(duration_zeropad/temporal_binwidth),1);
 %% concatenate data from different trials
