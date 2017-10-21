@@ -13,8 +13,8 @@ while newline ~= -1
     count = count+1;
     trials(count).prs.floordensity = str2num(newline(27:34));
     % initialise
-    trials(count).logical.landmark_distance = 0;
-    trials(count).logical.landmark_angle = nan; % #$%^&&^&*^danger - change 0 to nan immediately
+    trials(count).logical.landmark_distance = false;
+    trials(count).logical.landmark_angle = false; % #$%^&&^&*^danger - change false to nan immediately
     trials(count).prs.ptb_linear = 0;
     trials(count).prs.ptb_angular = 0;
     trials(count).prs.ptb_delay = 0;

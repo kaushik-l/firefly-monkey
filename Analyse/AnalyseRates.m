@@ -26,45 +26,45 @@ for i=1:length(trialtypes)
         %% aligned to movement onset
         if any(strcmp(gettuning,'move'))
             trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_move]);
-            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.movementaligned,temporal_binwidth);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.move,temporal_binwidth);
             stats.trialtype.(trialtypes{i})(j).events.move.rate = nspk;
             stats.trialtype.(trialtypes{i})(j).events.move.time = ts;
             stats.trialtype.(trialtypes{i})(j).events.move.peakresp = ...           % significance of peak response
-                EvaluatePeakresponse(trials_spks_temp2,prs.ts.movementaligned,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.move,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
         end
         %% aligned to target onset
         if any(strcmp(gettuning,'target'))
             trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_beg]-[events_temp.t_beg]);
-            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.targetaligned,temporal_binwidth);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.target,temporal_binwidth);
             stats.trialtype.(trialtypes{i})(j).events.target.rate = nspk;
             stats.trialtype.(trialtypes{i})(j).events.target.time = ts;
             stats.trialtype.(trialtypes{i})(j).events.target.peakresp = ...         % significance of peak response
-                EvaluatePeakresponse(trials_spks_temp2,prs.ts.targetaligned,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.target,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
         end
         %% aligned to movement stop
         if any(strcmp(gettuning,'stop'))
             trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_stop]);
-            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.stopaligned,temporal_binwidth);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.stop,temporal_binwidth);
             stats.trialtype.(trialtypes{i})(j).events.stop.rate = nspk;
             stats.trialtype.(trialtypes{i})(j).events.stop.time = ts;
             stats.trialtype.(trialtypes{i})(j).events.stop.peakresp = ...           % significance of peak response
-                EvaluatePeakresponse(trials_spks_temp2,prs.ts.stopaligned,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.stop,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
         end
         %% aligned to reward
         if any(strcmp(gettuning,'reward'))
             trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_rew]);
-            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.rewardaligned,temporal_binwidth);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.reward,temporal_binwidth);
             stats.trialtype.(trialtypes{i})(j).events.reward.rate = nspk;
             stats.trialtype.(trialtypes{i})(j).events.reward.time = ts;
             stats.trialtype.(trialtypes{i})(j).events.reward.peakresp = ...         % significance of peak response
-                EvaluatePeakresponse(trials_spks_temp2,prs.ts.rewardaligned,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.reward,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
         end
     end
 end
 
 %% cross-correlation and tuning to continuous variables
 gettuning = prs.gettuning_continuous;
-for i=1:length(trialtypes)
+for i=1
     nconds = length(behv_stats.trialtype.(trialtypes{i}));
     if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
     fprintf(['.........estimating tuning curves :: trialtype: ' (trialtypes{i}) '\n']);
@@ -208,3 +208,10 @@ for i=1:length(trialtypes)
         end
     end
 end
+
+%% time-rescaling index
+trlindx = behv_stats.trialtype.all.trlindx;
+events_temp = events(trlindx);
+trials_spks_temp = trials_spks(trlindx);
+[stats.trialtype.all.intrinsic.scalingindex,stats.trialtype.all.intrinsic.lockingindex] = ...
+    ComputeScalingindex(trials_spks_temp,events_temp,prs.ts_shortesttrialgroup,temporal_binwidth,prs.ntrialgroups);

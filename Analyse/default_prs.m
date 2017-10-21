@@ -46,10 +46,15 @@ prs.temporal_binwidth = 0.02; % time binwidth for neural data analysis (s)
 prs.spkkrnlwidth = 0.05; % width of the gaussian kernel convolved with spike trains (s)
 prs.spkkrnlwidth = prs.spkkrnlwidth/prs.temporal_binwidth; % width in samples
 prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
-prs.ts.movementaligned = -0.5:prs.temporal_binwidth:3.5;
-prs.ts.targetaligned = -0.5:prs.temporal_binwidth:3.5;
-prs.ts.stopaligned = -3.5:prs.temporal_binwidth:0.5;
-prs.ts.rewardaligned = -3.5:prs.temporal_binwidth:0.5;
+prs.ts.move = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.target = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.stop = -3.5:prs.temporal_binwidth:0.5;
+prs.ts.reward = -3.5:prs.temporal_binwidth:0.5;
+% time window for psth of shortesttrialgroup -- used to compare temporal responses across trial groups
+prs.ts_shortesttrialgroup.move = -0.5:prs.temporal_binwidth:1.5;
+prs.ts_shortesttrialgroup.target = -0.5:prs.temporal_binwidth:1.5;
+prs.ts_shortesttrialgroup.stop = -1.5:prs.temporal_binwidth:0.5;
+prs.ts_shortesttrialgroup.reward = -1.5:prs.temporal_binwidth:0.5;
 prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
 prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
 
@@ -84,7 +89,10 @@ prs.tuning_binedges.dphi = [prs.tuning_binedges.d; prs.tuning_binedges.phi];
 
 % specify which tunings are needed (to save computing time ---> especially important for continuous variables)
 prs.gettuning_events = {'move','target','stop','reward'};
-prs.gettuning_continuous = {'v','w','r_targ','r_stop','r','theta'};
+prs.gettuning_continuous = {'w'};
+
+% time-rescaling analysis
+prs.ntrialgroups = 5; % number of groups based on trial duration
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds
