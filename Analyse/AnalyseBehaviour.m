@@ -1,5 +1,7 @@
 function stats = AnalyseBehaviour(trials,prs)
 
+fprintf('******Behavioural analysis****** \n');
+mintrialsforstats = prs.mintrialsforstats;
 maxrewardwin = prs.maxrewardwin;
 bootstrap_trl = prs.bootstrap_trl;
 monk_startpos = prs.monk_startpos;
@@ -10,41 +12,39 @@ ntrls = length(trials);
 v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls);
 x_monk = zeros(1,ntrls); y_monk = zeros(1,ntrls);
 x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
-crazy = false(1,ntrls); correct = false(1,ntrls); incorrect = false(1,ntrls);
 
 %% compute
-for i=1:length(trials)
+continuous = cell2mat({trials.continuous}); % extract continuous channels
+logical = cell2mat({trials.logical}); % extract continuous channels
+trialparams = cell2mat({trials.prs});
+for i=1:ntrls
     %% final velocity
-    v_monk(i) = (trials(i).v(end));
-    w_monk(i) = (trials(i).w(end));
+    v_monk(i) = (continuous(i).v(end));
+    w_monk(i) = (continuous(i).w(end));
     %% initial & final position - cartesian
-    indx_beg = find(trials(i).ts > 0,1); % sample number of target onset
-    x_monk(i) = trials(i).xmp(end); y_monk(i) = trials(i).ymp(end);
-    x_fly(i) = nanmedian(trials(i).xfp(indx_beg:end)); y_fly(i) = nanmedian(trials(i).yfp(indx_beg:end));
+    indx_beg = find(continuous(i).ts > 0,1); % sample number of target onset
+    x_monk(i) = continuous(i).xmp(end); y_monk(i) = continuous(i).ymp(end);
+    x_fly(i) = nanmedian(continuous(i).xfp(indx_beg:end)); y_fly(i) = nanmedian(continuous(i).yfp(indx_beg:end));
     %% eye position relative to monkey - cartesian
-    trials(i).yrep = prs.height./tand(-trials(i).zre); trials(i).yrep(trials(i).yrep<0) = nan;
-    trials(i).ylep = prs.height./tand(-trials(i).zle); trials(i).ylep(trials(i).ylep<0) = nan;
-    trials(i).xrep = trials(i).yrep.*tand(trials(i).yre);
-    trials(i).xlep = trials(i).ylep.*tand(trials(i).yle);
+    continuous(i).yrep = prs.height./tand(-continuous(i).zre); continuous(i).yrep(continuous(i).yrep<0) = nan;
+    continuous(i).ylep = prs.height./tand(-continuous(i).zle); continuous(i).ylep(continuous(i).ylep<0) = nan;
+    continuous(i).xrep = continuous(i).yrep.*tand(continuous(i).yre);
+    continuous(i).xlep = continuous(i).ylep.*tand(continuous(i).yle);
     %% eye position on screen - cartesian
-    trials(i).zrep_scr = prs.screendist*tand(trials(i).zre);
-    trials(i).zlep_scr = prs.screendist*tand(trials(i).zle);
-    trials(i).yrep_scr = prs.screendist*tand(trials(i).yre);
-    trials(i).ylep_scr = prs.screendist*tand(trials(i).yle);
-    %% trial type
-    crazy(i)  = (y_monk(i)<0) | (abs(v_monk(i))>1); % monkey did not move at all or kept moving until the end
-    correct(i) = trials(i).reward & ~crazy(i);
-    incorrect(i) = ~trials(i).reward & ~crazy(i);
+    continuous(i).zrep_scr = prs.screendist*tand(continuous(i).zre);
+    continuous(i).zlep_scr = prs.screendist*tand(continuous(i).zle);
+    continuous(i).yrep_scr = prs.screendist*tand(continuous(i).yre);
+    continuous(i).ylep_scr = prs.screendist*tand(continuous(i).yle);
     %% fly position relative to monkey - cartesian
-    trials(i).xfp_rel = x_fly(i) - trials(i).xmp;
-    trials(i).yfp_rel = y_fly(i) - trials(i).ymp;
-    trials(i).r_fly_rel = sqrt(trials(i).xfp_rel.^2 + trials(i).yfp_rel.^2);
-    trials(i).theta_fly_rel = atan2d(trials(i).xfp_rel,trials(i).yfp_rel);
+    continuous(i).xfp_rel = x_fly(i) - continuous(i).xmp;
+    continuous(i).yfp_rel = y_fly(i) - continuous(i).ymp;
+    continuous(i).r_fly_rel = sqrt(continuous(i).xfp_rel.^2 + continuous(i).yfp_rel.^2);
+    continuous(i).theta_fly_rel = atan2d(continuous(i).xfp_rel,continuous(i).yfp_rel);
     %% final stopping position relative to monkey
-    trials(i).xsp_rel = trials(i).xmp(end) - trials(i).xmp;
-    trials(i).ysp_rel = trials(i).ymp(end) - trials(i).ymp;
-    trials(i).r_stop_rel = sqrt(trials(i).xsp_rel.^2 + trials(i).ysp_rel.^2);
-    trials(i).theta_stop_rel = atan2d(trials(i).xsp_rel,trials(i).ysp_rel);
+    continuous(i).xsp_rel = continuous(i).xmp(end) - continuous(i).xmp;
+    continuous(i).ysp_rel = continuous(i).ymp(end) - continuous(i).ymp;
+    continuous(i).r_stop_rel = sqrt(continuous(i).xsp_rel.^2 + continuous(i).ysp_rel.^2);
+    continuous(i).theta_stop_rel = atan2d(continuous(i).xsp_rel,continuous(i).ysp_rel);
 end
 
 %% position - polar
@@ -53,58 +53,102 @@ r_fly = sqrt((x_fly - x0_monk).^2 + (y_fly - y0_monk).^2);
 thetaf_monk = atan2d((x_monk - x0_monk),(y_monk - y0_monk));
 theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 
-%% linear regression
-[pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(~crazy)', rf_monk(~crazy)', 0.05, 2);
-[pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(~crazy)', thetaf_monk(~crazy)', 0.05, 2);
-
-%% ROC analysis
-[rewardwin ,pCorrect, pcorrect_shuffled_mu] = ...
-    ComputeROCFirefly([r_fly(~crazy)' (pi/180)*theta_fly(~crazy)'],...
-    [rf_monk(~crazy)' (pi/180)*thetaf_monk(~crazy)'],maxrewardwin,bootstrap_trl);
-
-%% save
-% trial index
-stats.trlindx.correct = correct; 
-stats.trlindx.incorrect = incorrect; 
-stats.trlindx.crazy = crazy;
-
+%% save position stats
+% time
+stats.time = {continuous.ts};
 % final position - monkey and fly
 stats.pos_final.r_monk = rf_monk; stats.pos_final.theta_monk = thetaf_monk;
 stats.pos_final.r_fly = r_fly; stats.pos_final.theta_fly = theta_fly;
-
 % absolute position - monkey
-stats.pos_abs.x_monk = {trials.xmp};
-stats.pos_abs.y_monk = {trials.ymp};
-
+stats.pos_abs.x_monk = {continuous.xmp};
+stats.pos_abs.y_monk = {continuous.ymp};
 % absolute position - eye
-stats.pos_abs.z_leye =  {trials.zlep_scr};
-stats.pos_abs.y_leye =  {trials.ylep_scr};
-stats.pos_abs.z_reye =  {trials.zrep_scr};
-stats.pos_abs.y_reye =  {trials.yrep_scr};
-
+stats.pos_abs.z_leye =  {continuous.zlep_scr};
+stats.pos_abs.y_leye =  {continuous.ylep_scr};
+stats.pos_abs.z_reye =  {continuous.zrep_scr};
+stats.pos_abs.y_reye =  {continuous.yrep_scr};
 % relative position - fly, eye, stop
-stats.pos_rel.x_fly = {trials.xfp_rel};
-stats.pos_rel.y_fly = {trials.yfp_rel};
-stats.pos_rel.r_fly = {trials.r_fly_rel};
-stats.pos_rel.theta_fly = {trials.theta_fly_rel};
+stats.pos_rel.x_fly = {continuous.xfp_rel};
+stats.pos_rel.y_fly = {continuous.yfp_rel};
+stats.pos_rel.r_fly = {continuous.r_fly_rel};
+stats.pos_rel.theta_fly = {continuous.theta_fly_rel};
+stats.pos_rel.x_leye = {continuous.xlep};
+stats.pos_rel.y_leye = {continuous.ylep};
+stats.pos_rel.x_reye = {continuous.xrep};
+stats.pos_rel.y_reye = {continuous.yrep};
+stats.pos_rel.x_stop = {continuous.xsp_rel};
+stats.pos_rel.y_stop = {continuous.ysp_rel};
+stats.pos_rel.r_stop = {continuous.r_stop_rel};
+stats.pos_rel.theta_stop = {continuous.theta_stop_rel};
 
-stats.pos_rel.x_leye = {trials.xlep};
-stats.pos_rel.y_leye = {trials.ylep};
-stats.pos_rel.x_reye = {trials.xrep};
-stats.pos_rel.y_reye = {trials.yrep};
+%% trial type
+goodtrls = ~((y_monk<0) | (abs(v_monk)>1)); % remove trials in which monkey did not move at all or kept moving until the end
+% all trials
+stats.trialtype.all.trlindx  = goodtrls;
+stats.trialtype.all.val = 'all';
 
-stats.pos_rel.x_stop = {trials.xsp_rel};
-stats.pos_rel.y_stop = {trials.ysp_rel};
-stats.pos_rel.r_stop = {trials.r_stop_rel};
-stats.pos_rel.theta_stop = {trials.theta_stop_rel};
+% unrewarded trials
+stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls;
+stats.trialtype.reward(1).val = 'unrewarded';
+% rewarded trials
+stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls;
+stats.trialtype.reward(2).val = 'rewarded';
 
-% regression results
-stats.pos_regress = pos_regress;
+% different densities
+density = [trialparams.floordensity];
+densities = unique(density);
+for i=1:length(densities)
+    stats.trialtype.density(i).val = ['density = ' num2str(densities(i))];
+    stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls);    
+end
 
-% ROC results
-stats.accuracy.rewardwin = rewardwin;
-stats.accuracy.pCorrect = pCorrect;
-stats.accuracy.pcorrect_shuffled_mu = pcorrect_shuffled_mu;
+stats.trialtype.ptb = [];
+% trials without perturbation
+trlindx = ~[logical.ptb] & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.ptb(end+1).trlindx = trlindx;
+    stats.trialtype.ptb(end).val = 'without perturbation';
+end
+% trials with perturbation
+trlindx = [logical.ptb] & goodtrls;
+if sum(trlindx)>1 
+    stats.trialtype.ptb(end+1).trlindx = trlindx;
+    stats.trialtype.ptb(end).val = 'with perturbation';
+end
 
-% time
-stats.time = {trials.ts};
+stats.trialtype.landmark = [];
+% trials with landmarks
+trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.landmark(end+1).trlindx = trlindx;
+    stats.trialtype.landmark(end).val = 'with landmark';
+end
+% trials without landmarks
+trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
+if sum(trlindx)>1
+    stats.trialtype.landmark(end+1).trlindx = trlindx;
+    stats.trialtype.landmark(end).val = 'without landmark';
+end
+
+%% linear regression and ROC analysis
+trialtypes = fields(stats.trialtype);
+for i=1:length(trialtypes)
+    nconds = length(stats.trialtype.(trialtypes{i}));
+    for j=1:nconds
+        trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+        if sum(trlindx) > mintrialsforstats
+            fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
+            % regression
+            [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
+            [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
+            stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
+            % ROC
+            [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
+                [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,bootstrap_trl);
+            stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
+        else
+            stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
+            stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+        end
+    end
+end

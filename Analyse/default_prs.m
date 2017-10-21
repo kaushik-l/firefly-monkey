@@ -17,9 +17,12 @@ prs.fs_smr = 5000/6; % sampling rate of smr file
 prs.filtwidth = 10; % width in samples (10 samples @ fs_smr = 10x0.0012 = 12 ms)
 prs.filtsize = 10*prs.filtwidth; % size in samples
 prs.factor_downsample = 10; % select every nth sample
+prs.dt = 10/(prs.fs_smr);
 prs.screendist = 32.5;
 prs.height = 10;
 prs.framerate = 60;
+prs.x0 = 0; % x-position at trial onset (cm)
+prs.y0 = -32.5; %y-position at trial onset (cm)
 
 %% static stimulus parameters
 prs.monk_startpos = [0 -30];
@@ -27,20 +30,69 @@ prs.fly_ONduration = 0.3;
 prs.saccadeduration = 0.05; % saccades last ~50ms
 
 %% data analysis parameters
-prs.binwidth = 1/(prs.fs_smr/prs.factor_downsample); % binwidth for neural data analysis (s)
-prs.spkkrnlwidth = 0.05; % width of the gaussian kernel convolved with spike trains (s)
-prs.spkkrnlwidth = prs.spkkrnlwidth/prs.binwidth; % width in samples
-prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
-prs.corr_lag = 1; % timescale of correlograms (s)
-prs.corr_lag = round(prs.corr_lag/prs.binwidth); % lag in samples
-prs.bootstrap_trl = 100; % number of bootstraps for trial-shuffled estimates
+% behavioural analysis
+prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
+prs.bootstrap_trl = 50; % number of bootstraps for trial-shuffled estimates
 prs.saccade_thresh = 120; % deg/s
 prs.v_thresh = 5; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0; % (s)
-prs.posttrial = 0; % (s)
+prs.pretrial = 0.25; % (s)
+prs.posttrial = 0.25; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
+
+% time window for psth of event aligned responses
+prs.temporal_binwidth = 0.02; % time binwidth for neural data analysis (s)
+prs.spkkrnlwidth = 0.05; % width of the gaussian kernel convolved with spike trains (s)
+prs.spkkrnlwidth = prs.spkkrnlwidth/prs.temporal_binwidth; % width in samples
+prs.spkkrnlsize = round(10*prs.spkkrnlwidth);
+prs.ts.move = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.target = -0.5:prs.temporal_binwidth:3.5;
+prs.ts.stop = -3.5:prs.temporal_binwidth:0.5;
+prs.ts.reward = -3.5:prs.temporal_binwidth:0.5;
+% time window for psth of shortesttrialgroup -- used to compare temporal responses across trial groups
+prs.ts_shortesttrialgroup.move = -0.5:prs.temporal_binwidth:1.5;
+prs.ts_shortesttrialgroup.target = -0.5:prs.temporal_binwidth:1.5;
+prs.ts_shortesttrialgroup.stop = -1.5:prs.temporal_binwidth:0.5;
+prs.ts_shortesttrialgroup.reward = -1.5:prs.temporal_binwidth:0.5;
+prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
+prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
+
+% correlogram
+prs.duration_zeropad = 0.05; % zeros to pad to end of trial before concatenating (s)
+prs.corr_lag = 1; % timescale of correlograms +/-(s)
+
+% define bin edges for tuning curves
+prs.tuning_binedges.v = 0:20:200; % linear velocity (cm/s)
+prs.tuning_binedges.w = -90:18:90; % angular velocity (deg/s)
+prs.tuning_binedges.a = -1500:300:1500; % linear acceleration (cm/s/s)
+prs.tuning_binedges.alpha = -500:100:500; % angular acceleration (deg/s/s)
+prs.tuning_binedges.v_abs = 0:20:200; % linear speed (cm/s)
+prs.tuning_binedges.w_abs = 0:9:90; % angular speed (deg/s)
+prs.tuning_binedges.a_abs = 0:150:1500; % absolute linear acceleration (cm/s/s)
+prs.tuning_binedges.alpha_abs = 0:50:500; % absolute angular acceleration (deg/s/s)
+prs.tuning_binedges.heye = -30:6:30; % horizontal eye position (deg)
+prs.tuning_binedges.veye = -30:6:30; % vertical eye position (deg)
+prs.tuning_binedges.r = 0:40:400; % displacement from starting point (cm)
+prs.tuning_binedges.theta = -40:8:40; % bearing angle relative to starting point (deg)
+prs.tuning_binedges.d = 0:50:500; % distance moved along path (cm)
+prs.tuning_binedges.phi = -60:12:60; % angle turned (deg)
+prs.tuning_binedges.r_targ = 0:40:400; % distance to target (cm)
+prs.tuning_binedges.r_stop = 0:40:400; % distance to stopping point (cm)
+
+% define bin edges for 2-D tuning curves
+prs.tuning_binedges.vw = [prs.tuning_binedges.v; prs.tuning_binedges.w];
+prs.tuning_binedges.aalpha = [prs.tuning_binedges.a; prs.tuning_binedges.alpha];
+prs.tuning_binedges.vheye = [prs.tuning_binedges.veye; prs.tuning_binedges.heye];
+prs.tuning_binedges.rtheta = [prs.tuning_binedges.r; prs.tuning_binedges.theta];
+prs.tuning_binedges.dphi = [prs.tuning_binedges.d; prs.tuning_binedges.phi];
+
+% specify which tunings are needed (to save computing time ---> especially important for continuous variables)
+prs.gettuning_events = {'move','target','stop','reward'};
+prs.gettuning_continuous = {'w'};
+
+% time-rescaling analysis
+prs.ntrialgroups = 5; % number of groups based on trial duration
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds
@@ -68,7 +120,7 @@ prs.varlookup('dist2fly') = 'r_fly';
 prs.varlookup('dist2stop') = 'r_stop';
 
 %% plotting parameters
-prs.binwidth_abs = prs.binwidth; % use same width as for the analysis
+prs.binwidth_abs = prs.temporal_binwidth; % use same width as for the analysis
 prs.binwidth_warp = 0.01;
 prs.trlkrnlwidth = 50; % width of the gaussian kernel for trial averaging (number of trials)
 prs.maxtrls = 5000; % maximum #trials to plot at once.

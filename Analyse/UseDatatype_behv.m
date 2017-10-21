@@ -16,10 +16,10 @@ function UseDatatype_behv(data_behv,data_type)
 ntrls = length(data_behv.trials);
 for i=1:ntrls
     trial_temp = data_behv.trials(i);
-    flds = fields(trial_temp);
+    flds = fields(trial_temp.continuous);
     nflds = length(flds);
     for j=1:nflds
-        trial_temp.(flds{j}) = eval([data_type '(trial_temp.(flds{j}))']);
+        trial_temp.continuous.(flds{j}) = eval([data_type '(trial_temp.continuous.(flds{j}))']);
     end
     data_behv.trials(i) = trial_temp;
 end

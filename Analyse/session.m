@@ -29,7 +29,7 @@ classdef session < handle
         %% add units
         function AddUnits(this,prs)
             cd(prs.filepath_neur);
-            file_ead=dir('*_ead.plx');
+            file_ead=dir('*.plx');
             file_nev=dir('*.nev');
             if ~isempty(file_ead) % data recorded using Plexon
                 fprintf(['... reading ' file_ead.name '\n']);
@@ -54,10 +54,7 @@ classdef session < handle
                 [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv'); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
                 fprintf(['... reading events from ' file_nev.name '\n']);
                 [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
-                events_smr.t_beg = [this.behaviours.trials.t_beg];
-                events_smr.t_rew = [this.behaviours.trials.t_rew];
-                events_smr.t_end = [this.behaviours.trials.t_end];
-                if length(events_smr.t_end)==length(events_nev.t_end)
+                if length(this.behaviours.trials)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
                             %fetch singleunit

@@ -1,280 +1,217 @@
-function [trials_spks,stats] = AnalyseRates(trials_spks,trials_behv,behv_stats,prs)
+function stats = AnalyseRates(trials_spks,trials_behv,behv_stats,prs)
 
-% nseries = length(tseries_behv.smr);
-ntrls = length(trials_behv);
+%% load analysis params
+x0 = prs.x0; y0 = prs.y0; % position of the subject at trial onset
+dt = prs.dt; % sampling resolution (s)
+temporal_binwidth = prs.temporal_binwidth;
+corr_lag = prs.corr_lag;
+duration_zeropad = prs.duration_zeropad;
+bootstrap_trl = prs.bootstrap_trl;
+peaktimewindow = prs.peaktimewindow;
+minpeakprominence = prs.minpeakprominence;
 
-%% convolve spike trains with gaussian kernel (trials)
-for i=1:ntrls
-    trial_spks_temp = trials_spks(i);
-    trial_behv_temp = trials_behv(i);
-    ts = trial_behv_temp.ts;
-    % add time points to the flanks to absorb spike counts outside
-    % the time period of interest
-    ts_hist = [ts(1)-prs.binwidth_abs ; ts(:) ; ts(end)+prs.binwidth_abs];
-    [nspk,~]=hist(trial_spks_temp.tspk,ts_hist); 
-    nspk = nspk(2:end-1); % discard spikes outside the time period of interest
-    sig = prs.spkkrnlwidth; %filter width
-    sz = prs.spkkrnlsize; %filter size
-    t2 = linspace(-sz/2, sz/2, sz);
-    h = exp(-t2.^2/(2*sig^2));
-    h = h/sum(h);
-    nspk = conv(nspk,h,'same');
-    trials_spks(i).nspk = nspk; % smoothed spike train
-end
+%% load cases
+trialtypes = fields(behv_stats.trialtype);
+events = cell2mat({trials_behv.events});
+continuous = cell2mat({trials_behv.continuous});
 
-%% compute spiketimes relative to end-of-trial
-for i=1:ntrls
-    trial_spks_temp = trials_spks(i);
-    trial_behv_temp = trials_behv(i);
-    Td = trial_behv_temp.t_end - trial_behv_temp.t_beg;
-    trial_spks_temp.tspk2end = trial_spks_temp.tspk - Td;
-    trials_spks(i).tspk2end = trial_spks_temp.tspk2end;
-end
-
-% convolve with gaussian kernel
-for i=1:ntrls
-    trial_spks_temp = trials_spks(i);
-    trial_behv_temp = trials_behv(i);
-    ts = trial_behv_temp.ts;
-    ts = ts - ts(end);    
-    % add time points to the flanks to absorb spike counts outside
-    % the time period of interest
-    ts_hist = [ts(1)-prs.binwidth_abs ; ts(:) ; ts(end)+prs.binwidth_abs];
-    [nspk2end,~]=hist(trial_spks_temp.tspk2end,ts_hist); 
-    nspk2end = nspk2end(2:end-1); % discard spikes outside the time period of interest
-    sig = prs.spkkrnlwidth; %filter width
-    sz = prs.spkkrnlsize; %filter size
-    t2 = linspace(-sz/2, sz/2, sz);
-    h = exp(-t2.^2/(2*sig^2));
-    h = h/sum(h);
-    nspk2end = conv(nspk2end,h,'same');
-    trials_spks(i).nspk2end = nspk2end; % smoothed spike train
-end
-
-%% compute spiketimes relative to perturbation
-% for i=1:ntrls
-%     trial_spks_temp = trials_spks(i);
-%     trial_behv_temp = trials_behv(i);
-%     Tp = trial_behv_temp.t_ptb;
-%     trial_spks_temp.tspk2ptb = trial_spks_temp.tspk - Tp;
-%     trials_spks(i).tspk2ptb = trial_spks_temp.tspk2ptb;
-% end
-% 
-% % convolve with gaussian kernel
-% for i=1:ntrls
-%     trial_spks_temp = trials_spks(i);
-%     trial_behv_temp = trials_behv(i);
-%     ts = trial_behv_temp.ts;
-%     ts = ts - ts((ts-Tp)==min(abs(ts-Tp)));
-%     [nspk2end,~]=hist(trial_spks_temp.tspk2end,ts); nspk2end = nspk2end(:);
-%     sig = prs.spkkrnlwidth; %filter width
-%     sz = prs.spkkrnlsize; %filter size
-%     t2 = linspace(-sz/2, sz/2, sz);
-%     h = exp(-t2.^2/(2*sig^2));
-%     h = h/sum(h);
-%     nspk2end = conv(nspk2end,h,'same');
-%     trials_spks(i).nspk2end = nspk2end; % smoothed spike train
-% end
-
-%% convert spiketimes to percentile of total trial duration
-% by stretching/compressing all trials to the "same" length
-for i=1:ntrls
-    trial_spks_temp = trials_spks(i);
-    trial_behv_temp = trials_behv(i);
-    Td = trial_behv_temp.t_end - trial_behv_temp.t_beg;
-    trial_spks_temp.reltspk = (trial_spks_temp.tspk)/Td;
-    trials_spks(i).reltspk = trial_spks_temp.reltspk;
-end
-
-% convolve with gaussian kernel
-for i=1:ntrls
-    trial_spks_temp = trials_spks(i);
-    trial_behv_temp = trials_behv(i);
-    Td = trial_behv_temp.t_end - trial_behv_temp.t_beg;
-    ts = linspace(0,1,(1/prs.binwidth_warp)+1);
-    % add time points to the flanks to absorb spike counts outside
-    % the time period of interest
-    ts_hist = [ts(1)-prs.binwidth_warp ; ts(:) ; ts(end)+prs.binwidth_warp];
-    [relnspk,~]=hist(trial_spks_temp.reltspk,ts_hist); 
-    relnspk = relnspk(2:end-1)/Td; % discard spikes outside the time period of interest
-    sig = prs.spkkrnlwidth; %filter width
-    sz = prs.spkkrnlsize; %filter size
-    t2 = linspace(-sz/2, sz/2, sz);
-    h = exp(-t2.^2/(2*sig^2));
-    h = h/sum(h);
-    relnspk = conv(relnspk,h,'same');
-    trials_spks(i).relnspk = relnspk; % smoothed spike train
-end
-
-%% peak response
-for i=1:ntrls
-    [trials_spks(i).peak_rate,trials_spks(i).peak_time] = max(trials_spks(i).nspk/prs.binwidth_abs);
-end
-
-%% stats
-stats = [];
-binwidth_abs = prs.binwidth_abs;
-binwidth_warp = prs.binwidth_warp;
-
-% trial-averaged responses for different ground plane densities
-temp = [];
-density = unique([trials_behv.floordensity]);
-for i=1:length(density)
-   trial_indx = ([trials_behv.floordensity] == density(i));
-   stats.density(i).val = density(i);
-   
-   nspk = struct2mat(trials_spks(trial_indx),'nspk','start');
-   stats.density(i).nspk.mu = nanmean(nspk)/binwidth_abs;
-   stats.density(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.density(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
-   [stats.density(i).nspk.mupeak,stats.density(i).nspk.tpeak] = ...
-       max(stats.density(i).nspk.mu(stats.density(i).nspk.t>0.4 & stats.density(i).nspk.t<2));
-   stats.density(i).nspk.tpeak = stats.density(i).nspk.tpeak*binwidth_abs + 0.4;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).nspkpeak(j) = max(nspk(j,stats.density(i).nspk.t>0.4 & stats.density(i).nspk.t<2))/binwidth_abs;
-   end
-   
-   nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
-   stats.density(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
-   stats.density(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.density(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-   % peak within [-2,-0.3] seconds of trial end
-   [stats.density(i).nspk2end.mupeak,stats.density(i).nspk2end.tpeak] = ...
-       max(stats.density(i).nspk2end.mu(stats.density(i).nspk2end.t>-2 & stats.density(i).nspk2end.t<-0.3));
-   stats.density(i).nspk2end.tpeak = stats.density(i).nspk2end.tpeak*binwidth_abs - 2;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.density(i).nspk2end.t>-2 & stats.density(i).nspk2end.t<-0.3))/binwidth_abs;
-   end
-   
-   relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
-   stats.density(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
-   stats.density(i).relnspk.sig = (nanstd(relnspk)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.density(i).relnspk.t = linspace(0,1,size(relnspk,2));
-   % peak anywhere during the trial
-   [stats.density(i).relnspk.mupeak,stats.density(i).relnspk.tpeak] = max(stats.density(i).relnspk.mu);
-   stats.density(i).relnspk.tpeak = stats.density(i).relnspk.tpeak*binwidth_warp;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
-   end
-end
-for i=1:length(density)
-    for j=1:length(density)
-        [~,stats.nspkpeak.density.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
-        [~,stats.nspk2endpeak.density.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
-        [~,stats.relnspkpeak.density.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
+%% event-aligned, trial-averaged firing rates
+gettuning = prs.gettuning_events;
+for i=1:length(trialtypes)
+    nconds = length(behv_stats.trialtype.(trialtypes{i}));
+    for j=1:nconds
+        trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+        events_temp = events(trlindx);
+        trials_spks_temp = trials_spks(trlindx);
+        %% aligned to movement onset
+        if any(strcmp(gettuning,'move'))
+            trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_move]);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.move,temporal_binwidth);
+            stats.trialtype.(trialtypes{i})(j).events.move.rate = nspk;
+            stats.trialtype.(trialtypes{i})(j).events.move.time = ts;
+            stats.trialtype.(trialtypes{i})(j).events.move.peakresp = ...           % significance of peak response
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.move,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+        end
+        %% aligned to target onset
+        if any(strcmp(gettuning,'target'))
+            trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_beg]-[events_temp.t_beg]);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.target,temporal_binwidth);
+            stats.trialtype.(trialtypes{i})(j).events.target.rate = nspk;
+            stats.trialtype.(trialtypes{i})(j).events.target.time = ts;
+            stats.trialtype.(trialtypes{i})(j).events.target.peakresp = ...         % significance of peak response
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.target,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+        end
+        %% aligned to movement stop
+        if any(strcmp(gettuning,'stop'))
+            trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_stop]);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.stop,temporal_binwidth);
+            stats.trialtype.(trialtypes{i})(j).events.stop.rate = nspk;
+            stats.trialtype.(trialtypes{i})(j).events.stop.time = ts;
+            stats.trialtype.(trialtypes{i})(j).events.stop.peakresp = ...           % significance of peak response
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.stop,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+        end
+        %% aligned to reward
+        if any(strcmp(gettuning,'reward'))
+            trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_rew]);
+            [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.reward,temporal_binwidth);
+            stats.trialtype.(trialtypes{i})(j).events.reward.rate = nspk;
+            stats.trialtype.(trialtypes{i})(j).events.reward.time = ts;
+            stats.trialtype.(trialtypes{i})(j).events.reward.peakresp = ...         % significance of peak response
+                EvaluatePeakresponse(trials_spks_temp2,prs.ts.reward,temporal_binwidth,peaktimewindow,minpeakprominence,bootstrap_trl);
+        end
     end
 end
 
-% trial-averaged responses for rewarded and unrewarded trials
-temp = [];
-reward = {'correct','incorrect'};
-for i=1:length(reward)
-    trial_indx = behv_stats.trlindx.(reward{i});
-    stats.reward(i).val = reward{i};
-    
-    nspk = struct2mat(trials_spks(trial_indx),'nspk','start');
-    stats.reward(i).nspk.mu = nanmean(nspk)/binwidth_abs;
-    stats.reward(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
-    stats.reward(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
-    [stats.reward(i).nspk.mupeak,stats.reward(i).nspk.tpeak] = ...
-        max(stats.reward(i).nspk.mu(stats.reward(i).nspk.t>0.4 & stats.reward(i).nspk.t<2));
-    stats.reward(i).nspk.tpeak = stats.reward(i).nspk.tpeak*binwidth_abs + 0.4;
-    % store vector of peak responses to calculate significance
-    for j=1:size(nspk,1)
-        temp(i).nspkpeak(j) = max(nspk(j,stats.reward(i).nspk.t>0.4 & stats.reward(i).nspk.t<2))/binwidth_abs;
-    end
-    
-    nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
-    stats.reward(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
-    stats.reward(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
-    stats.reward(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-   % peak within [-2,-0.3] seconds of trial end
-    [stats.reward(i).nspk2end.mupeak,stats.reward(i).nspk2end.tpeak] = ...
-        max(stats.reward(i).nspk2end.mu(stats.reward(i).nspk2end.t>-2 & stats.reward(i).nspk2end.t<-0.3));
-    stats.reward(i).nspk2end.tpeak = stats.reward(i).nspk2end.tpeak*binwidth_abs - 2;
-    % store vector of peak responses to calculate significance
-    for j=1:size(nspk,1)
-        temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.reward(i).nspk2end.t>-2 & stats.reward(i).nspk2end.t<-0.3))/binwidth_abs;
-    end
-    
-    relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
-    stats.reward(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
-    stats.reward(i).relnspk.sig = (nanstd(relnspk)/binwidth_abs)/sqrt(sum(trial_indx));
-    stats.reward(i).relnspk.t = linspace(0,1,size(relnspk,2));
-    % peak anywhere during the trial
-    [stats.reward(i).relnspk.mupeak,stats.reward(i).relnspk.tpeak] = max(stats.reward(i).relnspk.mu);
-    stats.reward(i).relnspk.tpeak = stats.reward(i).relnspk.tpeak*binwidth_warp;
-    % store vector of peak responses to calculate significance
-    for j=1:size(nspk,1)
-        temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
-    end
-end
-for i=1:length(reward)
-    for j=1:length(reward)
-        [~,stats.nspkpeak.reward.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
-        [~,stats.nspk2endpeak.reward.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
-        [~,stats.relnspkpeak.reward.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
+%% cross-correlation and tuning to continuous variables
+gettuning = prs.gettuning_continuous;
+for i=1
+    nconds = length(behv_stats.trialtype.(trialtypes{i}));
+    if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+    fprintf(['.........estimating tuning curves :: trialtype: ' (trialtypes{i}) '\n']);
+    for j=1:nconds
+        if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+            for k=1:length(gettuning)
+                stats.trialtype.(trialtypes{i})(j).continuous.(gettuning{k}) = stats.trialtype.all.continuous.(gettuning{k});
+            end
+        else
+            trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+            events_temp = events(trlindx);
+            continuous_temp = continuous(trlindx);
+            trials_spks_temp = trials_spks(trlindx);
+            %% define time windows for computing tuning
+            timewindow_move = [[events_temp.t_move]' [events_temp.t_stop]']; % when the subject is moving
+            timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+            timewindow_full = [[events_temp.t_move]' [events_temp.t_end]']; % from movement onset to end of trial
+            %% linear velocity, v
+            if any(strcmp(gettuning,'v'))
+                stats.trialtype.(trialtypes{i})(j).continuous.v = ...
+                    ComputeTuning({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.v,bootstrap_trl);
+            end
+            %% angular velocity, w
+            if any(strcmp(gettuning,'w'))
+                stats.trialtype.(trialtypes{i})(j).continuous.w = ...
+                    ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.w,bootstrap_trl);
+            end
+            %% velocity, vw (two dimensional)
+            if any(strcmp(gettuning,'vw'))
+                stats.trialtype.(trialtypes{i})(j).continuous.vw = ...
+                    ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.vw);
+            end
+            %% linear acceleration, a
+            if any(strcmp(gettuning,'a'))
+                a = cellfun(@(x) diff(x)/dt,{continuous_temp.v},'UniformOutput',false);
+                a_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.a = ...
+                    ComputeTuning(a,a_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.a,bootstrap_trl);
+            end
+            %% angular acceleration, alpha
+            if any(strcmp(gettuning,'alpha'))
+                alpha = cellfun(@(x) diff(x)/dt,{continuous_temp.w},'UniformOutput',false);
+                alpha_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.alpha = ...
+                    ComputeTuning(alpha,alpha_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.alpha,bootstrap_trl);
+            end
+            %% acceleration, aalpha (two dimensional)
+            if any(strcmp(gettuning,'aalpha'))
+                stats.trialtype.(trialtypes{i})(j).continuous.aalpha = ...
+                    ComputeTuning2D(a,alpha,a_ts,{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.aalpha);
+            end
+            %% magnitude of linear velocity, |v|
+            if any(strcmp(gettuning,'v_abs'))
+                v_abs = cellfun(@abs,{continuous_temp.v},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.v_abs = ...
+                    ComputeTuning(v_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.v_abs,bootstrap_trl);
+            end
+            %% magnitude of angular velocity, |w|
+            if any(strcmp(gettuning,'w_abs'))
+                w_abs = cellfun(@abs,{continuous_temp.w},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.w_abs = ...
+                    ComputeTuning(w_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.w_abs,bootstrap_trl);
+            end
+            %% magnitude of linear acceleration, |a|
+            if any(strcmp(gettuning,'a_abs'))
+                a_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.v},'UniformOutput',false);
+                a_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.a_abs = ...
+                    ComputeTuning(a_abs,a_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.a_abs,bootstrap_trl);
+            end
+            %% magnitude of angular acceleration, |alpha|
+            if any(strcmp(gettuning,'alpha_abs'))
+                alpha_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.w},'UniformOutput',false);
+                alpha_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.alpha_abs = ...
+                    ComputeTuning(alpha_abs,alpha_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.alpha_abs,bootstrap_trl);
+            end
+            %% vertical eye position, veye
+            if any(strcmp(gettuning,'veye'))
+                veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
+                stats.trialtype.(trialtypes{i})(j).continuous.veye = ...
+                    ComputeTuning(veye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.veye,bootstrap_trl);
+            end
+            %% horizontal eye position, heye
+            if any(strcmp(gettuning,'heye'))
+                heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
+                stats.trialtype.(trialtypes{i})(j).continuous.heye = ...
+                    ComputeTuning(heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,prs.tuning_binedges.heye,bootstrap_trl);
+            end
+            %% eye position, vheye (two dimensional)
+            if any(strcmp(gettuning,'vheye'))
+                stats.trialtype.(trialtypes{i})(j).continuous.vheye = ...
+                    ComputeTuning2D(veye,heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,prs.tuning_binedges.vheye);
+            end
+            %% displacement, r
+            if any(strcmp(gettuning,'r'))
+                r = cellfun(@(x,y) sqrt((x(:)-x0).^2 + (y(:)-y0).^2),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.r = ...
+                    ComputeTuning(r,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r,bootstrap_trl);
+            end
+            %% bearing, theta
+            if any(strcmp(gettuning,'theta'))
+                theta = cellfun(@(x,y) atan2d(x(:)-x0,y(:)-y0),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.theta = ...
+                    ComputeTuning(theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.theta,bootstrap_trl);
+            end
+            %% position, rtheta (two dimensional)
+            if any(strcmp(gettuning,'rtheta'))
+                stats.trialtype.(trialtypes{i})(j).continuous.rtheta = ...
+                    ComputeTuning2D(r,theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning_binedges.rtheta);
+            end
+            %% distance, d (refine -- use t_targ instead of 0?)
+            if any(strcmp(gettuning,'d'))
+                d = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.d = ...
+                    ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.d,bootstrap_trl);
+            end
+            %% heading, phi
+            if any(strcmp(gettuning,'phi'))
+                phi = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                stats.trialtype.(trialtypes{i})(j).continuous.phi = ...
+                    ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.phi,bootstrap_trl);
+            end
+            %% path, dphi (two dimensional)
+            if any(strcmp(gettuning,'dphi'))
+                stats.trialtype.(trialtypes{i})(j).continuous.dphi = ...
+                    ComputeTuning2D(d,phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning_binedges.dphi);
+            end
+            %% distance to target, r_targ
+            if any(strcmp(gettuning,'r_targ'))
+                r_targ = behv_stats.pos_rel.r_fly(trlindx);
+                stats.trialtype.(trialtypes{i})(j).continuous.r_targ = ...
+                    ComputeTuning(r_targ,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r_targ,bootstrap_trl);
+            end
+            %% distance to stop, r_stop
+            if any(strcmp(gettuning,'r_stop'))
+                r_stop = behv_stats.pos_rel.r_stop(trlindx);
+                stats.trialtype.(trialtypes{i})(j).continuous.r_stop = ...
+                    ComputeTuning(r_stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,prs.tuning_binedges.r_stop,bootstrap_trl);
+            end
+        end
     end
 end
 
-% trial-averaged responses for different accuracies
-temp = [];
-dist2fly = zeros(1,ntrls);
-for i=1:ntrls
-    dist2fly(i) = behv_stats.pos_rel.r_fly{i}(end);
-end
-accuracy = [0 25; 25 50; 50 75; 75 100];
-for i=1:length(accuracy)
-   trial_indx = (dist2fly>=prctile(dist2fly,accuracy(i,1)) & dist2fly<prctile(dist2fly,accuracy(i,2)));
-   stats.accuracy(i).val = accuracy(i,:);
-   
-   nspk = struct2mat(trials_spks(trial_indx),'nspk','start');
-   stats.accuracy(i).nspk.mu = nanmean(nspk)/binwidth_abs;
-   stats.accuracy(i).nspk.sig = (nanstd(nspk)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.accuracy(i).nspk.t = binwidth_abs:binwidth_abs:size(nspk,2)*binwidth_abs;
-   % peak within the [0.4,2] seconds of trial onset (disregard period when target was ON)
-   [stats.accuracy(i).nspk.mupeak,stats.accuracy(i).nspk.tpeak] = ...
-       max(stats.accuracy(i).nspk.mu(stats.accuracy(i).nspk.t>0.4 & stats.accuracy(i).nspk.t<2));
-   stats.accuracy(i).nspk.tpeak = stats.accuracy(i).nspk.tpeak*binwidth_abs + 0.4;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).nspkpeak(j) = max(nspk(j,stats.accuracy(i).nspk.t>0.4 & stats.accuracy(i).nspk.t<2))/binwidth_abs;
-   end
-   
-   nspk2end = struct2mat(trials_spks(trial_indx),'nspk2end','end');
-   stats.accuracy(i).nspk2end.mu = nanmean(nspk2end)/binwidth_abs;
-   stats.accuracy(i).nspk2end.sig = (nanstd(nspk2end)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.accuracy(i).nspk2end.t = -size(nspk2end,2)*binwidth_abs:binwidth_abs:-binwidth_abs;
-   % peak within [-2,-0.3] seconds of trial end
-   [stats.accuracy(i).nspk2end.mupeak,stats.accuracy(i).nspk2end.tpeak] = ...
-       max(stats.accuracy(i).nspk2end.mu(stats.accuracy(i).nspk2end.t>-2 & stats.accuracy(i).nspk2end.t<-0.3));
-   stats.accuracy(i).nspk2end.tpeak = stats.accuracy(i).nspk2end.tpeak*binwidth_abs - 2;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).nspk2endpeak(j) = max(nspk2end(j,stats.accuracy(i).nspk2end.t>-2 & stats.accuracy(i).nspk2end.t<-0.3))/binwidth_abs;
-   end
-   
-   relnspk = struct2mat(trials_spks(trial_indx),'relnspk','start');
-   stats.accuracy(i).relnspk.mu = nanmean(relnspk)/binwidth_abs;
-   stats.accuracy(i).relnspk.sig = (nanstd(relnspk)/binwidth_abs)/sqrt(sum(trial_indx));
-   stats.accuracy(i).relnspk.t = linspace(0,1,size(relnspk,2));
-   % peak anywhere during the trial
-   [stats.accuracy(i).relnspk.mupeak,stats.accuracy(i).relnspk.tpeak] = max(stats.accuracy(i).relnspk.mu);
-   stats.accuracy(i).relnspk.tpeak = stats.accuracy(i).relnspk.tpeak*binwidth_warp;
-   % store vector of peak responses to calculate significance
-   for j=1:size(nspk,1)
-       temp(i).relnspkpeak(j) = max(relnspk(j,:))/binwidth_warp;
-   end
-end
-for i=1:length(accuracy)
-    for j=1:length(accuracy)
-        [~,stats.nspkpeak.accuracy.p(i,j)] = ttest2(temp(i).nspkpeak,temp(j).nspkpeak);
-        [~,stats.nspk2endpeak.accuracy.p(i,j)] = ttest2(temp(i).nspk2endpeak,temp(j).nspk2endpeak);
-        [~,stats.relnspkpeak.accuracy.p(i,j)] = ttest2(temp(i).relnspkpeak,temp(j).relnspkpeak);
-    end
-end
+%% time-rescaling index
+trlindx = behv_stats.trialtype.all.trlindx;
+events_temp = events(trlindx);
+trials_spks_temp = trials_spks(trlindx);
+[stats.trialtype.all.intrinsic.scalingindex,stats.trialtype.all.intrinsic.lockingindex] = ...
+    ComputeScalingindex(trials_spks_temp,events_temp,prs.ts_shortesttrialgroup,temporal_binwidth,prs.ntrialgroups);
