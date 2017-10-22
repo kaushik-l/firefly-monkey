@@ -32,7 +32,7 @@ prs.saccadeduration = 0.05; % saccades last ~50ms
 %% data analysis parameters
 % behavioural analysis
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
-prs.bootstrap_trl = 50; % number of bootstraps for trial-shuffled estimates
+prs.npermutations = 50; % number of permutations for trial shuffled estimates
 prs.saccade_thresh = 120; % deg/s
 prs.v_thresh = 5; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
@@ -58,38 +58,37 @@ prs.ts_shortesttrialgroup.reward = -1.5:prs.temporal_binwidth:0.5;
 prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
 prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
 
-% correlogram
+% correlograms
 prs.duration_zeropad = 0.05; % zeros to pad to end of trial before concatenating (s)
 prs.corr_lag = 1; % timescale of correlograms +/-(s)
 
-% define bin edges for tuning curves
-prs.tuning_binedges.v = 0:20:200; % linear velocity (cm/s)
-prs.tuning_binedges.w = -90:18:90; % angular velocity (deg/s)
-prs.tuning_binedges.a = -1500:300:1500; % linear acceleration (cm/s/s)
-prs.tuning_binedges.alpha = -500:100:500; % angular acceleration (deg/s/s)
-prs.tuning_binedges.v_abs = 0:20:200; % linear speed (cm/s)
-prs.tuning_binedges.w_abs = 0:9:90; % angular speed (deg/s)
-prs.tuning_binedges.a_abs = 0:150:1500; % absolute linear acceleration (cm/s/s)
-prs.tuning_binedges.alpha_abs = 0:50:500; % absolute angular acceleration (deg/s/s)
-prs.tuning_binedges.heye = -30:6:30; % horizontal eye position (deg)
-prs.tuning_binedges.veye = -30:6:30; % vertical eye position (deg)
-prs.tuning_binedges.r = 0:40:400; % displacement from starting point (cm)
-prs.tuning_binedges.theta = -40:8:40; % bearing angle relative to starting point (deg)
-prs.tuning_binedges.d = 0:50:500; % distance moved along path (cm)
-prs.tuning_binedges.phi = -60:12:60; % angle turned (deg)
-prs.tuning_binedges.r_targ = 0:40:400; % distance to target (cm)
-prs.tuning_binedges.r_stop = 0:40:400; % distance to stopping point (cm)
+% computing standard errors
+prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 
-% define bin edges for 2-D tuning curves
-prs.tuning_binedges.vw = [prs.tuning_binedges.v; prs.tuning_binedges.w];
-prs.tuning_binedges.aalpha = [prs.tuning_binedges.a; prs.tuning_binedges.alpha];
-prs.tuning_binedges.vheye = [prs.tuning_binedges.veye; prs.tuning_binedges.heye];
-prs.tuning_binedges.rtheta = [prs.tuning_binedges.r; prs.tuning_binedges.theta];
-prs.tuning_binedges.dphi = [prs.tuning_binedges.d; prs.tuning_binedges.phi];
+% define bin edges for tuning curves by 'binning' method
+prs.v.tuning_binedges = 0:20:200; % linear velocity (cm/s)
+prs.w.tuning_binedges = -90:18:90; % angular velocity (deg/s)
+prs.a.tuning_binedges = -1500:300:1500; % linear acceleration (cm/s/s)
+prs.alpha.tuning_binedges = -500:100:500; % angular acceleration (deg/s/s)
+prs.v_abs.tuning_binedges = 0:20:200; % linear speed (cm/s)
+prs.w_abs.tuning_binedges = 0:9:90; % angular speed (deg/s)
+prs.a_abs.tuning_binedges = 0:150:1500; % absolute linear acceleration (cm/s/s)
+prs.alpha_abs.tuning_binedges = 0:50:500; % absolute angular acceleration (deg/s/s)
+prs.heye.tuning_binedges = -30:6:30; % horizontal eye position (deg)
+prs.veye.tuning_binedges = -30:6:30; % vertical eye position (deg)
+prs.r.tuning_binedges = 0:40:400; % displacement from starting point (cm)
+prs.theta.tuning_binedges = -40:8:40; % bearing angle relative to starting point (deg)
+prs.d.tuning_binedges = 0:50:500; % distance moved along path (cm)
+prs.phi.tuning_binedges = -60:12:60; % angle turned (deg)
+prs.r_targ.tuning_binedges = 0:40:400; % distance to target (cm)
+prs.r_stop.tuning_binedges = 0:40:400; % distance to stopping point (cm)
 
-% specify which tunings are needed (to save computing time ---> especially important for continuous variables)
-prs.gettuning_events = {'move','target','stop','reward'};
-prs.gettuning_continuous = {'w'};
+% define bin edges for 2-D tuning curves by 'binning' method
+prs.vw.tuning_binedges = [prs.v.tuning_binedges; prs.w.tuning_binedges];
+prs.aalpha.tuning_binedges = [prs.a.tuning_binedges; prs.alpha.tuning_binedges];
+prs.vheye.tuning_binedges = [prs.veye.tuning_binedges; prs.heye.tuning_binedges];
+prs.rtheta.tuning_binedges = [prs.r.tuning_binedges; prs.theta.tuning_binedges];
+prs.dphi.tuning_binedges = [prs.d.tuning_binedges; prs.phi.tuning_binedges];
 
 % time-rescaling analysis
 prs.ntrialgroups = 5; % number of groups based on trial duration
@@ -126,6 +125,14 @@ prs.trlkrnlwidth = 50; % width of the gaussian kernel for trial averaging (numbe
 prs.maxtrls = 5000; % maximum #trials to plot at once.
 prs.rewardwin = 65; % size of reward window (cm)
 prs.maxrewardwin = 400; % maximum reward window for ROC analysis
+
+%% list of analyses to perform
+prs.split_trials = true; % split trials into different stimulus conditions
+prs.regress_behv = false; % regress response against target position
+% specify which tunings are needed (to save computing time ---> especially important for continuous variables)
+prs.tuning_events = {'move','target','stop','reward'}; % discrete events
+prs.tuning_continuous = {'v'}; % continuous variables
+prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 
 %% temporary testing
 prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...

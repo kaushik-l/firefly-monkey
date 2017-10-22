@@ -1,5 +1,5 @@
 function [rewardwin, pCorrect, pCorrect_shuffled_mu] = ...
-    ComputeROCFirefly(X_fly,X_monk,maxrewardwin,nboot)
+    ComputeROCFirefly(X_fly,X_monk,maxrewardwin,npermutations)
 
 %% initialise
 rewardwin = linspace(0, maxrewardwin, 20); % total of 20 reward windows
@@ -16,8 +16,8 @@ for j=1:length(rewardwin)
     end
     % unshuffled accuracy
     pCorrect(j) = sum(dist2fly < rewardwin(j))/ntrls; % fraction of correct trials
-    pCorrect_shuffled = zeros(1,nboot);
-    for k=1:nboot
+    pCorrect_shuffled = zeros(1,npermutations);
+    for k=1:npermutations
         indx = randperm(ntrls);
         X_monk2 = X_monk(indx,:);
         % shuffled errors

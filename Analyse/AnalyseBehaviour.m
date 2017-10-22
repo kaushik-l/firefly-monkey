@@ -3,7 +3,7 @@ function stats = AnalyseBehaviour(trials,prs)
 fprintf('******Behavioural analysis****** \n');
 mintrialsforstats = prs.mintrialsforstats;
 maxrewardwin = prs.maxrewardwin;
-bootstrap_trl = prs.bootstrap_trl;
+npermutations = prs.npermutations;
 monk_startpos = prs.monk_startpos;
 x0_monk = monk_startpos(1); y0_monk = monk_startpos(2);
 
@@ -87,68 +87,72 @@ goodtrls = ~((y_monk<0) | (abs(v_monk)>1)); % remove trials in which monkey did 
 stats.trialtype.all.trlindx  = goodtrls;
 stats.trialtype.all.val = 'all';
 
-% unrewarded trials
-stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls;
-stats.trialtype.reward(1).val = 'unrewarded';
-% rewarded trials
-stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls;
-stats.trialtype.reward(2).val = 'rewarded';
-
-% different densities
-density = [trialparams.floordensity];
-densities = unique(density);
-for i=1:length(densities)
-    stats.trialtype.density(i).val = ['density = ' num2str(densities(i))];
-    stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls);    
-end
-
-stats.trialtype.ptb = [];
-% trials without perturbation
-trlindx = ~[logical.ptb] & goodtrls;
-if sum(trlindx)>1
-    stats.trialtype.ptb(end+1).trlindx = trlindx;
-    stats.trialtype.ptb(end).val = 'without perturbation';
-end
-% trials with perturbation
-trlindx = [logical.ptb] & goodtrls;
-if sum(trlindx)>1 
-    stats.trialtype.ptb(end+1).trlindx = trlindx;
-    stats.trialtype.ptb(end).val = 'with perturbation';
-end
-
-stats.trialtype.landmark = [];
-% trials with landmarks
-trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
-if sum(trlindx)>1
-    stats.trialtype.landmark(end+1).trlindx = trlindx;
-    stats.trialtype.landmark(end).val = 'with landmark';
-end
-% trials without landmarks
-trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
-if sum(trlindx)>1
-    stats.trialtype.landmark(end+1).trlindx = trlindx;
-    stats.trialtype.landmark(end).val = 'without landmark';
+if prs.split_trials
+    % unrewarded trials
+    stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls;
+    stats.trialtype.reward(1).val = 'unrewarded';
+    % rewarded trials
+    stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls;
+    stats.trialtype.reward(2).val = 'rewarded';
+    
+    % different densities
+    density = [trialparams.floordensity];
+    densities = unique(density);
+    for i=1:length(densities)
+        stats.trialtype.density(i).val = ['density = ' num2str(densities(i))];
+        stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls);
+    end
+    
+    stats.trialtype.ptb = [];
+    % trials without perturbation
+    trlindx = ~[logical.ptb] & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.ptb(end+1).trlindx = trlindx;
+        stats.trialtype.ptb(end).val = 'without perturbation';
+    end
+    % trials with perturbation
+    trlindx = [logical.ptb] & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.ptb(end+1).trlindx = trlindx;
+        stats.trialtype.ptb(end).val = 'with perturbation';
+    end
+    
+    stats.trialtype.landmark = [];
+    % trials with landmarks
+    trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.landmark(end+1).trlindx = trlindx;
+        stats.trialtype.landmark(end).val = 'with landmark';
+    end
+    % trials without landmarks
+    trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.landmark(end+1).trlindx = trlindx;
+        stats.trialtype.landmark(end).val = 'without landmark';
+    end
 end
 
 %% linear regression and ROC analysis
-trialtypes = fields(stats.trialtype);
-for i=1:length(trialtypes)
-    nconds = length(stats.trialtype.(trialtypes{i}));
-    for j=1:nconds
-        trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
-        if sum(trlindx) > mintrialsforstats
-            fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
-            % regression
-            [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
-            [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
-            stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
-            % ROC
-            [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
-                [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,bootstrap_trl);
-            stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
-        else
-            stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
-            stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+if prs.regress_behv
+    trialtypes = fields(stats.trialtype);
+    for i=1:length(trialtypes)
+        nconds = length(stats.trialtype.(trialtypes{i}));
+        for j=1:nconds
+            trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+            if sum(trlindx) > mintrialsforstats
+                fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
+                % regression
+                [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
+                [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
+                stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
+                % ROC
+                [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
+                    [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,npermutations);
+                stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
+            else
+                stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
+                stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+            end
         end
     end
 end
