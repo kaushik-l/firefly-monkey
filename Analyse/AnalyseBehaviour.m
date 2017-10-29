@@ -68,10 +68,10 @@ stats.pos_abs.y_leye =  {continuous.ylep_scr};
 stats.pos_abs.z_reye =  {continuous.zrep_scr};
 stats.pos_abs.y_reye =  {continuous.yrep_scr};
 % relative position - fly, eye, stop
-stats.pos_rel.x_fly = {continuous.xfp_rel};
-stats.pos_rel.y_fly = {continuous.yfp_rel};
-stats.pos_rel.r_fly = {continuous.r_fly_rel};
-stats.pos_rel.theta_fly = {continuous.theta_fly_rel};
+stats.pos_rel.x_targ = {continuous.xfp_rel};
+stats.pos_rel.y_targ = {continuous.yfp_rel};
+stats.pos_rel.r_targ = {continuous.r_fly_rel};
+stats.pos_rel.theta_targ = {continuous.theta_fly_rel};
 stats.pos_rel.x_leye = {continuous.xlep};
 stats.pos_rel.y_leye = {continuous.ylep};
 stats.pos_rel.x_reye = {continuous.xrep};
