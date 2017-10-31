@@ -1097,13 +1097,47 @@ monkeyInfo = [];
 %     'extra experiment with random ITI and random time-to-reward'};
 
 %% session 118 (?)
+% monkeyInfo (end+1).monk_id = 44;
+% monkeyInfo (end).session_id =118;
+% monkeyInfo (end).coord.row = nan;
+% monkeyInfo (end).coord.column = nan;
+% monkeyInfo (end).coord.depth = nan;
+% monkeyInfo (end).channels = 1:96;
+% monkeyInfo (end).units = 0;
+% monkeyInfo (end).folder = 'Quigley\Utah array\Aug 3 2017';
+% monkeyInfo (end).comments = {'Fixed densities, no landmarks, no perturbations; juice - 150ms & 300ms; ' ...
+%     'extra experiment with random ITI and random time-to-reward'};
+
+%% session 119 (?)
+% monkeyInfo (end+1).monk_id = 51;
+% monkeyInfo (end).session_id =119;
+% monkeyInfo (end).coord.row = nan;
+% monkeyInfo (end).coord.column = nan;
+% monkeyInfo (end).coord.depth = nan;
+% monkeyInfo (end).channels = 1:96;
+% monkeyInfo (end).units = 0;
+% monkeyInfo (end).folder = 'Bruno\Utah array\Aug 4 2017';
+% monkeyInfo (end).comments = {'Fixed densities, no landmarks, no perturbations; juice - 150ms & 300ms; ' ...
+%     'extra experiment with random ITI and random time-to-reward'};
+%% session 120 (?) ERROR Trial counts in smr and nev files do not match 
+% monkeyInfo (end+1).monk_id = 44;
+% monkeyInfo (end).session_id =120;
+% monkeyInfo (end).coord.row = nan;
+% monkeyInfo (end).coord.column = nan;
+% monkeyInfo (end).coord.depth = nan;
+% monkeyInfo (end).channels = 1:96;
+% monkeyInfo (end).units = 0;
+% monkeyInfo (end).folder = 'Quigley\Utah array\Mar 17 2017';
+% monkeyInfo (end).comments = {'Fixed densities, no landmarks, no perturbations; juice - 150ms & 300ms; ' ...
+%     'Fixed DCI and ITI'};
+%% session 121 (?) 
 monkeyInfo (end+1).monk_id = 44;
-monkeyInfo (end).session_id =118;
+monkeyInfo (end).session_id =121;
 monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
-monkeyInfo (end).folder = 'Quigley\Utah array\Aug 3 2017';
+monkeyInfo (end).folder = 'Quigley\Utah array\Mar 15 2017';
 monkeyInfo (end).comments = {'Fixed densities, no landmarks, no perturbations; juice - 150ms & 300ms; ' ...
-    'extra experiment with random ITI and random time-to-reward'};
+    'Fixed DCI and ITI'};

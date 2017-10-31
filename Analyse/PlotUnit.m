@@ -12,10 +12,12 @@ crazy = behv.stats.trlindx.crazy;
 
 % behavioural data
 behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
+% behv_all = behv.trials; ntrls_all = length(behv_all);
 behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
 behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
 % neural data
 spks_all = unit.trials(~crazy);
+% spks_all = unit.trials;
 spks_correct = unit.trials(correct); 
 spks_incorrect = unit.trials(incorrect);
 
@@ -91,7 +93,7 @@ switch plot_type
         nspk(isnan(nspk)) = 0; % display nan as white pixels
         figure; imagesc(ts,1:ntrls_all,nspk,[0  max(mean(nspk))]);
         colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal','box', 'off','TickDir', 'out'); axis([0 4 100 ntrls_all]); %axis off;
+        set(gca,'Ydir','normal','box', 'off','TickDir', 'out', 'YTick',[0 ntrls_all], 'XTick',[0 2 4],'FontSize', 18); axis([0 4 100 ntrls_all]); %axis off;
         ylabel('Trial'); xlabel('Time(s)'); 
         
     case 'rate_end'
@@ -103,7 +105,7 @@ switch plot_type
         end
         ns_max = max(ns);
         % store responses in a matrix (Trial x Time)
-        nspk2end = nan(ntrls_all,ns_max);
+        nspk2end = nan(sum([behv_all.reward]),ns_max);
         rewardcount = 0;
         for i=1:ntrls_all
             if behv_all(i).reward
@@ -118,11 +120,19 @@ switch plot_type
         nspk2end = nspk2end/binwidth_abs;
         nspk2end(isnan(nspk2end)) = 0;  % display nan as white pixels
         figure; imagesc(ts,1:ntrls_all,nspk2end,[0  max(mean(nspk2end))]);
-        yyaxis left; colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal', 'box', 'off','TickDir', 'out'); axis([-4 -0.5 100 ntrls_all]); %axis off;
+        colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal', 'box', 'off','TickDir', 'out', 'YTick',[0 ntrls_all], 'XTick', [-4 -2 0],'FontSize',18); axis([-4 0 100 ntrls_all]); %axis off;
         ylabel('Trial'); xlabel('Time(s)'); 
         % plot psth on top
-        yyaxis right; plot(ts,nanmean(nspk2end), 'LineWidth', 3, 'Color', 'r'); set(gca,'XTick', [-4:0.5:0], 'TickDir', 'out', 'box', 'off');vline([-1 -0.7]);
+%       yyaxis right; plot(ts,nanmean(nspk2end), 'LineWidth', 3, 'Color', 'r'); set(gca,'XTick', [-4:0.5:0], 'TickDir', 'out', 'box', 'off');vline([-1 -0.7]);
+        
+        % plot zoom
+        figure; imagesc(ts,1:ntrls_all,nspk2end,[0  max(mean(nspk2end))]);
+        yyaxis left; colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
+        set(gca,'Ydir','normal', 'box', 'off','TickDir', 'out', 'CLimMode', 'manual', 'YTick', [0 rewardcount]); axis([-1 0 50 rewardcount]); %axis off;
+        ylabel('Trial'); xlabel('Time(s)'); 
+        % plot psth on top
+        yyaxis right; plot(ts,nanmean(nspk2end), 'LineWidth', 3, 'Color', 'r'); set(gca,'XTick', [-1.5:0.5:0], 'TickDir', 'out', 'box', 'off', 'YTick',[0 round(max(nanmean(nspk2end)))]);vline([-0.5]);
         
     case 'rate_warp'
         %% psth - normalised by trial duration
@@ -173,7 +183,7 @@ case 'rate_reward'
         %nspk2rew(isnan(nspk2rew)) = 0;  % display nan as white pixels
         figure; imagesc(ts,1:size(nspk2rew,1),nspk2rew,[0  1.5*max(mean(nspk2rew))]);
         yyaxis left; colordata = colormap; colordata(1,:) = [1 1 1]; colormap(colordata);
-        set(gca,'Ydir','normal','XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off'); axis([0 ts(150) 100 count]); vline(ts(75));
+        set(gca,'Ydir','normal','XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off', 'FontSize', 18); axis([0 ts(150) 100 count]); vline(ts(75));
         ylabel('Trial'); xlabel('Time(s)');
         yyaxis right; plot(ts,nanmean(nspk2rew(301:end,:)), 'LineWidth', 3, 'Color', 'r'); set(gca,'XTick', [0:0.1:2], 'TickDir', 'out', 'box', 'off'); xlim([0 ts(95)]);
     case 'psth_warp'

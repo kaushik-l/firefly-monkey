@@ -150,7 +150,7 @@ for j=1:nunits
             nspk = conv2nan(nspk, trlkrnl);
             nspk = nspk/binwidth_abs;
             % plot
-            figure(4); hold on; SubplotArray('multiunits',units(j).channel_no);
+            figure(4); hold on; SubplotArray('multiunits',units(j).channel_no); 
             imagesc(nspk,[0  max(mean(nspk))]);
             set(gca,'Ydir','normal'); axis off;
             
