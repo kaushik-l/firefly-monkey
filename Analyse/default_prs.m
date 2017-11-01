@@ -65,30 +65,22 @@ prs.corr_lag = 1; % timescale of correlograms +/-(s)
 % computing standard errors
 prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 
-% define bin edges for tuning curves by 'binning' method
-prs.v.tuning_binedges = 0:20:200; % linear velocity (cm/s)
-prs.w.tuning_binedges = -90:18:90; % angular velocity (deg/s)
-prs.a.tuning_binedges = -1500:300:1500; % linear acceleration (cm/s/s)
-prs.alpha.tuning_binedges = -500:100:500; % angular acceleration (deg/s/s)
-prs.v_abs.tuning_binedges = 0:20:200; % linear speed (cm/s)
-prs.w_abs.tuning_binedges = 0:9:90; % angular speed (deg/s)
-prs.a_abs.tuning_binedges = 0:150:1500; % absolute linear acceleration (cm/s/s)
-prs.alpha_abs.tuning_binedges = 0:50:500; % absolute angular acceleration (deg/s/s)
-prs.heye.tuning_binedges = -30:6:30; % horizontal eye position (deg)
-prs.veye.tuning_binedges = -30:6:30; % vertical eye position (deg)
-prs.r.tuning_binedges = 0:40:400; % displacement from starting point (cm)
-prs.theta.tuning_binedges = -40:8:40; % bearing angle relative to starting point (deg)
-prs.d.tuning_binedges = 0:50:500; % distance moved along path (cm)
-prs.phi.tuning_binedges = -60:12:60; % angle turned (deg)
-prs.r_targ.tuning_binedges = 0:40:400; % distance to target (cm)
-prs.r_stop.tuning_binedges = 0:40:400; % distance to stopping point (cm)
+% define no. of bins for tuning curves by binning method
+prs.tuning.nbins1d_binning = 10; % bin edges for tuning curves by 'binning' method
+prs.tuning.nbins2d_binning = [10;10]; % define bin edges for 2-D tuning curves by 'binning' method
 
-% define bin edges for 2-D tuning curves by 'binning' method
-prs.vw.tuning_binedges = [prs.v.tuning_binedges; prs.w.tuning_binedges];
-prs.aalpha.tuning_binedges = [prs.a.tuning_binedges; prs.alpha.tuning_binedges];
-prs.vheye.tuning_binedges = [prs.veye.tuning_binedges; prs.heye.tuning_binedges];
-prs.rtheta.tuning_binedges = [prs.r.tuning_binedges; prs.theta.tuning_binedges];
-prs.dphi.tuning_binedges = [prs.d.tuning_binedges; prs.phi.tuning_binedges];
+% define no. of nearest neighbors for tuning curves by k-nearest neighbors method
+prs.tuning.k_knn = @(x) round(sqrt(x)); % k=sqrt(N) where N is the total no. of observations
+prs.tuning.nbins1d_knn = 100; prs.tuning.nbins2d_knn = [100 ; 100];
+
+% define kernel type for tuning curves by Nadayara-Watson kernel regression
+prs.tuning.kernel_nw = 'Gaussian'; % choose from 'Uniform', 'Epanechnikov', 'Biweight', 'Gaussian'
+prs.tuning.bandwidth_nw = []; prs.tuning.bandwidth2d_nw = [];
+prs.tuning.nbins_nw = []; prs.tuning.nbins2d_nw = [];
+
+% define kernel type for tuning curves by local linear regression
+prs.tuning.kernel_locallinear = 'Gaussian'; % choose from 'Uniform', 'Epanechnikov', 'Biweight', 'Gaussian'
+prs.tuning.bandwidth_locallinear = [];
 
 % time-rescaling analysis
 prs.ntrialgroups = 5; % number of groups based on trial duration
@@ -130,9 +122,11 @@ prs.maxrewardwin = 400; % maximum reward window for ROC analysis
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = false; % regress response against target position
 % specify which tunings are needed (to save computing time ---> especially important for continuous variables)
-prs.tuning_events = {'move','target','stop','reward'}; % discrete events
-prs.tuning_continuous = {'v'}; % continuous variables
-prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
+prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
+prs.tuning_continuous = {'vw'}; % continuous variables - choose from elements of continuous_vars (above)
+prs.tuning_method = 'k-nearest'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
+prs.fit_LNmodel = true; % fit LN model to single neuron responses
+prs.LNmodel_vars = {'v','w','r_targ'}; % list of variables to include in the LN model
 
 %% temporary testing
 prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...

@@ -6,23 +6,11 @@ if ntrls < nbootstraps % not enough trials
     return;
 end
 
-temporal_binwidth = median(diff(ts{1}));
-padding = zeros(round(duration_zeropad/temporal_binwidth),1);
 %% concatenate data from different trials
-y = cellfun(@(x,y) hist(x,y),tspk,ts,'UniformOutput',false);
-t2 = cellfun(@(x) x(2:end-1),ts,'UniformOutput',false);
-x2 = cellfun(@(x) x(2:end-1),x,'UniformOutput',false);
-y2 = cellfun(@(x) x(2:end-1)',y,'UniformOutput',false); % transpose is to reshape to column vector
-
-twin = mat2cell(timewindow,ones(1,ntrls));
-xt = cellfun(@(x,y,z) x(y>z(1) & y<z(2)),x2(:),t2(:),twin(:),'UniformOutput',false);
-yt = cellfun(@(x,y,z) x(y>z(1) & y<z(2)),y2(:),t2(:),twin(:),'UniformOutput',false);
-xt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],x2(:),'UniformOutput',false)); % zero-pad for cross-correlations
-yt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],y2(:),'UniformOutput',false));
-xt = cell2mat(xt);
-yt = cell2mat(yt);
+[xt,yt,xt_pad,yt_pad] = ConcatenateTrials(x,ts,tspk,timewindow,duration_zeropad);
 
 %% estimate cross-correlation
+temporal_binwidth = median(diff(ts{1}));
 lags = round(corr_lag/temporal_binwidth);
 [c,lags]=xcorr(zscore(xt_pad),zscore(yt_pad),lags,'coeff'); % normalise E[z(x)*z(y)] by sqrt(R_xx(0)*R_yy(0))
 tuningstats.xcorr.val = c;
@@ -30,6 +18,18 @@ tuningstats.xcorr.lag = lags*temporal_binwidth;
 
 %% compute tuning curves
 if strcmp(tuning_method,'binning')
-    binedges = tuning_prs.tuning_binedges;
-    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,binedges,nbootstraps,temporal_binwidth);
+    nbins = tuning_prs.nbins1d_binning; % load predefined number of bins
+    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,temporal_binwidth,nbins,nbootstraps);
+elseif strcmp(tuning_method,'k-nearest')
+    k = arrayfun(tuning_prs.k_knn,numel(xt)); % compute k from predefined anonymous function
+    nbins = tuning_prs.nbins1d_binning; % load predefined number of bins
+    [tuningstats.tuning.stim,tuningstats.tuning.rate] = NPregress_knn(xt,yt,temporal_binwidth,k,nbins,nbootstraps);
+elseif strcmp(tuning_method,'nadaraya-watson')
+    kernel = tuning_prs.kernel_nw; % load kernel for smoothing
+    bandwidth = tuning_prs.bandwidth_nw; % load kernel for smoothing
+    [tuningstats.tuning.stim,tuningstats.tuning.rate] = NPregress_nw(xt,yt,temporal_binwidth,kernel,bandwidth,[],nbootstraps);
+elseif strcmp(tuning_method,'local-linear')
+    kernel = tuning_prs.kernel_locallinear; % load kernel for smoothing
+    bandwidth = tuning_prs.bandwidth_locallinear; % load kernel for smoothing
+    [tuningstats.tuning.stim,tuningstats.tuning.rate] = NPregress_locallinear(xt,yt,temporal_binwidth,kernel,bandwidth,[],nbootstraps);
 end
