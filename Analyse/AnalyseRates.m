@@ -10,6 +10,7 @@ nbootstraps = prs.nbootstraps;
 peaktimewindow = prs.peaktimewindow;
 minpeakprominence = prs.minpeakprominence;
 mintrialsforstats = prs.mintrialsforstats;
+fit_LNmodel = prs.fit_LNmodel;
 
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
@@ -211,31 +212,32 @@ for i=1 % compute tuning curves using all trials, rather than separately for eac
 end
 
 %% fit LN model
-getvars = prs.LNmodel_vars;
-for i=1 % fit model using all trials, rather than separately to data from each condition
-    trlindx = behv_stats.trialtype.(trialtypes{i}).trlindx;
-    events_temp = events(trlindx);
-    continuous = continuous(trlindx);
-    spks = trials_spks(trlindx);
-    %% select variables of interest
-    vars = cell(length(getvars),1);
-    for j=1:length(getvars)
-        if isfield(continuous,getvars(j)), vars{j} = {continuous.(getvars{j})};
-        elseif isfield(behv_stats.pos_rel,getvars(j)), vars{j} = behv_stats.pos_rel.(getvars{j})(trlindx); end
-        tuning_binedges(j,:) = prs.(getvars{j}).tuning_binedges;
+if fit_LNmodel
+    getvars = prs.LNmodel_vars;
+    nbins = prs.tuning.nbins1d_binning;
+    for i=1 % fit model using all trials, rather than separately to data from each condition
+        trlindx = behv_stats.trialtype.(trialtypes{i}).trlindx;
+        events_temp = events(trlindx);
+        continuous_temp = continuous(trlindx);
+        trials_spks_temp = trials_spks(trlindx);
+        %% select variables of interest
+        vars = cell(length(getvars),1);
+        for j=1:length(getvars)
+            if isfield(continuous_temp,getvars(j)), vars{j} = {continuous_temp.(getvars{j})};
+            elseif isfield(behv_stats.pos_rel,getvars(j)), vars{j} = behv_stats.pos_rel.(getvars{j})(trlindx); end
+        end
+        %% define time windows for computing tuning
+        timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+        %% fit different model variants
+        fprintf('......(1/1) Fitting linear-nonlinear-Poisson (LNP) models\n');
+        LNmodels = FitLNmodels(vars,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,nbins);
+        %% find the simplest model that best describes the spike train
+        fprintf('......(2/2) Performing forward model selection\n');
+        LNmodels.selected_model = SelectLNmodel(LNmodels);
+        stats.trialtype.(trialtypes{i}).LNmodels = LNmodels;
+        %% plot tuning curves obtained from the model and from binning
+        PlotLNmodel(LNmodels,stats.trialtype.(trialtypes{i}).continuous,tuning_binedges);
     end
-    %% define time windows for computing tuning
-    timewindow_move = [[events_temp.t_move]' [events_temp.t_stop]']; % when the subject is moving
-    timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
-    %% fit different model variants
-    fprintf('......(1/1) Fitting linear-nonlinear (LN) models\n');
-    LNmodels = FitLNmodels(vars,{continuous.ts},{spks.tspk},timewindow_path,tuning_binedges);
-    %% find the simplest model that best describes the spike train
-    fprintf('......(2/2) Performing forward model selection\n');
-    LNmodels.selected_model = SelectLNmodel(LNmodels);
-    stats.trialtype.(trialtypes{i}).LNmodels = LNmodels;
-    %% plot tuning curves obtained from the model and from binning
-    PlotLNmodel(LNmodels,stats.trialtype.(trialtypes{i}).continuous,tuning_binedges);
 end
 
 %% time-rescaling index

@@ -124,7 +124,7 @@ prs.regress_behv = false; % regress response against target position
 % specify which tunings are needed (to save computing time ---> especially important for continuous variables)
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
 prs.tuning_continuous = {'vw'}; % continuous variables - choose from elements of continuous_vars (above)
-prs.tuning_method = 'k-nearest'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
+prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 prs.fit_LNmodel = true; % fit LN model to single neuron responses
 prs.LNmodel_vars = {'v','w','r_targ'}; % list of variables to include in the LN model
 
