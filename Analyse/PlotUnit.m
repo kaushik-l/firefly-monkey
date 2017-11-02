@@ -5,34 +5,29 @@ binwidth_abs = prs.binwidth_abs;
 binwidth_warp = prs.binwidth_warp;
 trlkrnlwidth = prs.trlkrnlwidth;
 
-ntrl = length(behv.trials);
-correct = behv.stats.trlindx.correct;
-incorrect = behv.stats.trlindx.incorrect;
-crazy = behv.stats.trlindx.crazy;
-
-% behavioural data
-behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
-behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
-behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
-% neural data
-spks_all = unit.trials(~crazy);
-spks_correct = unit.trials(correct); 
-spks_incorrect = unit.trials(incorrect);
+trlindx = behv.stats.trialtype.all.trlindx;
+behv_trials = behv.trials(trlindx);
+spks_trials = unit.trials(trlindx);
+events_trials = cell2mat({behv_trials.events});
+ntrls = length(behv_trials);
 
 %% order trials based on trial duration
-Td = [behv_all.t_end] - [behv_all.t_beg];
+Td = [events_trials.t_end] - [events_trials.t_targ];
 [~,indx] = sort(Td);
-behv_all = behv_all(indx);
-spks_all = spks_all(indx);
-Td_all = [behv_all.t_end] - [behv_all.t_beg];
-rew_all = [behv_all.reward];
-% ptb data
-ptb_delay = [behv_all.ptb_delay]; ptb_delay = ptb_delay/1000; % in secs
-ptb_indx = (ptb_delay~=0);
-ptb_linear = [behv_all.ptb_linear];
-ptb_angular = [behv_all.ptb_angular];
-
+behv_trials = behv_trials(indx);
+spks_trials = spks_trials(indx);
+events_trials = events_trials(indx);
 switch plot_type
+    case 'raster_move'
+        figure; hold on;set(gcf,'Position',[85 -276 700 1000]);
+        for i=1:ntrls
+            tspk = spks_trials(i).tspk(spks_trials(i).tspk>0);
+            if ~isempty(tspk)
+                plot(tspk(1:30:end),i,'.r','MarkerSize',2,'Color',[.5 .5 .5]);
+%                 plot(events_trials(i).t_end,i,'.k');
+            end
+        end
+        xlim([0 4]);
     case 'raster_start'
         %% raster plot - aligned to start of trial
         figure; hold on;

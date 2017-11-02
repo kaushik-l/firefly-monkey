@@ -1,19 +1,18 @@
-function peakresp = EvaluatePeakresponse(trials,timepoints,binwidth,peaktimewindow,minpeakprominence,bootstrap_trl)
+function peakresp = EvaluatePeakresponse(trials,timepoints,binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats)
 
 preevent_nanflag = false;
 postevent_nanflag = false;
 ntrls = length(trials);
-if ntrls<bootstrap_trl % not enough trials for stats
+if ntrls<mintrialsforstats % not enough trials for stats
     preevent_nanflag = true;
     postevent_nanflag = true;
 else
-    nbootstraps = 2*bootstrap_trl; % set number of bootstraps == 2*number of samples/bootstrap
     nt = numel(timepoints);
     nspk = zeros(nbootstraps,nt);
     
     %% obtain bootstrapped estimate of spike rates
     for i=1:nbootstraps
-        trlindx = randperm(ntrls); trlindx = trlindx(1:bootstrap_trl);
+        trlindx = randsample(1:ntrls,ntrls,true); % sample with replacement
         trials2 = trials(trlindx);
         nspk(i,:) = Spiketimes2Rate(trials2,timepoints,binwidth);
     end
