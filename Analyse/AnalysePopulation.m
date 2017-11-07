@@ -9,6 +9,7 @@ trialtypes = fields(behv_stats.trialtype);
 events = cell2mat({trials_behv.events});
 continuous = cell2mat({trials_behv.continuous});
 
+stats = [];
 %% compute population readout weights via ordinary-least-squares
 if regress_popreadout
     getreadout = prs.popreadout_continuous;
