@@ -50,13 +50,15 @@ prs.ts.move = -0.5:prs.temporal_binwidth:3.5;
 prs.ts.target = -0.5:prs.temporal_binwidth:3.5;
 prs.ts.stop = -3.5:prs.temporal_binwidth:0.5;
 prs.ts.reward = -3.5:prs.temporal_binwidth:0.5;
-% time window for psth of shortesttrialgroup -- used to compare temporal responses across trial groups
+prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
+prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
+
+% time-rescaling analysis
 prs.ts_shortesttrialgroup.move = -0.5:prs.temporal_binwidth:1.5;
 prs.ts_shortesttrialgroup.target = -0.5:prs.temporal_binwidth:1.5;
 prs.ts_shortesttrialgroup.stop = -1.5:prs.temporal_binwidth:0.5;
 prs.ts_shortesttrialgroup.reward = -1.5:prs.temporal_binwidth:0.5;
-prs.peaktimewindow = [-0.5 0.5]; % time-window around the events within which to look for peak response
-prs.minpeakprominence = 2; % minimum height of peak response relative to closest valley (spk/s)
+prs.ntrialgroups = 5; % number of groups based on trial duration
 
 % correlograms
 prs.duration_zeropad = 0.05; % zeros to pad to end of trial before concatenating (s)
@@ -68,22 +70,41 @@ prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 % define no. of bins for tuning curves by binning method
 prs.tuning.nbins1d_binning = 10; % bin edges for tuning curves by 'binning' method
 prs.tuning.nbins2d_binning = [10;10]; % define bin edges for 2-D tuning curves by 'binning' method
-
 % define no. of nearest neighbors for tuning curves by k-nearest neighbors method
 prs.tuning.k_knn = @(x) round(sqrt(x)); % k=sqrt(N) where N is the total no. of observations
 prs.tuning.nbins1d_knn = 100; prs.tuning.nbins2d_knn = [100 ; 100];
-
 % define kernel type for tuning curves by Nadayara-Watson kernel regression
 prs.tuning.kernel_nw = 'Gaussian'; % choose from 'Uniform', 'Epanechnikov', 'Biweight', 'Gaussian'
 prs.tuning.bandwidth_nw = []; prs.tuning.bandwidth2d_nw = [];
 prs.tuning.nbins_nw = []; prs.tuning.nbins2d_nw = [];
-
 % define kernel type for tuning curves by local linear regression
 prs.tuning.kernel_locallinear = 'Gaussian'; % choose from 'Uniform', 'Epanechnikov', 'Biweight', 'Gaussian'
 prs.tuning.bandwidth_locallinear = [];
 
-% time-rescaling analysis
-prs.ntrialgroups = 5; % number of groups based on trial duration
+% range of stimulus values [min max]
+prs.binrange.v = [0 ; 200]; %cm/s
+prs.binrange.w = [-90 ; 90]; %deg/s
+prs.binrange.r_targ = [0 ; 400]; %cm
+
+% define variable type ('1d','2d','1dcirc')
+prs.vartype.v = '1d';
+prs.vartype.w = '1d';
+prs.vartype.r_targ = '1d';
+
+% fitting models to neural data
+prs.neuralfiltwidth = 10;
+prs.nfolds = 10; % number of folds for cross-validation
+
+% Generalised additive model - parameters
+prs.GAM_nbins = {10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_alpha = 0.05; % significance level for model comparison
+
+% Gradient descent - parameters
+prs.GD_alpha = 1;
+prs.GD_niters = 1000;
+prs.GD_featurescale = false;
+prs.GD_modelname = 'LR'; % name of model to fit: linear regression == 'LR'
 
 %% GLM fitting parameters
 prs.sackrnlwidth = 0.5; %seconds
@@ -119,24 +140,32 @@ prs.rewardwin = 65; % size of reward window (cm)
 prs.maxrewardwin = 400; % maximum reward window for ROC analysis
 
 %% list of analyses to perform
+% specify methods and variables for analyses (fewer => faster obvisously)
+prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
+prs.tuning_continuous = {'v','w','r_targ'}; % continuous variables - choose from elements of continuous_vars (above)
+prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
+prs.GAM_varname = {'v','w','r_targ'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1d','1d','1d'}; % type of variable: '1d', '1dcirc'
+prs.GAM_modelname = 'LNP'; % which type of GAM to fit: 'LNP'
+prs.popreadout_continuous = {'d','phi'};
+
+% which analyses to do
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = false; % regress response against target position
-% specify which tunings are needed (to save computing time ---> especially important for continuous variables)
-prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
-prs.tuning_continuous = {'vw'}; % continuous variables - choose from elements of continuous_vars (above)
-prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
-prs.fit_LNmodel = true; % fit LN model to single neuron responses
-prs.LNmodel_vars = {'v','w','r_targ'}; % list of variables to include in the LN model
+prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.compute_tuning = true; % compute tuning functions
+prs.fit_GAM = true; % fit generalised additive models to single neuron responses
+prs.regress_popreadout = false;
 
 %% temporary testing
-prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...
-    57 59 60 63 67 68 70 71 73 75 76 77 78 81 83 86 87 88 89 90 91 92 93 94 96];
-% prs.goodorder = [51 55 8 90 77 70 23 59 44 43 25 26 57 96 27 81 18 21 92 30 91 76 93 94 29 ...
-%     88 20 16 13 75 45 6];
-nsua = 51;
-prs.goodorder = [5 6 9 10 18 23 25 26 31 33 34 37 38 40 43 47 nsua+([9 21 27 36 38 50 57 66]) 48 nsua+([59 62]) ...
-    nsua+([43 31 41 42 40]) 1 28 22 nsua+([18 61 65 55]) 27 42 ...
-    nsua+19 41 14 25 46 nsua+([28 64]) nsua+([29 44]) 35 36 8 ...
-    nsua+44 24 32 nsua+45 49 4 2 3 ...
-    50 51 19 30 nsua+([10 14 15 16 67]) 12 15 16 19 14 20 21 39 45 nsua+([2 4 6 7 13 17 20 22 33 37 52 53])];
-prs.units = [59 77];
+% prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...
+%     57 59 60 63 67 68 70 71 73 75 76 77 78 81 83 86 87 88 89 90 91 92 93 94 96];
+% % prs.goodorder = [51 55 8 90 77 70 23 59 44 43 25 26 57 96 27 81 18 21 92 30 91 76 93 94 29 ...
+% %     88 20 16 13 75 45 6];
+% nsua = 51;
+% prs.goodorder = [5 6 9 10 18 23 25 26 31 33 34 37 38 40 43 47 nsua+([9 21 27 36 38 50 57 66]) 48 nsua+([59 62]) ...
+%     nsua+([43 31 41 42 40]) 1 28 22 nsua+([18 61 65 55]) 27 42 ...
+%     nsua+19 41 14 25 46 nsua+([28 64]) nsua+([29 44]) 35 36 8 ...
+%     nsua+44 24 32 nsua+45 49 4 2 3 ...
+%     50 51 19 30 nsua+([10 14 15 16 67]) 12 15 16 19 14 20 21 39 45 nsua+([2 4 6 7 13 17 20 22 33 37 52 53])];
+% prs.units = [59 77];

@@ -118,17 +118,17 @@ if prs.split_trials
     end
     
     stats.trialtype.landmark = [];
-    % trials with landmarks
-    trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
-    if sum(trlindx)>1
-        stats.trialtype.landmark(end+1).trlindx = trlindx;
-        stats.trialtype.landmark(end).val = 'with landmark';
-    end
     % trials without landmarks
     trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'without landmark';
+    end
+    % trials with landmarks
+    trlindx = ([logical.landmark_angle] | [logical.landmark_distance]) & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.landmark(end+1).trlindx = trlindx;
+        stats.trialtype.landmark(end).val = 'with landmark';
     end
 end
 

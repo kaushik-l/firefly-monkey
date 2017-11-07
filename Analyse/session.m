@@ -5,8 +5,7 @@ classdef session < handle
         sess_id
         coord
         behaviours = behaviour.empty();                                     % trial
-        multiunits = multiunit.empty();                                     % multiunit
-        singleunits = singleunit.empty();                                   % singleunit
+        units = unit.empty();                                               % single/multiunit
         lfps = lfp.empty();                                                 % lfp
         populations = population.empty();                                   % population
     end
@@ -38,15 +37,15 @@ classdef session < handle
                 fprintf(['... reading ' file_plx.name '\n']);
                 for j=1:prs.maxchannels
                     fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels) '\n']);
-                    units = GetUnits_plx(file_plx.name,prs.units,j);
+                    smua = GetUnits_plx(file_plx.name,prs.units,j); % smua = singleunits + multiunits
                     %fetch multiunit
-                    this.multiunits(end+1) = multiunit(units(1));
-                    this.multiunits(end).AddTrials(units(1).tspk,t_events,this.behaviours,prs);
-                    %fetch singleunits
-                    if length(units)>1
-                        for k=2:length(units)
-                            this.singleunits(end+1) = singleunit(units(k));
-                            this.singleunits(end).AddTrials(units(k).tspk,t_events,this.behaviours,prs);
+                    this.units(end+1) = unit('multiunit');
+                    this.units(end).AddTrials(smua(1).tspk,t_events,this.behaviours,prs);
+                    %fetch units
+                    if length(smua)>1
+                        for k=2:length(smua)
+                            this.units(end+1) = unit('singleunit');
+                            this.units(end).AddTrials(smua(k).tspk,t_events,this.behaviours,prs);
                         end
                     end
                 end
@@ -58,19 +57,19 @@ classdef session < handle
                     if ~isempty(sua)
                         for i=1:length(sua)
                             %fetch singleunit
-                            this.singleunits(end+1) = singleunit(sua(i));
-                            this.singleunits(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
+                            this.units(end+1) = unit('singleunit');
+                            this.units(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
                             fprintf(['... Analysing singleunit ' num2str(i) '\n']);
-                            this.singleunits(end).AnalyseUnit(this.behaviours,prs);
+                            this.units(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
                     if ~isempty(mua)
                         for i=1:length(mua)
                             %fetch multiunit
-                            this.multiunits(end+1) = multiunit(mua(i));
-                            this.multiunits(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
+                            this.units(end+1) = unit('multiunit');
+                            this.units(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
                             fprintf(['... Analysing multiunit ' num2str(i) '\n']);
-                            this.multiunits(end).AnalyseUnit(this.behaviours,prs);
+                            this.units(end).AnalyseUnit(this.behaviours,prs);
                         end
                     end
                 else
@@ -90,6 +89,14 @@ classdef session < handle
             fprintf(['... reading ' file_ead.name '\n']);
             for j=1:prs.maxchannels
                 this.lfps = GetLfp(file_ead.name,j);
+            end
+        end
+        %% add populations
+        function AddPopulation(this,unittype,prs)
+            if ~strcmp(unittype,'units')
+                this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours.trials,this.behaviours.stats,prs);
+            else
+                this.populations.AnalysePopulation(this.units,unittype,this.behaviours,prs);
             end
         end
         %% plot behaviour

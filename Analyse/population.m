@@ -1,6 +1,7 @@
 classdef population < handle
     %%
     properties
+        units
         singleunits
         multiunits
         lfps
@@ -9,7 +10,8 @@ classdef population < handle
     %%
     methods
         %% function to add sessions
-        function analyse_population(this,expname,data,prs)
+        function AnalysePopulation(this,units,unittype,behaviours,prs)
+            this.(unittype) = AnalysePopulation(units,behaviours.trials,behaviours.stats,prs);
         end
     end
 end

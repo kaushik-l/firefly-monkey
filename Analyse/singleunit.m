@@ -5,7 +5,7 @@ classdef singleunit < handle
         spkwf
         trials
         stats
-        weights
+        type
     end
     %%
     methods
