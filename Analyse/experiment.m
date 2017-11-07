@@ -17,6 +17,7 @@ classdef experiment < handle
             this.sessions(end+1) = session(monk_id,sess_id,prs.coord);
             this.sessions(end).AddBehaviours(prs);
             this.sessions(end).AddUnits(prs);
+            this.sessions(end).AddPopulation('units',prs);
         end
         %% function to plot behavioural data
         function PlotBehaviour(this,monk_id,sess_id,plot_type)
