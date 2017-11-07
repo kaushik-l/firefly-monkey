@@ -71,7 +71,7 @@ end
 %% cross-correlation and tuning to continuous variables (requires nonparametric-regression package: https://github.com/kaushik-l/nonparametric-regression.git)
 if compute_tuning
     gettuning = prs.tuning_continuous;
-    for i=1:length(trialtypes) % compute tuning curves using all trials, rather than separately for each condition
+    for i=1 % compute tuning curves using all trials, rather than separately for each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         fprintf(['.........estimating tuning curves :: trialtype: ' (trialtypes{i}) '\n']);
@@ -224,7 +224,7 @@ if fit_GAM
     modelname = prs.GAM_modelname;
     lambda = prs.GAM_lambda;
     alpha = prs.GAM_alpha;
-    for i=1:length(trialtypes) % if i=1, fit model using data from all trials rather than separately to data from each condition
+    for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         fprintf(['.........fitting GAM model :: trialtype: ' (trialtypes{i}) '\n']);
