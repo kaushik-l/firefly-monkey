@@ -92,7 +92,7 @@ prs.vartype.w = '1d';
 prs.vartype.r_targ = '1d';
 
 % fitting models to neural data
-prs.neuralfiltwidth = 10;
+prs.neuralfiltwidth = 15;
 prs.nfolds = 10; % number of folds for cross-validation
 
 % Generalised additive model - parameters
@@ -153,9 +153,9 @@ prs.popreadout_continuous = {'d','phi'};
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = false; % regress response against target position
 prs.evaluate_peaks = true; % evaluate significance of event-locked responses
-prs.compute_tuning = true; % compute tuning functions
-prs.fit_GAM = true; % fit generalised additive models to single neuron responses
-prs.regress_popreadout = false;
+prs.compute_tuning = false; % compute tuning functions
+prs.fit_GAM = false; % fit generalised additive models to single neuron responses
+prs.regress_popreadout = true;
 
 %% temporary testing
 % prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...

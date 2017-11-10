@@ -93,6 +93,7 @@ classdef session < handle
         end
         %% add populations
         function AddPopulation(this,unittype,prs)
+            this.populations(end+1) = population();
             if ~strcmp(unittype,'units')
                 this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours.trials,this.behaviours.stats,prs);
             else
@@ -105,17 +106,16 @@ classdef session < handle
             PlotBehaviour(behv,plot_type,prs);
         end
         %% plot units
-        function PlotUnits(this,unit_type,unit_id,plot_type,prs)
+        function PlotUnits(this,unit_id,plot_type,prs)
             behv = this.behaviours;
-            units = this.(unit_type);
             if length(unit_id)~=1
                 error('unit id should be an non-negative integer');
             end
             if unit_id~=0
-                unit = units(unit_id);
-                PlotUnit(behv,unit,plot_type,prs);        % plot data from a specific unit
+                unit = this.units(unit_id);
+                PlotUnit(behv,unit,plot_type,prs);        % plot data from one specific unit
             else
-                PlotUnits(behv,units,plot_type,prs);      % plot data from all units
+                PlotUnits(behv,this.units,plot_type,prs); % plot data from all units
             end
         end
     end

@@ -340,4 +340,39 @@ switch plot_type
         set(gca,'Ydir','normal'); axis([0 4 1 ntrls_correct]); %axis off;
         xlabel('Time (s)'); ylabel('Trial #');
         set(gcf,'Position',[85 -676 503 1543]);
+    case 'tuning_EC'
+        %% temporal
+        contexts = {'all','reward','density','landmark'}; ncontexts = length(contexts);
+        events = {'move','target','reward','stop'}; nevents = length(events);
+        trialtype = unit.stats.trialtype;
+        figure; hold on;
+        for i=1:ncontexts
+            nconds = length(trialtype.(contexts{i}));
+            for j=1:nconds
+                for k=1:nevents
+                    subplot(ncontexts,nevents,nevents*(i-1) + k); hold on;
+                    t = trialtype.(contexts{i})(j).events.(events{k}).time;
+                    r = trialtype.(contexts{i})(j).events.(events{k}).rate;
+                    plot(t,r,'Linewidth',2);
+                end
+            end
+        end
+        %% continuous variables
+        contexts = {'all','reward','density','landmark'}; ncontexts = length(contexts);
+        nvars = length(trialtype.all.models.LNP.x);
+        figure; hold on;
+        for i=1:ncontexts
+            nconds = length(trialtype.(contexts{i}));
+            for j=1:nconds
+                bestmodel = trialtype.(contexts{i})(j).models.LNP.bestmodel;
+                if ~isnan(bestmodel)
+                    for k=1:nvars
+                        subplot(ncontexts,nvars,nvars*(i-1) + k); hold on;
+                        x = trialtype.(contexts{i})(j).models.LNP.x{k};
+                        y = trialtype.(contexts{i})(j).models.LNP.wts{bestmodel}{k};
+                        if ~isempty(y), plot(x,y,'Linewidth',2); end
+                    end
+                end
+            end
+        end
 end
