@@ -340,12 +340,12 @@ switch plot_type
         set(gca,'Ydir','normal'); axis([0 4 1 ntrls_correct]); %axis off;
         xlabel('Time (s)'); ylabel('Trial #');
         set(gcf,'Position',[85 -676 503 1543]);
-    case 'tuning_EC'
+    case 'tuning_events'
         %% temporal
         contexts = {'all','reward','density','landmark'}; ncontexts = length(contexts);
         events = {'move','target','reward','stop'}; nevents = length(events);
         trialtype = unit.stats.trialtype;
-        figure; hold on;
+        hold on;
         for i=1:ncontexts
             nconds = length(trialtype.(contexts{i}));
             for j=1:nconds
@@ -357,10 +357,11 @@ switch plot_type
                 end
             end
         end
+    case 'tuning_continuous'
         %% continuous variables
         contexts = {'all','reward','density','landmark'}; ncontexts = length(contexts);
+        trialtype = unit.stats.trialtype;
         nvars = length(trialtype.all.models.LNP.x);
-        figure; hold on;
         for i=1:ncontexts
             nconds = length(trialtype.(contexts{i}));
             for j=1:nconds
@@ -374,5 +375,5 @@ switch plot_type
                     end
                 end
             end
-        end
+        end        
 end
