@@ -113,6 +113,7 @@ classdef session < handle
             end
             if unit_id~=0
                 unit = this.units(unit_id);
+                figure; hold on; suptitle(['m' num2str(this.monk_id) 's' num2str(this.sess_id) 'u' num2str(unit_id)]);
                 PlotUnit(behv,unit,plot_type,prs);        % plot data from one specific unit
             else
                 PlotUnits(behv,this.units,plot_type,prs); % plot data from all units
