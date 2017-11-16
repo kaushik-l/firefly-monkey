@@ -85,19 +85,16 @@ prs.tuning.bandwidth_locallinear = [];
 prs.binrange.v = [0 ; 200]; %cm/s
 prs.binrange.w = [-90 ; 90]; %deg/s
 prs.binrange.r_targ = [0 ; 400]; %cm
-
-% define variable type ('1d','2d','1dcirc')
-prs.vartype.v = '1d';
-prs.vartype.w = '1d';
-prs.vartype.r_targ = '1d';
+prs.binrange.d = [0 ; 400]; %cm
+prs.binrange.phi = [-90 ; 90]; %deg
 
 % fitting models to neural data
 prs.neuralfiltwidth = 15;
 prs.nfolds = 10; % number of folds for cross-validation
 
 % Generalised additive model - parameters
-prs.GAM_nbins = {10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
 
 % Gradient descent - parameters
@@ -142,20 +139,21 @@ prs.maxrewardwin = 400; % maximum reward window for ROC analysis
 %% list of analyses to perform
 % specify methods and variables for analyses (fewer => faster obvisously)
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
-prs.tuning_continuous = {'v','w','r_targ'}; % continuous variables - choose from elements of continuous_vars (above)
+prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
-prs.GAM_varname = {'v','w','r_targ'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1d','1d','1d'}; % type of variable: '1d', '1dcirc'
-prs.GAM_modelname = 'LNP'; % which type of GAM to fit: 'LNP'
-prs.popreadout_continuous = {'d','phi'};
+prs.GAM_varname = {'v','w','d','phi'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc'
+prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
+prs.popreadout_continuous = {'v','w','d','phi'};
 
 % which analyses to do
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = false; % regress response against target position
 prs.evaluate_peaks = true; % evaluate significance of event-locked responses
-prs.compute_tuning = false; % compute tuning functions
+prs.compute_tuning = true; % compute tuning functions
 prs.fit_GAM = false; % fit generalised additive models to single neuron responses
-prs.regress_popreadout = true;
+prs.fit_GAMcoupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.regress_popreadout = false;
 
 %% temporary testing
 % prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...
