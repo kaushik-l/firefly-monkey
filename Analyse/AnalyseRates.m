@@ -22,7 +22,7 @@ continuous = cell2mat({trials_behv.continuous});
 %% event-aligned, trial-averaged firing rates
 if evaluate_peaks
     gettuning = prs.tuning_events;
-    for i=1:length(trialtypes)
+    for i=1
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         for j=1:nconds
             trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
@@ -182,13 +182,13 @@ if compute_tuning
                 end
                 %% distance, d (refine -- use t_targ instead of 0?)
                 if any(strcmp(gettuning,'d'))
-                    d = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    d = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.d = ...
                         ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
                 end
                 %% heading, phi
                 if any(strcmp(gettuning,'phi'))
-                    phi = cellfun(@(x,y) [zeros(1,sum(y<=0)) cumsum(x(y>0)*dt)'],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    phi = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.phi = ...
                         ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
                 end
@@ -216,21 +216,23 @@ end
 
 %% fit generalised additive model (requires neuroGAM package: https://github.com/kaushik-l/neuroGAM.git)
 if fit_GAM
-    varname = prs.GAM_varname;
-    vartype = prs.GAM_vartype;
-    nbins = prs.GAM_nbins;
-    nfolds = prs.nfolds;
-    filtwidth = prs.neuralfiltwidth;
-    modelname = prs.GAM_modelname;
-    lambda = prs.GAM_lambda;
-    alpha = prs.GAM_alpha;
+    GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
+    GAM_prs.vartype = prs.GAM_vartype;
+    GAM_prs.nbins = prs.GAM_nbins;
+    GAM_prs.binrange = [];
+    GAM_prs.nfolds = prs.nfolds;
+    GAM_prs.dt = temporal_binwidth;
+    GAM_prs.filtwidth = prs.neuralfiltwidth;
+    GAM_prs.linkfunc = prs.GAM_linkfunc;
+    GAM_prs.lambda = prs.GAM_lambda;
+    GAM_prs.alpha = prs.GAM_alpha;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         fprintf(['.........fitting GAM model :: trialtype: ' (trialtypes{i}) '\n']);
         for j=1:nconds
             if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
-                stats.trialtype.(trialtypes{i})(j).models.(modelname) = stats.trialtype.all.models.(modelname);
+                stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc) = stats.trialtype.all.models.(GAM_prs.linkfunc);
             else
                 trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
                 events_temp = events(trlindx);
@@ -238,11 +240,16 @@ if fit_GAM
                 trials_spks_temp = trials_spks(trlindx);
                 %% select variables of interest and load their details
                 vars = cell(length(varname),1);
-                binrange = cell(1,length(varname));
+                GAM_prs.binrange = cell(1,length(varname));
                 for k=1:length(varname)
                     if isfield(continuous_temp,varname(k)), vars{k} = {continuous_temp.(varname{k})};
-                    elseif isfield(behv_stats.pos_rel,varname(k)), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx); end
-                    binrange{k} = prs.binrange.(varname{k});
+                    elseif isfield(behv_stats.pos_rel,varname(k)), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
+                    elseif strcmp(varname(k),'d')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'phi')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    end
+                    GAM_prs.binrange{k} = prs.binrange.(varname{k});
                 end
                 %% define time windows for computing tuning
                 timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
@@ -252,8 +259,9 @@ if fit_GAM
                     [xt(:,k),yt] = ConcatenateTrials(vars{k},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
                 end
                 %% model fitting and selection
-                models = BuildGAM(xt,vartype,yt,temporal_binwidth,binrange,nbins,nfolds,filtwidth,modelname,lambda,alpha);
-                stats.trialtype.(trialtypes{i})(j).models.(modelname) = models;
+                xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
+                models = BuildGAM(xt,yt,GAM_prs);
+                stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc) = models;
             end
         end
     end
