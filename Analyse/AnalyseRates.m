@@ -222,7 +222,7 @@ if fit_GAM
     GAM_prs.binrange = [];
     GAM_prs.nfolds = prs.nfolds;
     GAM_prs.dt = temporal_binwidth;
-    GAM_prs.filtwidth = prs.neuralfiltwidth;
+    GAM_prs.filtwidth = 3; %prs.neuralfiltwidth;
     GAM_prs.linkfunc = prs.GAM_linkfunc;
     GAM_prs.lambda = prs.GAM_lambda;
     GAM_prs.alpha = prs.GAM_alpha;
