@@ -3,6 +3,11 @@ function trials = AddLOGData(file)
 count = 0;
 fid = fopen(file, 'r');
 eof=0; newline = 'nothingnew'; count=0;
+%% check for fixed ground landmark
+while ~strcmp(newline(1:9),'Enable Li')
+    newline = fgetl(fid);
+end
+fixed_ground = logical(1 - str2double(newline(18))); % if limited lifetime is enabled (1), fixed_ground is 0
 while newline ~= -1
     %% get ground plane density
     while ~strcmp(newline(1:9),'Floor Den')
@@ -14,7 +19,8 @@ while newline ~= -1
     trials(count).prs.floordensity = str2num(newline(27:34));
     % initialise
     trials(count).logical.landmark_distance = false;
-    trials(count).logical.landmark_angle = false; % #$%^&&^&*^danger - change false to nan immediately
+    trials(count).logical.landmark_angle = false; % #$%^&&^&*^danger - change false to nan immediately (what if field missing from log file??)
+    trials(count).logical.landmark_fixedground = fixed_ground;
     trials(count).prs.ptb_linear = 0;
     trials(count).prs.ptb_angular = 0;
     trials(count).prs.ptb_delay = 0;

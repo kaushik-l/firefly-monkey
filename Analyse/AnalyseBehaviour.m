@@ -118,29 +118,35 @@ if prs.split_trials
     end
     
     stats.trialtype.landmark = [];
-    % trials without landmarks
-    trlindx = (~([logical.landmark_angle] | [logical.landmark_distance])) & goodtrls;
+    % trials without any landmark
+    trlindx = (~([logical.landmark_angle] | [logical.landmark_distance] | [logical.landmark_fixedground])) & goodtrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'without landmark';
     end
-    % trials with distance landmark
-    trlindx = ([logical.landmark_distance] & ~[logical.landmark_angle]) & goodtrls;
+    % trials with distance landmark only
+    trlindx = ([logical.landmark_distance] & ~[logical.landmark_angle] & ~[logical.landmark_fixedground]) & goodtrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with distance landmark';
     end
-    % trials with angular landmark
-    trlindx = ([logical.landmark_angle] & ~[logical.landmark_distance]) & goodtrls;
+    % trials with angular landmark only
+    trlindx = ([logical.landmark_angle] & ~[logical.landmark_distance] & ~[logical.landmark_fixedground]) & goodtrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with angular landmark';
     end
-    % trials with landmarks
+    % trials with distance & angular landmark
     trlindx = ([logical.landmark_angle] & [logical.landmark_distance]) & goodtrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with distance & angular landmark';
+    end
+    % trials with fixed ground plane only
+    trlindx = ([logical.landmark_fixedground] & ~[logical.landmark_distance] & ~[logical.landmark_angle]) & goodtrls;
+    if sum(trlindx)>1
+        stats.trialtype.landmark(end+1).trlindx = trlindx;
+        stats.trialtype.landmark(end).val = 'with ground plane as landmark';
     end
 end
 

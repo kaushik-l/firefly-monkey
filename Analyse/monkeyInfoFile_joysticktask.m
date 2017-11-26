@@ -2176,3 +2176,14 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Test';
 monkeyInfo (end).comments = {'fixed densities, no landmarks, perturbations, random DCI, random ITI'};
+
+%% test session Stephania
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 9999;
+monkeyInfo (end).coord.row = -6;
+monkeyInfo (end).coord.column = 20;
+monkeyInfo (end).coord.depth = 2449;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\Utah array\Nov 17 2017';
+monkeyInfo (end).comments = {'fixed densities, no landmarks, perturbations, random DCI, random ITI'};
