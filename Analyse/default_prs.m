@@ -89,12 +89,13 @@ prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
 
 % fitting models to neural data
-prs.neuralfiltwidth = 15;
+prs.neuralfiltwidth = 3;
 prs.nfolds = 10; % number of folds for cross-validation
 
 % Generalised additive model - parameters
 prs.GAM_nbins = {10,10,10,10}; % number of bins for each variable
 prs.GAM_lambda = {5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_beta = 5e1; % hyperparameter to penalise unsparse coupling
 prs.GAM_alpha = 0.05; % significance level for model comparison
 
 % Gradient descent - parameters
@@ -145,17 +146,19 @@ prs.GAM_varname = {'v','w','d','phi'}; % list of variable names to include in th
 prs.GAM_vartype = {'1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
 prs.canoncorr_vars = {'v','w','d','phi'}; % list of variables to include in the task variable matrix
+prs.simulate_vars = {'v','w','d','phi'}; % list of variables to use as inputs in simulation
 prs.popreadout_continuous = {'v','w','d','phi'};
 
 % which analyses to do
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = false; % regress response against target position
-prs.evaluate_peaks = false; % evaluate significance of event-locked responses
-prs.compute_tuning = false; % compute tuning functions
+prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.compute_tuning = true; % compute tuning functions
 prs.fit_GAM = false; % fit generalised additive models to single neuron responses
-prs.fit_GAMcoupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fit_GAMcoupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 prs.compute_canoncorr = true; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
+prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% temporary testing
 % prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...
