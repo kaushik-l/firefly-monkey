@@ -22,7 +22,7 @@ continuous = cell2mat({trials_behv.continuous});
 %% event-aligned, trial-averaged firing rates
 if evaluate_peaks
     gettuning = prs.tuning_events;
-    for i=1
+    for i=1:length(trialtypes)
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         for j=1:nconds
             trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;

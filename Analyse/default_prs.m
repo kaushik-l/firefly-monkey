@@ -151,12 +151,12 @@ prs.popreadout_continuous = {'v','w','d','phi'};
 
 % which analyses to do
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = false; % regress response against target position
+prs.regress_behv = true; % regress response against target position
 prs.evaluate_peaks = true; % evaluate significance of event-locked responses
-prs.compute_tuning = true; % compute tuning functions
+prs.compute_tuning = false; % compute tuning functions
 prs.fit_GAM = false; % fit generalised additive models to single neuron responses
-prs.fit_GAMcoupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
-prs.compute_canoncorr = true; % compute cannonical correlation between population response and task variables
+prs.fit_GAMcoupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models
 
