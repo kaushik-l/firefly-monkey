@@ -25,7 +25,14 @@ for i=1:nfiles
         trials_smr = [trials_smr AddSMRData(data_smr,prs)];
     end
     % merge contents of .log and .smr files
-    for j=1:length(trials_smr), trials_temp(j) = catstruct(trials_smr(j),trials_log(j)) ; end
+    ntrls_log = length(trials_log); ntrls_smr = length(trials_smr);
+    if ntrls_smr <= ntrls_log
+        for j=1:length(trials_smr), trials_temp(j) = catstruct(trials_smr(j),trials_log(j)) ; end
+    else  % apply a very dirty fix if spike2 was not "stopped" on time (can happen when replaying stimulus movie)
+        for j=1:ntrls_log, trials_temp(j) = catstruct(trials_smr(j),trials_log(j)) ; end
+        dummy_trials_log = trials_log(1:ntrls_smr-ntrls_log);
+        for j=1:(ntrls_smr-ntrls_log); trials_temp(ntrls_log+j) = catstruct(trials_smr(ntrls_log+j),dummy_trials_log(j)); end
+    end
     % add contents of .mat file
 %     trials_temp = AddMATData(flist_mat(i).name,trials_temp);
     trials = [trials trials_temp];

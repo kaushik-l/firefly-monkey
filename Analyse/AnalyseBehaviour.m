@@ -83,16 +83,17 @@ stats.pos_rel.theta_stop = {continuous.theta_stop_rel};
 
 %% trial type
 goodtrls = ~((y_monk<0) | (abs(v_monk)>1)); % remove trials in which monkey did not move at all or kept moving until the end
+replaytrls = [logical.replay];
 % all trials
-stats.trialtype.all.trlindx  = goodtrls;
+stats.trialtype.all.trlindx  = goodtrls & ~replaytrls;
 stats.trialtype.all.val = 'all';
 
 if prs.split_trials
     % unrewarded trials
-    stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls;
+    stats.trialtype.reward(1).trlindx = ~[logical.reward] & goodtrls & ~replaytrls;
     stats.trialtype.reward(1).val = 'unrewarded';
     % rewarded trials
-    stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls;
+    stats.trialtype.reward(2).trlindx = [logical.reward] & goodtrls & ~replaytrls;
     stats.trialtype.reward(2).val = 'rewarded';
     
     % different densities
@@ -100,18 +101,18 @@ if prs.split_trials
     densities = unique(density);
     for i=1:length(densities)
         stats.trialtype.density(i).val = ['density = ' num2str(densities(i))];
-        stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls);
+        stats.trialtype.density(i).trlindx = (density==densities(i) & goodtrls & ~replaytrls);
     end
     
     stats.trialtype.ptb = [];
     % trials without perturbation
-    trlindx = ~[logical.ptb] & goodtrls;
+    trlindx = ~[logical.ptb] & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.ptb(end+1).trlindx = trlindx;
         stats.trialtype.ptb(end).val = 'without perturbation';
     end
     % trials with perturbation
-    trlindx = [logical.ptb] & goodtrls;
+    trlindx = [logical.ptb] & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.ptb(end+1).trlindx = trlindx;
         stats.trialtype.ptb(end).val = 'with perturbation';
@@ -119,34 +120,48 @@ if prs.split_trials
     
     stats.trialtype.landmark = [];
     % trials without any landmark
-    trlindx = (~([logical.landmark_angle] | [logical.landmark_distance] | [logical.landmark_fixedground])) & goodtrls;
+    trlindx = (~([logical.landmark_angle] | [logical.landmark_distance] | [logical.landmark_fixedground])) & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'without landmark';
     end
     % trials with distance landmark only
-    trlindx = ([logical.landmark_distance] & ~[logical.landmark_angle] & ~[logical.landmark_fixedground]) & goodtrls;
+    trlindx = ([logical.landmark_distance] & ~[logical.landmark_angle] & ~[logical.landmark_fixedground]) & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with distance landmark';
     end
     % trials with angular landmark only
-    trlindx = ([logical.landmark_angle] & ~[logical.landmark_distance] & ~[logical.landmark_fixedground]) & goodtrls;
+    trlindx = ([logical.landmark_angle] & ~[logical.landmark_distance] & ~[logical.landmark_fixedground]) & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with angular landmark';
     end
     % trials with distance & angular landmark
-    trlindx = ([logical.landmark_angle] & [logical.landmark_distance]) & goodtrls;
+    trlindx = ([logical.landmark_angle] & [logical.landmark_distance]) & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with distance & angular landmark';
     end
     % trials with fixed ground plane only
-    trlindx = ([logical.landmark_fixedground] & ~[logical.landmark_distance] & ~[logical.landmark_angle]) & goodtrls;
+    trlindx = ([logical.landmark_fixedground] & ~[logical.landmark_distance] & ~[logical.landmark_angle]) & goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.landmark(end+1).trlindx = trlindx;
         stats.trialtype.landmark(end).val = 'with ground plane as landmark';
+    end
+    
+    stats.trialtype.replay = [];
+    % trials without replay
+    trlindx  = goodtrls & ~replaytrls;
+    if sum(trlindx)>1
+        stats.trialtype.replay(end+1).trlindx = trlindx;
+        stats.trialtype.landmark(end).val = 'active behaviour';
+    end
+    % trials recorded during replay
+    trlindx  = goodtrls & replaytrls;
+    if sum(trlindx)>1
+        stats.trialtype.replay(end+1).trlindx = trlindx;
+        stats.trialtype.replay(end).val = 'replay behaviour';
     end
 end
 
