@@ -18,9 +18,10 @@ prs.filtwidth = 10; % width in samples (10 samples @ fs_smr = 10x0.0012 = 12 ms)
 prs.filtsize = 10*prs.filtwidth; % size in samples
 prs.factor_downsample = 10; % select every nth sample
 prs.dt = 10/(prs.fs_smr);
-prs.screendist = 32.5;
-prs.height = 10;
-prs.framerate = 60;
+prs.screendist = 32.5; %cm
+prs.height = 10; %cm
+prs.interoculardist = 3.5; %cm
+prs.framerate = 60; %(sec)^-1
 prs.x0 = 0; % x-position at trial onset (cm)
 prs.y0 = -32.5; %y-position at trial onset (cm)
 
@@ -33,12 +34,13 @@ prs.saccadeduration = 0.05; % saccades last ~50ms
 % behavioural analysis
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
-prs.saccade_thresh = 120; % deg/s
+prs.saccade_thresh = 60; % deg/s
+prs.saccade_duration = 0.15; %seconds
 prs.v_thresh = 5; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0.25; % (s)
-prs.posttrial = 0.25; % (s)
+prs.pretrial = 0.4; % (s)
+prs.posttrial = 0.4; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 
 % time window for psth of event aligned responses
@@ -87,47 +89,33 @@ prs.binrange.w = [-90 ; 90]; %deg/s
 prs.binrange.r_targ = [0 ; 400]; %cm
 prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
+prs.binrange.eye_ver = [-25 ; 5]; %deg
+prs.binrange.eye_hor = [-40 ; 40]; %deg
+prs.binrange.target = [-0.24 ; 0.48];
+prs.binrange.move = [-0.36 ; 0.36];
+prs.binrange.stop = [-0.48 ; 0.24];
+prs.binrange.reward = [-0.36 ; 0.36];
 
 % fitting models to neural data
-prs.neuralfiltwidth = 3;
-prs.nfolds = 10; % number of folds for cross-validation
+prs.neuralfiltwidth = 10;
+prs.nfolds = 3; % number of folds for cross-validation
 
-% Generalised additive model - parameters
-prs.GAM_nbins = {10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+% Generalised additive model for feature tuning
 prs.GAM_beta = 5e1; % hyperparameter to penalise unsparse coupling
 prs.GAM_alpha = 0.05; % significance level for model comparison
 
 % Gradient descent - parameters
 prs.GD_alpha = 1;
-prs.GD_niters = 1000;
+prs.GD_niters = 200;
 prs.GD_featurescale = false;
 prs.GD_modelname = 'LR'; % name of model to fit: linear regression == 'LR'
 
-%% GLM fitting parameters
-prs.sackrnlwidth = 0.5; %seconds
-prs.eyekrnlwidth = 0.5; %seconds
-prs.velkrnlwidth = 0.5;
-prs.distkrnlwidth = 0.5;
-prs.targetkrnlwidth = 0.5;
-prs.spikehistkrnlwidth = 0.5;
-prs.vars = {'linacc','angacc','firefly','saccade'};%,'angacc','horeye','veryeye','dist2stop'};
-prs.nsim = 100; % number of simulations for predicting
-prs.nTrials = 900;
-
-% hash table to map variable names used in behaviour structure to the
-% ones used in the GLM model (why don't we use the same names??? you won't understand)
+%% hash table to map layman terms to variable names
 prs.varlookup = containers.Map;
-prs.varlookup('saccade') = 't_sac';
-prs.varlookup('horeye') = 'yle';
-prs.varlookup('vereye') = 'zle';
-prs.varlookup('linvel') = 'v';
-prs.varlookup('angvel') = 'w';
-prs.varlookup('linacc') = 'v';
-prs.varlookup('angacc') = 'w';
-prs.varlookup('firefly') = 'firefly';
-prs.varlookup('dist2fly') = 'r_fly';
-prs.varlookup('dist2stop') = 'r_stop';
+prs.varlookup('target') = 't_targ';
+prs.varlookup('move') = 't_move';
+prs.varlookup('stop') = 't_stop';
+prs.varlookup('reward') = 't_rew';
 
 %% plotting parameters
 prs.binwidth_abs = prs.temporal_binwidth; % use same width as for the analysis
@@ -136,39 +124,38 @@ prs.trlkrnlwidth = 50; % width of the gaussian kernel for trial averaging (numbe
 prs.maxtrls = 5000; % maximum #trials to plot at once.
 prs.rewardwin = 65; % size of reward window (cm)
 prs.maxrewardwin = 400; % maximum reward window for ROC analysis
+prs.bootstrap_trl = 50; % number of trials to bootstrap
 
 %% list of analyses to perform
-% specify methods and variables for analyses (fewer => faster obvisously)
+% *specify methods and variables for analyses (fewer => faster obvisously)*
+% traditional methods
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
 prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
-prs.GAM_varname = {'v','w','d','phi'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc'
+% GAM fitting
+prs.GAM_varname = {'v','w','d','phi','r_targ','eye_ver','eye_hor'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
+prs.GAM_nbins = {10,10,10,10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_varchoose = [0,0,0,0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
+% population analysis
 prs.canoncorr_vars = {'v','w','d','phi'}; % list of variables to include in the task variable matrix
 prs.simulate_vars = {'v','w','d','phi'}; % list of variables to use as inputs in simulation
-prs.popreadout_continuous = {'v','w','d','phi'};
+prs.popreadout_continuous = {'v','w','d','phi','r_targ','alpha','beta'};
 
-% which analyses to do
+% ****which analyses to do****
+% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = true; % regress response against target position
-prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.regress_behv = false; % regress response against target position
+prs.regress_eye = false; % regress eye position against target position
+% traditional methods
+prs.evaluate_peaks = false; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
-prs.fit_GAM = false; % fit generalised additive models to single neuron responses
-prs.fit_GAMcoupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+% GAM fitting
+prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+% population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models
-
-%% temporary testing
-% prs.goodunits = [6 8 13 16 18 19 20 21 23 24 25 26 27 29 30 32 39 41 43 44 45 47 49 51 53 55 ...
-%     57 59 60 63 67 68 70 71 73 75 76 77 78 81 83 86 87 88 89 90 91 92 93 94 96];
-% % prs.goodorder = [51 55 8 90 77 70 23 59 44 43 25 26 57 96 27 81 18 21 92 30 91 76 93 94 29 ...
-% %     88 20 16 13 75 45 6];
-% nsua = 51;
-% prs.goodorder = [5 6 9 10 18 23 25 26 31 33 34 37 38 40 43 47 nsua+([9 21 27 36 38 50 57 66]) 48 nsua+([59 62]) ...
-%     nsua+([43 31 41 42 40]) 1 28 22 nsua+([18 61 65 55]) 27 42 ...
-%     nsua+19 41 14 25 46 nsua+([28 64]) nsua+([29 44]) 35 36 8 ...
-%     nsua+44 24 32 nsua+45 49 4 2 3 ...
-%     50 51 19 30 nsua+([10 14 15 16 67]) 12 15 16 19 14 20 21 39 45 nsua+([2 4 6 7 13 17 20 22 33 37 52 53])];
-% prs.units = [59 77];

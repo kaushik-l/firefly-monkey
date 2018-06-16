@@ -11,13 +11,9 @@ ncorrbins = prs.ncorrbins;
 if length(behv) > 1, behv = CombineBehv(behv); end
 
 %% behavioural data
-ntrl = length(behv.trials);
-correct = logical(behv.stats.trlindx.correct);
-incorrect = logical(behv.stats.trlindx.incorrect);
-crazy = logical(behv.stats.trlindx.crazy);
-
-
-behv_all = behv.trials(~crazy); ntrls_all = length(behv_all);
+correct = behv.stats.trialtype.reward(strcmp({behv.stats.trialtype.reward.val},'rewarded')).trlindx;
+incorrect = behv.stats.trialtype.reward(strcmp({behv.stats.trialtype.reward.val},'unrewarded')).trlindx;
+crazy = ~(correct | incorrect); ntrls = sum(~crazy);
 behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
 behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
 
@@ -27,8 +23,8 @@ switch plot_type
         figure; hold on;
         r_fly = behv.stats.pos_final.r_fly(~crazy);
         r_monk = behv.stats.pos_final.r_monk(~crazy);
-        if ntrls_all > maxtrls
-            trl_indx = randperm(ntrls_all);
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
             trl_indx = trl_indx(1:maxtrls);
             plot(r_fly(trl_indx), r_monk(trl_indx), '.','Color',[.5 .5 .5],'markersize',2);
 %             [b, a, bint, aint, r, p]=regress_perp(r_fly(trl_indx)',r_monk(trl_indx)',0.05,2)
@@ -45,8 +41,8 @@ switch plot_type
         figure; hold on;
         theta_fly = behv.stats.pos_final.theta_fly(~crazy);
         theta_monk = behv.stats.pos_final.theta_monk(~crazy);
-        if ntrls_all > maxtrls
-            trl_indx = randperm(ntrls_all);
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
             trl_indx = trl_indx(1:maxtrls);
             plot(theta_fly(trl_indx), theta_monk(trl_indx), '.','Color',[.5 .5 .5],'markersize',2);
 %             [b, a, bint, aint, r, p]=regress_perp(theta_fly(trl_indx)',theta_monk(trl_indx)',0.05,2)
@@ -81,7 +77,7 @@ switch plot_type
         xlabel('x (m)');
         set(gca, 'YTick', 0:100:400, 'YTickLabel', 0:4);
         ylabel('y (m)');
-        removeaxes;
+%         removeaxes;
     case 'trajectories'
         figure; hold on;
         x_monk = behv.stats.pos_abs.x_monk(correct);
@@ -101,7 +97,7 @@ switch plot_type
         xlabel('x (m)');
         set(gca, 'YTick', 0:100:400, 'YTickLabel', 0:4);
         ylabel('y (m)');
-        removeaxes;
+%         removeaxes;
     case 'example_trial'
         trials = behv.trials(correct);
         r_fly = behv.stats.pos_final.r_fly(correct);
@@ -116,8 +112,8 @@ switch plot_type
         x_monk = x_monk{indx}(5:end); y_monk = y_monk{indx}(5:end) + 37.5;
         x_fly = x_fly(indx); y_fly = y_fly(indx);
         % velocity
-        v = trials(indx).v;
-        w = trials(indx).w;
+        v = trials(indx).continuous.v;
+        w = trials(indx).continuous.w;
         %% plot
         figure; hold on;
         nt = length(x_monk);
@@ -133,7 +129,7 @@ switch plot_type
         % plot trajectory
         surface([x_monk';x_monk'],[y_monk';y_monk'],[z;z],[col;col],...
             'edgecol','interp','linew',2); 
-        box off; axis equal; axis([-250 250 -50 450]); removeaxes;
+        box off; axis equal; axis([-250 250 -50 450]); %removeaxes;
         nt = length(v);
         t = linspace(0,nt/Fs,nt);
         z = zeros(size(t));
@@ -141,14 +137,14 @@ switch plot_type
         figure; hold on;set(gca,'Fontsize',14);
         xlabel('time'); ylabel('Linear speed');
         surface([t;t],[v';v'],[z;z],[col;col],'edgecol','interp','linew',4);
-        removeaxes;
+%         removeaxes;
         figure; hold on; set(gca,'Fontsize',14);
         xlabel('time'); ylabel('Angular speed');
         surface([t;t],[w';w'],[z;z],[col;col],'facecol','no','edgecol','interp','linew',4);
-        removeaxes;
+%         removeaxes;
         % plot eye movements
-        figure; hold on; plot(t,trials(indx).zle); plot(t,trials(indx).zre); ylim([-20 0]);
-        figure; hold on; plot(t,trials(indx).yle); plot(t,trials(indx).yre); ylim([-20 20]);
+        figure; hold on; plot(t,trials(indx).continuous.zle); plot(t,trials(indx).continuous.zre); ylim([-30 30]);
+        figure; hold on; plot(t,trials(indx).continuous.yle); plot(t,trials(indx).continuous.yre); ylim([-30 30]);
     case 'ROC'
         rewardwin = behv.stats.accuracy.rewardwin;
         pCorrect = behv.stats.accuracy.pCorrect;
@@ -166,16 +162,16 @@ switch plot_type
     case 'saccade'
         trials = behv.trials(~crazy);        
         for i=1:length(trials)
-            t_sac(i).t_beg = trials(i).t_sac;
-            t_stop = trials(i).t_stop;
+            t_sac(i).t_beg = trials(i).events.t_sac;
+            t_stop = trials(i).events.t_stop;
             if ~isempty(t_stop)
-                t_sac(i).t_stop = trials(i).t_sac - t_stop;
+                t_sac(i).t_stop = trials(i).events.t_sac - t_stop;
             else
                 t_sac(i).t_stop = [];
             end
         end
-        t_sac_beg = [t_sac.t_beg];
-        t_sac_stop = [t_sac.t_stop];        
+        t_sac_beg = cell2mat({t_sac.t_beg}');
+        t_sac_stop = cell2mat({t_sac.t_stop}');        
         %% bootstrap
         % saccade relative to trial onset
         ts_beg = linspace(-1,3,100); psac = [];
@@ -203,16 +199,16 @@ switch plot_type
         axis([-1 0.6 0 150]);
     case 'gaze_beg'
         trials = behv.trials(~crazy);
-        r_fly = behv.stats.pos_rel.r_fly(~crazy);
-        theta_fly = behv.stats.pos_rel.theta_fly(~crazy);
+        r_fly = behv.stats.pos_rel.r_targ(~crazy);
+        theta_fly = behv.stats.pos_rel.theta_targ(~crazy);
         x_reye = behv.stats.pos_rel.x_leye(~crazy);
         y_reye = behv.stats.pos_rel.y_leye(~crazy);
         figure; hold on;
-        for i=1:ntrls_all
-            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
+        for i=1:ntrls
+            t_sac = trials(i).events.t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);
-                ts = trials(i).ts; t_indx = find(ts>t_sac+0.05,1);
+                ts = trials(i).continuous.ts; t_indx = find(ts>t_sac+0.05,1);
                 r_eye = sqrt(x_reye{i}.^2 + y_reye{i}.^2);
                 plot(r_fly{i}(t_indx),r_eye(t_indx),'.','Color',[.5 .5 .5],'markersize',2);
             else
@@ -226,11 +222,11 @@ switch plot_type
         lessticks('x'); lessticks('y');
         % plot angle
         figure; hold on;
-        for i=1:ntrls_all
-            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
+        for i=1:ntrls
+            t_sac = trials(i).events.t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);
-                ts = trials(i).ts; t_indx = find(ts>t_sac+0.05,1);
+                ts = trials(i).continuous.ts; t_indx = find(ts>t_sac+0.05,1);
                 theta_eye = atan2d(x_reye{i}(t_indx),y_reye{i}(t_indx));
                 plot(theta_fly{i}(t_indx),2*theta_eye,'.','Color',[.5 .5 .5],'markersize',2);
             else
@@ -243,18 +239,18 @@ switch plot_type
         xlabel('Target angle (deg)'); ylabel('Gaze angle (deg)');
         lessticks('x'); lessticks('y');
         hline(0, 'k'); vline(0, 'k');
-        removeaxes;
+%         removeaxes;
     case 'gaze_temporal'
         trials = behv.trials(~crazy);
-        r_fly = behv.stats.pos_rel.r_fly(~crazy);
+        r_fly = behv.stats.pos_rel.r_targ(~crazy);
         x_reye = behv.stats.pos_rel.x_leye(~crazy);
         y_reye = behv.stats.pos_rel.y_leye(~crazy);
         figure; hold on;
-        for i=1:ntrls_all
-            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
+        for i=1:ntrls
+            t_sac = trials(i).events.t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);
-                ts = trials(i).ts; t_indx = find(ts>t_sac+0.05);
+                ts = trials(i).continuous.ts; t_indx = find(ts>t_sac+0.05);
                 r_eye = sqrt(x_reye{i}.^2 + y_reye{i}.^2);
                 plot(ts,r_eye,'Color',[.5 .5 .5],'markersize',2);
             end
@@ -262,22 +258,22 @@ switch plot_type
         axis([0 3 0 500]);
         % plot distance to fly
         figure; hold on;
-        for i=1:ntrls_all
-            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
+        for i=1:ntrls
+            t_sac = trials(i).events.t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);
-                ts = trials(i).ts; t_indx = find(ts>t_sac+0.05);
+                ts = trials(i).continuous.ts; t_indx = find(ts>t_sac+0.05);
                 plot(ts,r_fly{i},'Color',[.5 .5 .5],'markersize',2);
             end
         end
         axis([0 3 0 500]);
         % plot gaze distance vs dist2fly
         figure; hold on;
-        for i=1:ntrls_all
-            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
+        for i=1:ntrls
+            t_sac = trials(i).events.t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);
-                ts = trials(i).ts; t_indx = find(ts>t_sac+0.05);
+                ts = trials(i).continuous.ts; t_indx = find(ts>t_sac+0.05);
                 r_eye = sqrt(x_reye{i}.^2 + y_reye{i}.^2);
                 plot(r_fly{i}(t_indx),r_eye(t_indx),'Color',[.5 .5 .5],'markersize',2);
             end
@@ -291,7 +287,7 @@ switch plot_type
         x_reye = behv.stats.pos_rel.x_reye(indx);
         y_reye = behv.stats.pos_rel.y_reye(indx);
         count = 0;
-        for i=1:ntrls_all
+        for i=1:ntrls
            t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.5);
            T = trials(i).t_end - trials(i).t_beg;
            if ~isempty(trials(i).t_stop), T_end = T - trials(i).t_stop; end
@@ -360,7 +356,7 @@ switch plot_type
         theta_fly = behv.stats.pos_rel.theta_fly(~crazy);
         x_reye = behv.stats.pos_rel.x_leye(~crazy);
         y_reye = behv.stats.pos_rel.y_leye(~crazy);
-        for i=1:ntrls_all
+        for i=1:ntrls
             ts = behv.trials(i).ts;
             verg(i,:) = rebin(ts,(behv.stats.pos_abs.y_reye{i} - behv.stats.pos_abs.y_leye{i}),150);
         end
@@ -371,7 +367,7 @@ switch plot_type
         x_leye = behv.stats.pos_rel.x_leye(~crazy);
         y_leye = behv.stats.pos_rel.y_leye(~crazy);
         figure; hold on;
-        for i=1:ntrls_all
+        for i=1:ntrls
             t_sac = trials(i).t_sac; t_sac = t_sac(t_sac>0 & t_sac<0.3);
             if ~isempty(t_sac)
                 t_sac = t_sac(1);

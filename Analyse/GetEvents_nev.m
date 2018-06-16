@@ -3,7 +3,7 @@ function [t_events,prs] = GetEvents_nev(f_nev,prs)
 
 NEV = openNEV(['/' f_nev], 'nosave');
 events = NEV.Data.SerialDigitalIO;
-prs.fs = NEV.MetaTags.TimeRes; % sampling rate
+prs.fs_spk = NEV.MetaTags.TimeRes; % sampling rate
 
 t_events.t_start = events.TimeStampSec(events.UnparsedData==1);
 t_events.t_rew = events.TimeStampSec(events.UnparsedData==4);

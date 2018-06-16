@@ -4,7 +4,7 @@ nunits = length(units);
 dt = prs.dt; % sampling resolution (s)
 
 %% which analayses to do
-fit_GAMcoupled = prs.fit_GAMcoupled;
+fitGAM_coupled = prs.fitGAM_coupled;
 compute_canoncorr = prs.compute_canoncorr;
 regress_popreadout = prs.regress_popreadout;
 simulate_population = prs.simulate_population;
@@ -16,7 +16,7 @@ continuous = cell2mat({trials_behv.continuous});
 
 stats = [];
 %% fit GAM with cross-neuronal coupling
-if fit_GAMcoupled
+if fitGAM_coupled
     GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
     GAM_prs.vartype = prs.GAM_vartype;
     GAM_prs.nbins = prs.GAM_nbins;
@@ -26,8 +26,9 @@ if fit_GAMcoupled
     GAM_prs.filtwidth = prs.neuralfiltwidth;
     GAM_prs.linkfunc = prs.GAM_linkfunc;
     GAM_prs.lambda = prs.GAM_lambda;
-    GAM_prs.beta = prs.GAM_beta;
+%     GAM_prs.beta = prs.GAM_beta;
     GAM_prs.alpha = prs.GAM_alpha;
+    GAM_prs.varchoose = prs.GAM_varchoose;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
@@ -58,18 +59,18 @@ if fit_GAMcoupled
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 %% concatenate units
                 Yt = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [~,Yt(:,k)] = ConcatenateTrials(vars{1},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 %% fit fully coupled GAM model to each unit
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
-                for k=1:nunits
-                    models = BuildGAMCoupled(xt,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
+                for k=56
+                    models = BuildGAMCoupled2(xt,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
                     stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc).units(k) = models;
                 end
             end
@@ -109,13 +110,13 @@ if compute_canoncorr
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 %% concatenate units
                 Yt = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [~,Yt(:,k)] = ConcatenateTrials(vars{1},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    [~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 Yt_conv = SmoothSpikes(Yt, filtwidth);
                 %% compute canonlical correlation
@@ -143,7 +144,10 @@ if regress_popreadout
             trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
             events_temp = events(trlindx);
             timewindow_move = [[events_temp.t_move]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
-            timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
+            timewindow_path = [[events_temp.t_targ]' [events_temp.t_rew]']; % test
+%             timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
+            timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
+                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
             continuous_temp = continuous(trlindx);
             nunits = length(units);
             %% linear velocity, v
@@ -151,10 +155,26 @@ if regress_popreadout
                 xt = []; Yt = [];
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [xt,Yt(:,k)] = ConcatenateTrials({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.v},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end                
                 Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-                [stats.(GD_modelname).v.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+%                 [stats.(GD_modelname).v.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).v.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).v.true = xt;
+                stats.(GD_modelname).v.pred = (Yt*stats.(GD_modelname).v.theta);
+            end
+            %% angular velocity, w
+            if any(strcmp(getreadout,'w'))
+                xt = []; Yt = [];
+                for k=1:nunits
+                    trials_spks_temp = units(k).trials(trlindx);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.w},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                end
+                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
+%                 [stats.(GD_modelname).w.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).w.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).w.true = xt;
+                stats.(GD_modelname).w.pred = (Yt*stats.(GD_modelname).w.theta);
             end
             %% distance to target, r_targ
             if any(strcmp(getreadout,'r_targ'))
@@ -162,10 +182,13 @@ if regress_popreadout
                 r_targ = behv_stats.pos_rel.r_targ(trlindx);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [xt,Yt(:,k)] = ConcatenateTrials(r_targ,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials(r_targ,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-                [stats.(GD_modelname).r_targ.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+%                 [stats.(GD_modelname).r_targ.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).r_targ.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).r_targ.true = xt;
+                stats.(GD_modelname).r_targ.pred = (Yt*stats.(GD_modelname).r_targ.theta);
             end
             %% distance, d
             if any(strcmp(getreadout,'d'))
@@ -173,10 +196,13 @@ if regress_popreadout
                 d = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [xt,Yt(:,k)] = ConcatenateTrials(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials(d,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-                [stats.(GD_modelname).d.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+%                 [stats.(GD_modelname).d.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).d.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).d.true = xt;
+                stats.(GD_modelname).d.pred = (Yt*stats.(GD_modelname).d.theta);
             end
             %% heading, phi
             if any(strcmp(getreadout,'phi'))
@@ -184,10 +210,49 @@ if regress_popreadout
                 phi = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [xt,Yt(:,k)] = ConcatenateTrials(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials(phi,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-                [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+%                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).phi.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).phi.true = xt;
+                stats.(GD_modelname).phi.pred = (Yt*stats.(GD_modelname).phi.theta);
+            end
+            %% eye vertical, alpha
+            if any(strcmp(getreadout,'alpha'))
+                xt = []; Yt = [];
+                isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                if isnan_le, alpha = {continuous_temp.zre};
+                elseif isnan_re, alpha = {continuous_temp.zle};
+                else alpha = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                end
+                for k=1:nunits
+                    trials_spks_temp = units(k).trials(trlindx);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials(alpha,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                end
+                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
+%                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).alpha.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).alpha.true = xt;
+                stats.(GD_modelname).alpha.pred = (Yt*stats.(GD_modelname).alpha.theta);
+            end
+            %% eye horizontal, beta
+            if any(strcmp(getreadout,'beta'))
+                xt = []; Yt = [];
+                isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                if isnan_le, beta = {continuous_temp.yre};
+                elseif isnan_re, beta = {continuous_temp.yle};
+                else beta = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                end
+                for k=1:nunits
+                    trials_spks_temp = units(k).trials(trlindx);
+                    [xt,~,Yt(:,k)] = ConcatenateTrials(beta,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                end
+                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
+                %                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
+                stats.(GD_modelname).beta.theta = (Yt'*Yt)\(Yt'*xt); % analytical
+                stats.(GD_modelname).beta.true = xt;
+                stats.(GD_modelname).beta.pred = (Yt*stats.(GD_modelname).beta.theta);
             end
         end
     end
@@ -224,7 +289,7 @@ if simulate_population
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path);
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
                 %% encode stimulus as one-hot variables
                 binrange(:,1) = prs.binrange.v;

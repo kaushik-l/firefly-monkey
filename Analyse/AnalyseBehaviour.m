@@ -15,7 +15,8 @@ x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
 
 %% compute
 continuous = cell2mat({trials.continuous}); % extract continuous channels
-logical = cell2mat({trials.logical}); % extract continuous channels
+events = cell2mat({trials.events}); % extract event channels
+logical = cell2mat({trials.logical}); % extract logical channels
 trialparams = cell2mat({trials.prs});
 for i=1:ntrls
     %% final velocity
@@ -45,7 +46,14 @@ for i=1:ntrls
     continuous(i).ysp_rel = continuous(i).ymp(end) - continuous(i).ymp;
     continuous(i).r_stop_rel = sqrt(continuous(i).xsp_rel.^2 + continuous(i).ysp_rel.^2);
     continuous(i).theta_stop_rel = atan2d(continuous(i).xsp_rel,continuous(i).ysp_rel);
+    %% believed target position - r and theta
+    [r_belief,theta_belief] = eyepos2flypos(continuous(i).zle,continuous(i).zre,continuous(i).yle,continuous(i).yre,prs.height);
+    continuous(i).r_belief = r_belief;
+    continuous(i).theta_belief = theta_belief;
 end
+
+%% trial-by-trial error
+trlerrors = cellfun(@min,{continuous.r_fly_rel});
 
 %% position - polar
 rf_monk = sqrt((x_monk - x0_monk).^2 + (y_monk - y0_monk).^2);
@@ -58,7 +66,7 @@ theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 stats.time = {continuous.ts};
 % final position - monkey and fly
 stats.pos_final.r_monk = rf_monk; stats.pos_final.theta_monk = thetaf_monk;
-stats.pos_final.r_fly = r_fly; stats.pos_final.theta_fly = theta_fly;
+stats.pos_final.r_targ = r_fly; stats.pos_final.theta_targ = theta_fly;
 % absolute position - monkey
 stats.pos_abs.x_monk = {continuous.xmp};
 stats.pos_abs.y_monk = {continuous.ymp};
@@ -76,6 +84,8 @@ stats.pos_rel.x_leye = {continuous.xlep};
 stats.pos_rel.y_leye = {continuous.ylep};
 stats.pos_rel.x_reye = {continuous.xrep};
 stats.pos_rel.y_reye = {continuous.yrep};
+stats.pos_rel.r_belief = {continuous.r_belief};
+stats.pos_rel.theta_belief = {continuous.theta_belief};
 stats.pos_rel.x_stop = {continuous.xsp_rel};
 stats.pos_rel.y_stop = {continuous.ysp_rel};
 stats.pos_rel.r_stop = {continuous.r_stop_rel};
@@ -155,13 +165,33 @@ if prs.split_trials
     trlindx  = goodtrls & ~replaytrls;
     if sum(trlindx)>1
         stats.trialtype.replay(end+1).trlindx = trlindx;
-        stats.trialtype.landmark(end).val = 'active behaviour';
+        stats.trialtype.replay(end).val = 'active behaviour';
     end
     % trials recorded during replay
     trlindx  = goodtrls & replaytrls;
     if sum(trlindx)>1
         stats.trialtype.replay(end+1).trlindx = trlindx;
         stats.trialtype.replay(end).val = 'replay behaviour';
+    end
+end
+
+%% analyse eye movements
+if prs.regress_eye
+    xfp_rel = {continuous.xfp_rel};
+    yfp_rel = {continuous.yfp_rel};
+    zle = {continuous.zle}; yle = {continuous.yle};
+    zre = {continuous.zre}; yre = {continuous.yre};
+    t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts};
+    trialtypes = fields(stats.trialtype);
+    for i=1:length(trialtypes)
+        nconds = length(stats.trialtype.(trialtypes{i}));
+        for j=1:nconds
+            trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+            stats.trialtype.(trialtypes{i})(j).eye_fixation = ...
+                AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),ts(trlindx),prs);
+            stats.trialtype.(trialtypes{i})(j).eye_movement = ...
+                AnalyseEyemovement(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+        end
     end
 end
 
@@ -174,16 +204,21 @@ if prs.regress_behv
             trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
             if sum(trlindx) > mintrialsforstats
                 fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
-                % regression
+                % regression without intercept
                 [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
                 [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
                 stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
+                % regression with intercept
+                [pos_regress2.beta_r, pos_regress2.alpha_r, pos_regress2.betaCI_r, pos_regress2.alphaCI_r, pos_regress2.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 1);
+                [pos_regress2.beta_theta, pos_regress2.alpha_theta, pos_regress2.betaCI_theta, pos_regress2.alphaCI_theta, pos_regress2.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 1);
+                stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = pos_regress2;
                 % ROC
                 [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
                     [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,npermutations);
                 stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
             else
                 stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
+                stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;
                 stats.trialtype.(trialtypes{i})(j).accuracy = nan;
             end
         end

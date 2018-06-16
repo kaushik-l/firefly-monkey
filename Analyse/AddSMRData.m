@@ -102,12 +102,13 @@ t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
 %% replace the broken eye coil (if any) with NaNs
-if var(ch.zle) > 2*var(ch.zre)
-    ch.zre(:) = nan;
-    ch.yre(:) = nan;
-elseif var(ch.zre) > 2*var(ch.zle)
+if var(ch.zle) < 10 || var(ch.zle) > 1000
     ch.zle(:) = nan;
     ch.yle(:) = nan;
+end
+if var(ch.zre) < 10 || var(ch.zre) > 1000
+    ch.zre(:) = nan;
+    ch.yre(:) = nan;
 end
 
 %% detect start-of-movement and end-of-movement times for each trial
@@ -134,10 +135,11 @@ end
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
     % define pretrial period
-    pretrial = max(t.beg(j) - t.move(j),0); % extract everything from movement onset or target onset - whichever is first
+    pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first
+    posttrial = prs.posttrial; % extract everything until "t_end + posttrial"
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
-            trl(j).continuous.(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j));
+            trl(j).continuous.(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j)+posttrial);
             trl(j).continuous.(chnames{i}) = downsample(trl(j).continuous.(chnames{i}),prs.factor_downsample);
         end
     end

@@ -21,9 +21,7 @@ classdef unit < handle
         end
         %% analyse spikes
         function AnalyseUnit(this,behaviours,prs)
-            this.stats = AnalyseRates(this.trials,behaviours.trials,behaviours.stats,prs);
-%             this.weights = FitGLM(this.trials,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
-%             [this.trials,this.stats] = PredictGLM(this.weights,this.trials,this.stats,behaviours.trials,behaviours.stats,prs); % requires neuroGLM package: https://github.com/pillowlab/neuroGLM
+            this.stats = AnalyseUnit(this.trials,behaviours.trials,behaviours.stats,prs);
         end
     end
 end

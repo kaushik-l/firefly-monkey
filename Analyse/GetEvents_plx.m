@@ -24,6 +24,6 @@ for i=1:nevents
     end
 end
 
-t_events.beg = t_beg;
-t_events.rew = t_rew;
-t_events.end = t_end;
+t_events.t_beg = t_beg;
+t_events.t_rew = t_rew;
+t_events.t_end = t_end;

@@ -28,7 +28,7 @@ classdef session < handle
         %% add units
         function AddUnits(this,prs)
             cd(prs.filepath_neur);
-            file_ead=dir('*.plx');
+            file_ead=dir('_ead.plx');
             file_nev=dir('*.nev');
             if ~isempty(file_ead) % data recorded using Plexon
                 fprintf(['... reading ' file_ead.name '\n']);
@@ -50,7 +50,7 @@ classdef session < handle
                     end
                 end
             elseif ~isempty(file_nev) % data recorded using Cereplex
-                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv'); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
+                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv'); %, 'cluster_location.xls'); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
                 fprintf(['... reading events from ' file_nev.name '\n']);
                 [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
                 if length(this.behaviours.trials)==length(events_nev.t_end)

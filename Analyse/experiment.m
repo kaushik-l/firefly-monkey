@@ -4,7 +4,7 @@ classdef experiment < handle
         name                                                                % protocol
         sessions = session.empty();
     end
-    
+     
     %%
     methods
         %% class constructor

@@ -7,7 +7,7 @@ if ntrls < nbootstraps % not enough trials
 end
 
 %% concatenate data from different trials
-[xt,yt,xt_pad,yt_pad] = ConcatenateTrials(x,ts,tspk,timewindow,duration_zeropad);
+[xt,~,yt,xt_pad,~,yt_pad] = ConcatenateTrials(x,[],tspk,ts,timewindow,duration_zeropad);
 
 %% estimate cross-correlation
 temporal_binwidth = median(diff(ts{1}));
