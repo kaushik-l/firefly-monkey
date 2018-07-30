@@ -111,6 +111,30 @@ if var(ch.zre) < 10 || var(ch.zre) > 1000
     ch.yre(:) = nan;
 end
 
+%% refine t.beg to ensure it corresponds to target onset
+jitter = prs.jitter_marker;
+dPm__dt = [0 ; sqrt(diff(ch.ymp).^2 + diff(ch.xmp).^2)]; % derivative of monkey position
+[~,t_teleport] = findpeaks(dPm__dt,dt*(1:length(dPm__dt)),'MinPeakHeight',prs.minpeakprominence.monkpos); % detect peaks
+dPf__dt = [0 ; sqrt(diff(ch.yfp).^2 + diff(ch.xfp).^2)]; % derivative of firefly position
+[~,t_flyON] = findpeaks(dPf__dt,dt*(1:length(dPf__dt)),'MinPeakHeight',prs.minpeakprominence.flypos); % detect peaks
+t_teleport_trl = nan(length(t.beg),1); t_flyON_trl = nan(length(t.beg),1);
+for i=1:length(t.beg)
+    t_teleport_temp = t_teleport(t_teleport > (t.beg(i) - jitter) &  t_teleport < (t.beg(i) + jitter));
+    if ~isempty(t_teleport_temp), t_teleport_trl(i) = t_teleport_temp(end); end
+    t_flyON_temp = t_flyON(t_flyON > (t.beg(i) - jitter) &  (t_flyON < t.beg(i) + jitter));
+    if ~isempty(t_flyON_temp), t_flyON_trl(i) = t_flyON_temp(end); end
+end
+tflyON_minus_teleport = nanmedian(t_flyON_trl - t_teleport_trl);
+% set trial begin time equal to target onset
+t_beg_original = t.beg;
+for i=1:length(t.beg)
+    if ~isnan(t_flyON_trl(i)), t.beg(i) = t_flyON_trl(i);
+    elseif ~isnan(t_teleport_trl(i)), t.beg(i) = t_teleport_trl(i) + tflyON_minus_teleport;
+    end
+end
+t_beg_correction = t.beg - t_beg_original;
+
+
 %% detect start-of-movement and end-of-movement times for each trial
 v_thresh = prs.v_thresh;
 v_time2thresh = prs.v_time2thresh;
@@ -128,10 +152,11 @@ for j=1:length(t.end)
    if ~isempty(indx), t.stop(j) = t.move(j) + indx*dt;
    else, t.stop(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
    % if monkey stopped prematurely, set movement end = trial end
-   if (t.stop(j)<t.beg(j) || t.stop(j)-t.move(j)<0.5), t.stop(j) = t.end(j); end
+   if (t.stop(j)<t.beg(j) || (t.stop(j)-t.move(j))<prs.mintrialduration), t.stop(j) = t.end(j); end
 end
 
 %% extract trials and downsample for storage
+dt_original = dt;
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
     % define pretrial period
@@ -140,6 +165,9 @@ for j=1:length(t.end)
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
             trl(j).continuous.(chnames{i}) = ch.(chnames{i})(ts>t.beg(j)-pretrial & ts<t.end(j)+posttrial);
+            if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'})) % set position values prior to target onset to nan
+                trl(j).continuous.(chnames{i})(1:floor(pretrial/dt_original)) = nan;
+            end
             trl(j).continuous.(chnames{i}) = downsample(trl(j).continuous.(chnames{i}),prs.factor_downsample);
         end
     end
@@ -169,15 +197,6 @@ for j=1:length(t.end)
     end
 end
 
-%% set position values prior to target onset to nan
-for j=1:length(trl)
-    for i=1:length(chnames)
-        if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'}))
-            trl(j).continuous.(chnames{i})(trl(j).continuous.ts<0) = nan; % target onset happens exactly at t_beg ?????
-        end
-    end
-end
-
 %% timestamps referenced relative to exp_beg
 exp_beg = t.events(find(markers==1,1,'first'));
 exp_end = t.events(find(markers==3,1,'last'));
@@ -191,6 +210,7 @@ for i=1:length(trl)
     trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_targ = 0;
+    trl(i).events.t_beg_correction = t_beg_correction(i);
 end
 
 %% downsample continuous data

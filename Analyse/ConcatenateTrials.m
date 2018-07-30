@@ -38,8 +38,8 @@ end
 if ~isempty(duration_zeropad)
     dt = median(diff(ts{1}));
     padding = zeros(round(duration_zeropad/dt),1);
-    xt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],xt(:),'UniformOutput',false)); % zero-pad for cross-correlations
-    zt_pad = cell2mat(cellfun(@(x) [padding(:) ; z(:)],zt(:),'UniformOutput',false));
+    if ~isempty(xt), xt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],xt(:),'UniformOutput',false)); else, xt_pad = []; end % zero-pad for cross-correlations
+    if ~isempty(zt), zt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],zt(:),'UniformOutput',false)); else, zt_pad = []; end
     yt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],yt(:),'UniformOutput',false));
 else
     xt_pad = [];

@@ -4,14 +4,13 @@ fprintf('******Behavioural analysis****** \n');
 mintrialsforstats = prs.mintrialsforstats;
 maxrewardwin = prs.maxrewardwin;
 npermutations = prs.npermutations;
-monk_startpos = prs.monk_startpos;
-x0_monk = monk_startpos(1); y0_monk = monk_startpos(2);
 
 %% preallocate for speed
 ntrls = length(trials);
-v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls);
-x_monk = zeros(1,ntrls); y_monk = zeros(1,ntrls);
-x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls);
+v_monk = zeros(1,ntrls); w_monk = zeros(1,ntrls); % velocity at t_end (v_monk, w_monk)
+x_fly = zeros(1,ntrls); y_fly = zeros(1,ntrls); % target location (x_fly, y_fly)
+x0_monk = zeros(1,ntrls); y0_monk = zeros(1,ntrls); % monkey - starting location (x0_monk, y0_monk)
+xf_monk = zeros(1,ntrls); yf_monk = zeros(1,ntrls); % monkey - stopping location (xf_monk, yf_monk)
 
 %% compute
 continuous = cell2mat({trials.continuous}); % extract continuous channels
@@ -20,30 +19,27 @@ logical = cell2mat({trials.logical}); % extract logical channels
 trialparams = cell2mat({trials.prs});
 for i=1:ntrls
     %% final velocity
-    v_monk(i) = (continuous(i).v(end));
-    w_monk(i) = (continuous(i).w(end));
+    indx_end = find(continuous(i).ts > events(i).t_end, 1); % sample number of end-of-trial timestamp (t_end)
+    v_monk(i) = (continuous(i).v(indx_end)); w_monk(i) = (continuous(i).w(indx_end));
     %% initial & final position - cartesian
-    indx_beg = find(continuous(i).ts > 0,1); % sample number of target onset
-    x_monk(i) = continuous(i).xmp(end); y_monk(i) = continuous(i).ymp(end);
-    x_fly(i) = nanmedian(continuous(i).xfp(indx_beg:end)); y_fly(i) = nanmedian(continuous(i).yfp(indx_beg:end));
+    indx_beg = find(continuous(i).ts > events(i).t_targ, 1); % sample number of target onset time
+    indx_stop = find(continuous(i).ts > events(i).t_stop, 1); % sample number of stopping time    
+    x_fly(i) = nanmedian(continuous(i).xfp(indx_beg:indx_stop)); y_fly(i) = nanmedian(continuous(i).yfp(indx_beg:indx_stop));
+    x0_monk(i) = continuous(i).xmp(indx_beg+1); y0_monk(i) = continuous(i).ymp(indx_beg+1);
+    xf_monk(i) = continuous(i).xmp(indx_stop); yf_monk(i) = continuous(i).ymp(indx_stop);
     %% eye position relative to monkey - cartesian
     continuous(i).yrep = prs.height./tand(-continuous(i).zre); continuous(i).yrep(continuous(i).yrep<0) = nan;
     continuous(i).ylep = prs.height./tand(-continuous(i).zle); continuous(i).ylep(continuous(i).ylep<0) = nan;
     continuous(i).xrep = continuous(i).yrep.*tand(continuous(i).yre);
     continuous(i).xlep = continuous(i).ylep.*tand(continuous(i).yle);
-    %% eye position on screen - cartesian
-    continuous(i).zrep_scr = prs.screendist*tand(continuous(i).zre);
-    continuous(i).zlep_scr = prs.screendist*tand(continuous(i).zle);
-    continuous(i).yrep_scr = prs.screendist*tand(continuous(i).yre);
-    continuous(i).ylep_scr = prs.screendist*tand(continuous(i).yle);
     %% fly position relative to monkey - cartesian
     continuous(i).xfp_rel = x_fly(i) - continuous(i).xmp;
     continuous(i).yfp_rel = y_fly(i) - continuous(i).ymp;
     continuous(i).r_fly_rel = sqrt(continuous(i).xfp_rel.^2 + continuous(i).yfp_rel.^2);
     continuous(i).theta_fly_rel = atan2d(continuous(i).xfp_rel,continuous(i).yfp_rel);
     %% final stopping position relative to monkey
-    continuous(i).xsp_rel = continuous(i).xmp(end) - continuous(i).xmp;
-    continuous(i).ysp_rel = continuous(i).ymp(end) - continuous(i).ymp;
+    continuous(i).xsp_rel = xf_monk(i) - continuous(i).xmp;
+    continuous(i).ysp_rel = yf_monk(i) - continuous(i).ymp;
     continuous(i).r_stop_rel = sqrt(continuous(i).xsp_rel.^2 + continuous(i).ysp_rel.^2);
     continuous(i).theta_stop_rel = atan2d(continuous(i).xsp_rel,continuous(i).ysp_rel);
     %% believed target position - r and theta
@@ -56,9 +52,9 @@ end
 trlerrors = cellfun(@min,{continuous.r_fly_rel});
 
 %% position - polar
-rf_monk = sqrt((x_monk - x0_monk).^2 + (y_monk - y0_monk).^2);
+rf_monk = sqrt((xf_monk - x0_monk).^2 + (yf_monk - y0_monk).^2);
 r_fly = sqrt((x_fly - x0_monk).^2 + (y_fly - y0_monk).^2);
-thetaf_monk = atan2d((x_monk - x0_monk),(y_monk - y0_monk));
+thetaf_monk = atan2d((xf_monk - x0_monk),(yf_monk - y0_monk));
 theta_fly = atan2d((x_fly - x0_monk),(y_fly - y0_monk));
 
 %% save position stats
@@ -70,11 +66,6 @@ stats.pos_final.r_targ = r_fly; stats.pos_final.theta_targ = theta_fly;
 % absolute position - monkey
 stats.pos_abs.x_monk = {continuous.xmp};
 stats.pos_abs.y_monk = {continuous.ymp};
-% absolute position - eye
-stats.pos_abs.z_leye =  {continuous.zlep_scr};
-stats.pos_abs.y_leye =  {continuous.ylep_scr};
-stats.pos_abs.z_reye =  {continuous.zrep_scr};
-stats.pos_abs.y_reye =  {continuous.yrep_scr};
 % relative position - fly, eye, stop
 stats.pos_rel.x_targ = {continuous.xfp_rel};
 stats.pos_rel.y_targ = {continuous.yfp_rel};
@@ -92,7 +83,7 @@ stats.pos_rel.r_stop = {continuous.r_stop_rel};
 stats.pos_rel.theta_stop = {continuous.theta_stop_rel};
 
 %% trial type
-goodtrls = ~((y_monk<0) | (abs(v_monk)>1)); % remove trials in which monkey did not move at all or kept moving until the end
+goodtrls = ~((yf_monk<0) | (abs(v_monk)>1) | ([events.t_stop]>4)); % remove trials in which monkey did not move at all or kept moving until the end
 replaytrls = [logical.replay];
 % all trials
 stats.trialtype.all.trlindx  = goodtrls & ~replaytrls;

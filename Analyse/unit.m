@@ -1,7 +1,7 @@
 classdef unit < handle
     %%
     properties
-        channel_no
+        channel_id
         spkwf
         type
         trials
@@ -11,7 +11,7 @@ classdef unit < handle
     methods
         %% class constructor
         function this = unit(unittype)
-            this.channel_no = []; %unit.chnl;
+            this.channel_id = []; %unit.chnl;
             this.spkwf = []; %mean(unit.spkwf);
             this.type = unittype;
         end

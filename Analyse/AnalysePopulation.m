@@ -18,7 +18,7 @@ stats = [];
 %% fit GAM with cross-neuronal coupling
 if fitGAM_coupled
     GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
-    GAM_prs.vartype = prs.GAM_vartype;
+    GAM_prs.vartype = prs.GAM_vartype; vartype = GAM_prs.vartype;
     GAM_prs.nbins = prs.GAM_nbins;
     GAM_prs.binrange = [];
     GAM_prs.nfolds = prs.nfolds;
@@ -50,27 +50,48 @@ if fitGAM_coupled
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'eye_ver')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                        if isnan_le, vars{k} = {continuous_temp.zre};
+                        elseif isnan_re, vars{k} = {continuous_temp.zle};
+                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                        end
+                    elseif strcmp(varname(k),'eye_hor')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                        if isnan_le, vars{k} = {continuous_temp.yre};
+                        elseif isnan_re, vars{k} = {continuous_temp.yle};
+                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                        end
+                    elseif strcmp(vartype(k),'event')
+                        vars{k} = [events_temp.(prs.varlookup(varname{k}))]; 
+                        if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
                     end
                     GAM_prs.binrange{k} = prs.binrange.(varname{k});
                 end
                 %% define time windows for computing tuning
                 timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
+                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
                 %% concatenate stimulus data from all trials
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    if ~strcmp(vartype(k),'event')
+                        [xt(:,k),~] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    else
+                        [~,xt(:,k)] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    end
                 end
                 %% concatenate units
                 Yt = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
                 %% fit fully coupled GAM model to each unit
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
-                for k=56
-                    models = BuildGAMCoupled2(xt,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
+                for k=1:3
+                    models = BuildGAMCoupled(xt,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
                     stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc).units(k) = models;
                 end
             end

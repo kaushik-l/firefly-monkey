@@ -8,7 +8,7 @@ corr_lag = prs.corr_lag;
 duration_zeropad = prs.duration_zeropad;
 nbootstraps = prs.nbootstraps;
 peaktimewindow = prs.peaktimewindow;
-minpeakprominence = prs.minpeakprominence;
+minpeakprominence = prs.minpeakprominence.neural;
 mintrialsforstats = prs.mintrialsforstats;
 evaluate_peaks = prs.evaluate_peaks;
 compute_tuning = prs.compute_tuning;
@@ -262,8 +262,8 @@ if fitGAM_tuning
                         else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                         end
                     elseif strcmp(vartype(k),'event')
-                        vars{k} = [events_temp.(prs.varlookup(varname{k}))]; 
-                        if strcmp(varname(k),'target'), vars{k} = vars{k} + prs.fly_ONduration; end % use target OFF time
+                        if ~strcmp(varname(k),'spikehist'), vars{k} = [events_temp.(prs.varlookup(varname{k}))]; else, vars{k} = []; end
+                        if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
                     end
                     GAM_prs.binrange{k} = prs.binrange.(varname{k});
                 end
@@ -275,11 +275,12 @@ if fitGAM_tuning
                 xt = []; yt = [];
                 for k=1:length(vars)
                     if ~strcmp(vartype(k),'event')
-                        [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
-                    else
-                        [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                        [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    elseif ~strcmp(varname(k),'spikehist')                        
+                        [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     end
                 end
+                if any(strcmp(varname,'spikehist')), xt(:,strcmp(varname,'spikehist')) = yt; end % pass spike train back as an input to fit spike-history kernel
                 %% model fitting and selection
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
                 models = BuildGAM(xt,yt,GAM_prs);
