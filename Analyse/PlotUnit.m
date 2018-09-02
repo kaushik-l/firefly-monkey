@@ -4,6 +4,7 @@ function PlotUnit(behv,unit,plot_type,prs)
 binwidth_abs = prs.binwidth_abs;
 binwidth_warp = prs.binwidth_warp;
 trlkrnlwidth = prs.trlkrnlwidth;
+electrode = prs.electrode;
 
 trlindx = behv.stats.trialtype.all.trlindx;
 behv_trials = behv.trials(trlindx);
@@ -375,5 +376,128 @@ switch plot_type
                     end
                 end
             end
-        end        
+        end       
+    case 'sfc'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        f = lfps(1).sta.f;
+        maxpeak = nan(nlfps,1);
+        sfc = nan(nlfps,length(f));
+        for i=1:nlfps
+            sfc(i,:) = lfps(i).sta.sfc;
+            [pks,locs] = findpeaks(sfc(i,:),f,'minpeakprominence',0.001);
+            if ~isempty(max(pks((locs>5 & locs<40)))), maxpeak(i) = max(pks((locs>5 & locs<40))); end
+        end
+        maxpeak = max(maxpeak); if isnan(maxpeak), maxpeak = 1e-3; end        
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                sfc = sfc(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(f,sfc(i,:)); axis([2 70 -1e-1*maxpeak 1.5*maxpeak]); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
+    case 'sta'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        t = lfps(1).sta.t;
+        maxpeak = nan(nlfps,1);
+        sta = nan(nlfps,length(t));
+        for i=1:nlfps
+            sta(i,:) = lfps(i).sta.lfp;
+            maxpeak = max(max(sta(i,:)),abs(min(sta(i,:))));
+        end
+        maxpeak = max(maxpeak);
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                sta = sta(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(t,sta(i,:)); ylim([-1.5*maxpeak 1.5*maxpeak]); xlim([-0.2 0.2]); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
+    case 'sta_beta'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        t = lfps(1).sta_beta.t;
+        maxpeak = nan(nlfps,1);
+        sta = nan(nlfps,length(t));
+        for i=1:nlfps
+            sta(i,:) = lfps(i).sta_beta.lfp;
+            maxpeak = max(max(sta(i,:)),abs(min(sta(i,:))));
+        end
+        maxpeak = max(maxpeak);
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                sta = sta(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(t,sta(i,:)); ylim([-1.5*maxpeak 1.5*maxpeak]); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
+    case 'phase'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        maxrate = nan(nlfps,1); minrate = nan(nlfps,1);
+        for i=1:nlfps
+            phi(i,:) = lfps(i).phase.tuning.stim.mu;
+            rate(i,:) = lfps(i).phase.tuning.rate.mu;
+            maxrate(i) = max(rate(i,:));
+            minrate(i) = min(rate(i,:));
+        end
+        maxrate = max(maxrate); minrate = min(minrate);
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                phi = phi(reorderindx,:); rate = rate(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(phi(i,:),rate(i,:)); ylim([minrate-0.5*maxrate 1.5*maxrate]); 
+                    vline(0,'k'); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
+    case 'phase_beta'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        maxrate = nan(nlfps,1); minrate = nan(nlfps,1);
+        for i=1:nlfps
+            phi(i,:) = lfps(i).phase_beta.tuning.stim.mu;
+            rate(i,:) = lfps(i).phase_beta.tuning.rate.mu;
+            maxrate(i) = max(rate(i,:));
+            minrate(i) = min(rate(i,:));
+        end
+        maxrate = max(maxrate); minrate = min(minrate);
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                phi = phi(reorderindx,:); rate = rate(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(phi(i,:),rate(i,:)); %ylim([minrate-0.5*maxrate 1.5*maxrate]);
+                    vline(0,'k'); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
 end

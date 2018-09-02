@@ -50,21 +50,21 @@ classdef session < handle
                     end
                 end
             elseif ~isempty(file_nev) % data recorded using Cereplex
-                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv'); %, 'cluster_location.xls'); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
+                [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.electrode); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
                 fprintf(['... reading events from ' file_nev.name '\n']);
                 [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
                 if length(this.behaviours.trials)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
                             %fetch singleunit
-                            this.units(end+1) = unit('singleunit');
+                            this.units(end+1) = unit('singleunit',sua(i),prs.fs_spk);
                             this.units(end).AddTrials(sua(i).tspk,events_nev,this.behaviours,prs);
                         end
                     end
                     if ~isempty(mua)
                         for i=1:length(mua)
                             %fetch multiunit
-                            this.units(end+1) = unit('multiunit');
+                            this.units(end+1) = unit('multiunit',mua(i),prs.fs_spk);
                             this.units(end).AddTrials(mua(i).tspk,events_nev,this.behaviours,prs);
                         end
                     end
@@ -81,9 +81,9 @@ classdef session < handle
         %% analyse units
         function AnalyseUnits(this,prs)
             nunits = length(this.units);
-            for i=1:nunits
+            for i=1%:nunits
                 fprintf(['... Analysing unit ' num2str(i) ' :: ' this.units(i).type '\n']);
-                this.units(i).AnalyseUnit(this.behaviours,prs);
+                this.units(i).AnalyseUnit(this.behaviours,this.lfps,prs);
             end
         end
         %% add lfps
@@ -100,13 +100,17 @@ classdef session < handle
                 file_nev=dir('*.nev');
                 fprintf(['... reading events from ' file_nev.name '\n']);
                 [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
+                if length(this.behaviours.trials)~=length(events_nev.t_end)
+                    events_nev = FixEvents_nev(events_nev,this.behaviours.trials);
+                end
                 if length(this.behaviours.trials)==length(events_nev.t_end)
                     NS1 = openNSx(['/' file_ns1.name],'report','read', 'uV');
                     if NS1.MetaTags.ChannelCount ~= prs.maxchannels, warning('Channel count in the file not equal to prs.maxchannels \n'); end
+                    [ch_id,electrode_id] = MapChannel2Electrode('utah96'); % assuming 96 channel array -- need to generalise this line of code
                     for j=1:prs.maxchannels
                         channel_id = NS1.MetaTags.ChannelID(j);
                         fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
-                        this.lfps(end+1) = lfp(channel_id);
+                        this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id));
                         this.lfps(end).AddTrials(NS1.Data(j,:),NS1.MetaTags.SamplingFreq,events_nev,this.behaviours,prs);
                     end
                 else
@@ -130,8 +134,10 @@ classdef session < handle
         %% add populations
         function AddPopulation(this,unittype,prs)
             this.populations(end+1) = population();
-            if ~strcmp(unittype,'units')
-                this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours.trials,this.behaviours.stats,prs);
+            if strcmp(unittype,'lfps')
+                this.populations.AnalysePopulation(this.lfps,'lfps',this.behaviours,prs);
+            elseif ~strcmp(unittype,'units')
+                this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours,prs);
             else
                 this.populations.AnalysePopulation(this.units,unittype,this.behaviours,prs);
             end
@@ -153,6 +159,19 @@ classdef session < handle
                 PlotUnit(behv,unit,plot_type,prs);        % plot data from one specific unit
             else
                 PlotUnits(behv,this.units,plot_type,prs); % plot data from all units
+            end
+        end
+        %% plot LFP
+        function PlotLFP(this,channel_id,electrode_id,plot_type,prs)
+            if ~isempty(electrode_id)
+                PlotLFP(this.lfps,this.populations.lfps,electrode_id,plot_type,prs);
+            elseif ~isempty(channel_id)
+                if channel_id==0
+                    PlotLFP(this.lfps,this.populations.lfps,channel_id,plot_type,prs);
+                else
+                    [~,electrode_id] = MapChannel2Electrode('utah96'); % hardcoding utah96 for now -- need to generalise
+                    PlotLFP(this.lfps,this.populations.lfps,electrode_id(channel_id),plot_type,prs);
+                end
             end
         end
     end

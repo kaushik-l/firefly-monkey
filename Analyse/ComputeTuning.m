@@ -10,7 +10,11 @@ end
 [xt,~,yt,xt_pad,~,yt_pad] = ConcatenateTrials(x,[],tspk,ts,timewindow,duration_zeropad);
 
 %% estimate cross-correlation
-temporal_binwidth = median(diff(ts{1}));
+if ~(length(tspk{1}) == length(ts{1})) % data as spike times
+    temporal_binwidth = median(diff(ts{1}));
+else % any other data
+    temporal_binwidth = 1;
+end
 lags = round(corr_lag/temporal_binwidth);
 [c,lags]=xcorr(zscore(xt_pad),zscore(yt_pad),lags,'coeff'); % normalise E[z(x)*z(y)] by sqrt(R_xx(0)*R_yy(0))
 tuningstats.xcorr.val = c;

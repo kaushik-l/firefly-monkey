@@ -5,10 +5,11 @@ binwidth_abs = prs.binwidth_abs;
 binwidth_warp = prs.binwidth_warp;
 trlkrnlwidth = prs.trlkrnlwidth;
 nunits = length(units);
+electrode = prs.electrode;
 
-correct = behv.stats.trlindx.correct;
-incorrect = behv.stats.trlindx.incorrect;
-crazy = behv.stats.trlindx.crazy;
+correct = behv.stats.trialtype.reward(1).trlindx;
+incorrect = behv.stats.trialtype.reward(2).trlindx;
+crazy = ~(behv.stats.trialtype.all.trlindx);
 indx_all = ~crazy;
 
 % behavioural data
@@ -96,13 +97,63 @@ switch plot_type
         set(gca, 'YScale', 'log');
         set(gca,'XTick',[1 10 20]); set(gca,'YTick',[1 10 20]);
         xlabel('log firing rate (rewarded)'); ylabel('log firing rate (unrewarded)');
+        
+    case 'sta'
+        for i=1:nunits
+            t(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.t;
+            sta(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.lfp;
+        end
+        electrode_ids = [units.electrode_id];
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                figure; hold on;
+                for i=1:nunits
+                    subplot(10,10,10*(xloc(electrode_ids(i))-1) + yloc(electrode_ids(i))); hold on;
+                     if i<120, plot(t(i,:),sta(i,:),'b'); else, plot(t(i,:),sta(i,:),'r'); end; axis off;
+                    axis tight; xlim([-0.2 0.2]); box on; set(gca,'XTick',[]); set(gca,'YTick',[]);
+                end
+        end
+    case 'sfc'
+        for i=1:nunits
+            f(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.f;
+            sfc(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.sfc;
+        end
+        electrode_ids = [units.electrode_id];
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                figure; hold on;
+                for i=1:nunits
+                    subplot(10,10,10*(xloc(electrode_ids(i))-1) + yloc(electrode_ids(i))); hold on;
+                    if i<120, plot(f(i,:),sfc(i,:),'b'); else, plot(f(i,:),sfc(i,:),'r'); end; axis off;
+                    axis tight; xlim([2 70]); box on; set(gca,'XTick',[]); set(gca,'YTick',[]);
+                end
+        end
+    case 'phase'
+        for i=1:nunits
+            phi(i,:) = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.stim.mu;
+            rate(i,:) = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.rate.mu;
+        end
+        electrode_ids = [units.electrode_id];
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                figure; hold on;
+                for i=1:nunits
+                    subplot(10,10,10*(xloc(electrode_ids(i))-1) + yloc(electrode_ids(i))); hold on;
+                    if i<70, plot(phi(i,:),rate(i,:),'b'); else, plot(phi(i,:),rate(i,:),'r'); end; axis off;
+                    axis tight; xlim([-pi pi]); box on; set(gca,'XTick',[]); set(gca,'YTick',[]);
+                end
+        end
+        
 end
 
 for j=1:nunits
     % neural data
-    spks_all = units(j).trials(~crazy);    
+    spks_all = units(j).trials(~crazy);
     % order trials based on trial duration
-%     spks_all = spks_all(indx_all);
+    %     spks_all = spks_all(indx_all);
     switch plot_type
         case 'raster_start'
             %% raster plot - aligned to start of trial
@@ -257,7 +308,7 @@ for j=1:nunits
                 nspk = struct2mat(r_pred,'total','start');
                 trlkrnl = ones(trlkrnlwidth,1)/trlkrnlwidth;
                 nspk_pred = conv2nan(nspk, trlkrnl);
-                nspk_pred = exp(nspk_pred);                
+                nspk_pred = exp(nspk_pred);
                 % variance explained
                 varexp_total(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
                 
@@ -301,6 +352,5 @@ for j=1:nunits
                 % variance explained
                 varexp_eyev(k) = 1-mean(nanvar((nspk_pred - nspk_true),[],2)./nanvar(nspk_true,[],2));
             end
-            x=1;
     end
 end

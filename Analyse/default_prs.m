@@ -10,6 +10,7 @@ prs.filepath_neur = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyIn
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
+prs.electrode = monkeyInfo.electrode;
 prs.comments = monkeyInfo.comments;
 
 %% data acquisition parameters
@@ -26,6 +27,7 @@ prs.x0 = 0; % x-position at trial onset (cm)
 prs.y0 = -32.5; %y-position at trial onset (cm)
 prs.jitter_marker = 0.25; % variability in marker time relative to actual event time (s)
 prs.mintrialduration = 0.5; % to detect bad trials (s)
+prs.electrodespacing = 0.4; %distance (mm) between electrode sites on the array
 
 %% static stimulus parameters
 prs.monk_startpos = [0 -30];
@@ -39,6 +41,7 @@ prs.npermutations = 50; % number of permutations for trial shuffled estimates
 prs.saccade_thresh = 60; % deg/s
 prs.saccade_duration = 0.15; %seconds
 prs.v_thresh = 5; % cm/s
+prs.w_thresh = 3; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
 prs.pretrial = 0.1; % (s) // duration to extract before target onset or movement onset, whichever is earlier
@@ -54,7 +57,15 @@ prs.lfp_freqmin = 0.5; % min frequency (Hz)
 prs.lfp_freqmax = 75; % max frequency (Hz)
 prs.spectrum_tapers = [1 1]; % [time-bandwidth-product number-of-tapers]
 prs.spectrum_trialave = 1; % 1 = trial-average
-prs.spectrum_movingwin = [1.5 1.5]; % [window-size step-size] to compute frequency spectrum (s);
+prs.spectrum_movingwin = [1.5 1.5]; % [window-size step-size] to compute frequency spectrum (s)
+prs.min_stationary = 0.5; % mimimum duration of stationary period for LFP analysis (s)
+prs.min_mobile = 0.5; % mimimum duration of mobile period for LFP analysis (s)
+prs.lfp_theta = [6 12]; prs.lfp_theta_peak = 8.5;
+prs.lfp_beta = [12 20]; prs.lfp_beta_peak = 18.5;
+prs.sta_window = [-1 1]; % time-window of STA
+prs.duration_nanpad = 1; % nans to pad to end of trial before concatenating (s)
+prs.phase_slidingwindow = 0.05:0.05:2; % time-lags for computing time-varying spike phase (s)
+prs.num_phasebins = 25; % divide phase into these many bins
 
 % time window for psth of event aligned responses
 prs.temporal_binwidth = 0.02; % time binwidth for neural data analysis (s)
@@ -84,7 +95,7 @@ prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 
 % define no. of bins for tuning curves by binning method
 prs.tuning.nbins1d_binning = 10; % bin edges for tuning curves by 'binning' method
-prs.tuning.nbins2d_binning = [10;10]; % define bin edges for 2-D tuning curves by 'binning' method
+prs.tuning.nbins2d_binning = [20;20]; % define bin edges for 2-D tuning curves by 'binning' method
 % define no. of nearest neighbors for tuning curves by k-nearest neighbors method
 prs.tuning.k_knn = @(x) round(sqrt(x)); % k=sqrt(N) where N is the total no. of observations
 prs.tuning.nbins1d_knn = 100; prs.tuning.nbins2d_knn = [100 ; 100];
@@ -104,6 +115,7 @@ prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
 prs.binrange.eye_ver = [-25 ; 5]; %deg
 prs.binrange.eye_hor = [-40 ; 40]; %deg
+prs.binrange.phase = [-pi ; pi]; %rad
 prs.binrange.target_ON = [-0.24 ; 0.48];
 prs.binrange.target_OFF = [-0.36 ; 0.36];
 prs.binrange.move = [-0.36 ; 0.36];
@@ -113,7 +125,7 @@ prs.binrange.spikehist = [0.012 ; 0.252];
 
 % fitting models to neural data
 prs.neuralfiltwidth = 10;
-prs.nfolds = 5; % number of folds for cross-validation
+prs.nfolds = 10; % number of folds for cross-validation
 
 % Gradient descent - parameters
 prs.GD_alpha = 1;
@@ -145,13 +157,14 @@ prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choos
 prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 % GAM fitting
-prs.GAM_varname = {'v','w','d','phi','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_varname = {'v','w','d','phi'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc', 'event'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10,10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_varchoose = [0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_method = 'FastBackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 % population analysis
 prs.canoncorr_vars = {'v','w','d','phi'}; % list of variables to include in the task variable matrix
 prs.simulate_vars = {'v','w','d','phi'}; % list of variables to use as inputs in simulation
@@ -168,7 +181,7 @@ prs.regress_eye = false; % regress eye position against target position
 prs.evaluate_peaks = true; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 % GAM fitting
-prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 % population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
@@ -176,5 +189,13 @@ prs.regress_popreadout = false; % regress population activity against individual
 prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% LFP
-prs.event_potential = true;
-prs.compute_spectrum = true;
+prs.event_potential = false;
+prs.compute_spectrum = false;
+prs.analyse_theta = false;
+prs.analyse_beta = false;
+prs.compute_coherencyLFP = false;
+
+%% Spike-LFP
+prs.analyse_spikeLFPrelation = false;
+prs.analyse_spikeLFPrelation_allLFPs = false; % spike-LFP for LFPs from all electrodes
+prs.analyse_temporalphase = false;

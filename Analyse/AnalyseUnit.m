@@ -1,4 +1,4 @@
-function stats = AnalyseUnit(trials_spks,trials_behv,behv_stats,prs)
+function stats = AnalyseUnit(trials_spks,trials_behv,behv_stats,lfps,prs)
 
 %% load analysis params
 x0 = prs.x0; y0 = prs.y0; % position of the subject at trial onset
@@ -13,6 +13,13 @@ mintrialsforstats = prs.mintrialsforstats;
 evaluate_peaks = prs.evaluate_peaks;
 compute_tuning = prs.compute_tuning;
 fitGAM_tuning = prs.fitGAM_tuning;
+analyse_spikeLFPrelation = prs.analyse_spikeLFPrelation;
+analyse_spikeLFPrelation_allLFPs = prs.analyse_spikeLFPrelation_allLFPs;
+sta_window = prs.sta_window;
+duration_nanpad = prs.duration_nanpad;
+phase_slidingwindow = prs.phase_slidingwindow;
+analyse_temporalphase = prs.analyse_temporalphase;
+ntrls = length(trials_spks);
 
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
@@ -24,45 +31,50 @@ if evaluate_peaks
     gettuning = prs.tuning_events;
     for i=1:length(trialtypes)
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
-            trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
-            events_temp = events(trlindx);
-            trials_spks_temp = trials_spks(trlindx);
-            %% aligned to movement onset
-            if any(strcmp(gettuning,'move'))
-                trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_move]);
-                [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.move,temporal_binwidth);
-                stats.trialtype.(trialtypes{i})(j).events.move.rate = nspk;
-                stats.trialtype.(trialtypes{i})(j).events.move.time = ts;
-                stats.trialtype.(trialtypes{i})(j).events.move.peakresp = ...           % significance of peak response
-                    EvaluatePeakresponse(trials_spks_temp2,prs.ts.move,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
-            end
-            %% aligned to target onset
-            if any(strcmp(gettuning,'target'))
-                trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_beg]-[events_temp.t_beg]);
-                [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.target,temporal_binwidth);
-                stats.trialtype.(trialtypes{i})(j).events.target.rate = nspk;
-                stats.trialtype.(trialtypes{i})(j).events.target.time = ts;
-                stats.trialtype.(trialtypes{i})(j).events.target.peakresp = ...         % significance of peak response
-                    EvaluatePeakresponse(trials_spks_temp2,prs.ts.target,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
-            end
-            %% aligned to movement stop
-            if any(strcmp(gettuning,'stop'))
-                trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_stop]);
-                [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.stop,temporal_binwidth);
-                stats.trialtype.(trialtypes{i})(j).events.stop.rate = nspk;
-                stats.trialtype.(trialtypes{i})(j).events.stop.time = ts;
-                stats.trialtype.(trialtypes{i})(j).events.stop.peakresp = ...           % significance of peak response
-                    EvaluatePeakresponse(trials_spks_temp2,prs.ts.stop,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
-            end
-            %% aligned to reward
-            if any(strcmp(gettuning,'reward'))
-                trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_rew]);
-                [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.reward,temporal_binwidth);
-                stats.trialtype.(trialtypes{i})(j).events.reward.rate = nspk;
-                stats.trialtype.(trialtypes{i})(j).events.reward.time = ts;
-                stats.trialtype.(trialtypes{i})(j).events.reward.peakresp = ...         % significance of peak response
-                    EvaluatePeakresponse(trials_spks_temp2,prs.ts.reward,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).events = stats.trialtype.all.events;
+            else
+                trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+                events_temp = events(trlindx);
+                trials_spks_temp = trials_spks(trlindx);
+                %% aligned to movement onset
+                if any(strcmp(gettuning,'move'))
+                    trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_move]);
+                    [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.move,temporal_binwidth);
+                    stats.trialtype.(trialtypes{i})(j).events.move.rate = nspk;
+                    stats.trialtype.(trialtypes{i})(j).events.move.time = ts;
+                    stats.trialtype.(trialtypes{i})(j).events.move.peakresp = ...           % significance of peak response
+                        EvaluatePeakresponse(trials_spks_temp2,prs.ts.move,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
+                end
+                %% aligned to target onset
+                if any(strcmp(gettuning,'target'))
+                    trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_beg]-[events_temp.t_beg]);
+                    [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.target,temporal_binwidth);
+                    stats.trialtype.(trialtypes{i})(j).events.target.rate = nspk;
+                    stats.trialtype.(trialtypes{i})(j).events.target.time = ts;
+                    stats.trialtype.(trialtypes{i})(j).events.target.peakresp = ...         % significance of peak response
+                        EvaluatePeakresponse(trials_spks_temp2,prs.ts.target,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
+                end
+                %% aligned to movement stop
+                if any(strcmp(gettuning,'stop'))
+                    trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_stop]);
+                    [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.stop,temporal_binwidth);
+                    stats.trialtype.(trialtypes{i})(j).events.stop.rate = nspk;
+                    stats.trialtype.(trialtypes{i})(j).events.stop.time = ts;
+                    stats.trialtype.(trialtypes{i})(j).events.stop.peakresp = ...           % significance of peak response
+                        EvaluatePeakresponse(trials_spks_temp2,prs.ts.stop,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
+                end
+                %% aligned to reward
+                if any(strcmp(gettuning,'reward'))
+                    trials_spks_temp2 = ShiftSpikes(trials_spks_temp,[events_temp.t_rew]);
+                    [nspk,ts] = Spiketimes2Rate(trials_spks_temp2,prs.ts.reward,temporal_binwidth);
+                    stats.trialtype.(trialtypes{i})(j).events.reward.rate = nspk;
+                    stats.trialtype.(trialtypes{i})(j).events.reward.time = ts;
+                    stats.trialtype.(trialtypes{i})(j).events.reward.peakresp = ...         % significance of peak response
+                        EvaluatePeakresponse(trials_spks_temp2,prs.ts.reward,temporal_binwidth,peaktimewindow,minpeakprominence,nbootstraps,mintrialsforstats);
+                end
             end
         end
     end
@@ -227,6 +239,7 @@ if fitGAM_tuning
     GAM_prs.lambda = prs.GAM_lambda;
     GAM_prs.alpha = prs.GAM_alpha;
     GAM_prs.varchoose = prs.GAM_varchoose;
+    GAM_prs.method = prs.GAM_method;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
@@ -239,6 +252,7 @@ if fitGAM_tuning
                 events_temp = events(trlindx);
                 continuous_temp = continuous(trlindx);
                 trials_spks_temp = trials_spks(trlindx);
+                if ~isempty(lfps), trials_lfps_temp = lfps(prs.channel_id).trials(trlindx); end
                 %% select variables of interest and load their details
                 vars = cell(length(varname),1);
                 GAM_prs.binrange = cell(1,length(varname));
@@ -261,6 +275,8 @@ if fitGAM_tuning
                         elseif isnan_re, vars{k} = {continuous_temp.yle};
                         else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                         end
+                    elseif strcmp(varname(k),'phase')
+                        vars{k} = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp.lfp},'UniformOutput',false);
                     elseif strcmp(vartype(k),'event')
                         if ~strcmp(varname(k),'spikehist'), vars{k} = [events_temp.(prs.varlookup(varname{k}))]; else, vars{k} = []; end
                         if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
@@ -285,6 +301,105 @@ if fitGAM_tuning
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
                 models = BuildGAM(xt,yt,GAM_prs);
                 stats.trialtype.(trialtypes{i})(j).GAM.(GAM_prs.linkfunc) = models;
+            end
+        end
+    end
+end
+
+
+%% Spike-LFP analysis
+if analyse_spikeLFPrelation
+    spectralparams.tapers = prs.spectrum_tapers;
+    spectralparams.Fs = 1/dt;
+    spectralparams.trialave = prs.spectrum_trialave;
+    trials_lfps = lfps(prs.channel_id).trials; % only use LFP from the same channel on which the unit was recorded
+    % phase analysis
+    for i=1:ntrls, trials_lfps(i).phase = angle(hilbert(trials_lfps(i).lfp)); end
+    for i=1:2%length(trialtypes) % i=1:2  => 'all' and 'reward'
+        nconds = length(behv_stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+        for j=1:nconds
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).continuous.lfps = stats.trialtype.all.continuous.lfps;
+            else
+                trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+                trials_spks_temp = trials_spks(trlindx);
+                events_temp = events(trlindx);
+                continuous_temp = continuous(trlindx);
+                trials_lfps_temp = trials_lfps(trlindx);
+                %% define time windows for computing tuning
+                timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                %% compute tuning to phase
+                stats.trialtype.(trialtypes{i})(j).continuous.lfps.phase = ...
+                    ComputeTuning({trials_lfps_temp.phase},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,[],prs.tuning,prs.tuning_method);
+                %% compute tuning to phase and v
+                stats.trialtype.(trialtypes{i})(j).continuous.lfps.vphase = ...
+                    ComputeTuning2D({continuous_temp.v},{trials_lfps_temp.phase},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning,prs.tuning_method);
+                %% compute tuning to phase and w
+                stats.trialtype.(trialtypes{i})(j).continuous.lfps.wphase = ...
+                    ComputeTuning2D({continuous_temp.w},{trials_lfps_temp.phase},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,prs.tuning,prs.tuning_method);
+                %% spike-triggered average of LFP
+                stats.trialtype.(trialtypes{i})(j).continuous.lfps.sta = SpikeTriggeredLFP({trials_lfps_temp.lfp},{continuous_temp.ts},{trials_spks_temp.tspk},...
+                    timewindow_path,sta_window,duration_nanpad,spectralparams);
+            end
+        end
+    end
+end
+
+if analyse_temporalphase
+    trials_lfps = lfps(prs.channel_id).trials; % only use LFP from the same channel on which the unit was recorded
+    for i=1:ntrls, trials_lfps(i).phase = angle(hilbert(trials_lfps(i).lfp)); end
+    trlindx = behv_stats.trialtype.all.trlindx;
+    trials_spks_temp = trials_spks(trlindx);
+    events_temp = events(trlindx);
+    continuous_temp = continuous(trlindx);
+    trials_lfps_temp = trials_lfps(trlindx);
+    t_stop =  [events_temp.t_stop]'; % when the subject is moving
+    prs_temp = prs; prs_temp.tuning.nbins1d_binning = prs.num_phasebins; prs_temp.tuning_method = 'local-linear'; % use different binning just for this analysis
+    for l = 1:length(phase_slidingwindow)-1
+        %% define time windows for computing tuning
+        timewindow_use = [[events_temp.t_targ]'+phase_slidingwindow(l) [events_temp.t_targ]'+phase_slidingwindow(l+1)]; % window to use for computing phase
+        trlindx2 = timewindow_use(:,2) < t_stop;
+        %% compute tuning to phase        
+        stats.trialtype.all.continuous.temporalphase.phi(l) = ...
+            ComputeTuning({trials_lfps_temp(trlindx2).phase},{continuous_temp(trlindx2).ts},{trials_spks_temp(trlindx2).tspk},timewindow_use(trlindx2,:),duration_zeropad,corr_lag,[],prs_temp.tuning,prs_temp.tuning_method);
+    end
+    stats.trialtype.all.continuous.temporalphase.t = 0.5*(phase_slidingwindow(1:end-1) + phase_slidingwindow(2:end));
+end
+
+if analyse_spikeLFPrelation_allLFPs
+    spectralparams.tapers = prs.spectrum_tapers;
+    spectralparams.Fs = 1/dt;
+    spectralparams.trialave = prs.spectrum_trialave;
+    nlfps = length(lfps);
+    for k=1:nlfps
+        fprintf(['                .....LFP ' num2str(k) '\n']);
+        trials_lfps = lfps(k).trials;
+        % phase analysis
+        for i=1:ntrls
+            trials_lfps(i).phase = angle(hilbert(trials_lfps(i).lfp));
+        end
+        for i=1:2%length(trialtypes) % i=1:2  => 'all' and 'reward'
+            nconds = length(behv_stats.trialtype.(trialtypes{i}));
+            if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+            for j=1:nconds
+                if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                    stats.trialtype.(trialtypes{i})(j).continuous.lfps(k) = stats.trialtype.all.continuous.lfps(k);
+                else
+                    trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+                    trials_spks_temp = trials_spks(trlindx);
+                    events_temp = events(trlindx);
+                    continuous_temp = continuous(trlindx);
+                    trials_lfps_temp = trials_lfps(trlindx);
+                    %% define time windows for computing tuning
+                    timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                    %% compute tuning to phase
+                    stats.trialtype.(trialtypes{i})(j).continuous.lfps(k).phase = ...
+                        ComputeTuning({trials_lfps_temp.phase},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,[],prs.tuning,prs.tuning_method);
+                    %% spike-triggered average of LFP
+                    stats.trialtype.(trialtypes{i})(j).continuous.lfps(k).sta = SpikeTriggeredLFP({trials_lfps_temp.lfp},{continuous_temp.ts},{trials_spks_temp.tspk},...
+                        timewindow_path,sta_window,duration_nanpad,spectralparams);
+                end
             end
         end
     end

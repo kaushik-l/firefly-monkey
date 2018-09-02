@@ -2,22 +2,26 @@ classdef lfp < handle
     %%
     properties
         channel_id
+        electrode_id
         trials
+        stationary
+        mobile
         stats
     end
     %%
     methods
         %% class constructor
-        function this = lfp(channel_id)
+        function this = lfp(channel_id,electrode_id)
             this.channel_id = channel_id;
+            this.electrode_id = electrode_id;
         end
         %% add lfps
         function AddTrials(this,lfp,fs,eventtimes,behaviours,prs)
-            this.trials = AddTrials2Lfp(lfp,fs,eventtimes,behaviours.trials,prs);
+            [this.trials, this.stationary, this.mobile] = AddTrials2Lfp(lfp,fs,eventtimes,behaviours.trials,prs);
         end
         %% analyse spikes
         function AnalyseLfp(this,behaviours,prs)
-            this.stats = AnalyseLfp(this.trials,behaviours.trials,behaviours.stats,prs);
+            this.stats = AnalyseLfp(this.trials,this.stationary,this.mobile,behaviours.trials,behaviours.stats,prs);
         end
     end
 end

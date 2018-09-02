@@ -1,8 +1,8 @@
 function tuningstats = ComputeTuning2D(x1,x2,ts,tspk,timewindow,tuning_prs,tuning_method)
 
 %% concatenate data from different trials
-[xt1,~] = ConcatenateTrials(x1,ts,tspk,timewindow);
-[xt2,yt] = ConcatenateTrials(x2,ts,tspk,timewindow);
+xt1 = ConcatenateTrials(x1,[],tspk,ts,timewindow);
+[xt2,~,yt] = ConcatenateTrials(x2,[],tspk,ts,timewindow);
 xt = [xt1 xt2];
 
 %% compute tuning curves

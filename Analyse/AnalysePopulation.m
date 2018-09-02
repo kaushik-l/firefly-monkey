@@ -8,6 +8,7 @@ fitGAM_coupled = prs.fitGAM_coupled;
 compute_canoncorr = prs.compute_canoncorr;
 regress_popreadout = prs.regress_popreadout;
 simulate_population = prs.simulate_population;
+compute_coherencyLFP = prs.compute_coherencyLFP;
 
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
@@ -359,4 +360,21 @@ if simulate_population
             end
         end
     end
+end
+
+
+%% coherence between LFPs
+if compute_coherencyLFP
+    lfp_concat = nan(length(cell2mat({units(1).trials.lfp}')),nunits);
+    % params
+    spectralparams.tapers = prs.spectrum_tapers;
+    spectralparams.Fs = 1/dt;
+    spectralparams.trialave = prs.spectrum_trialave;
+    % data
+    for i=1:nunits, lfp_concat(:,i) = cell2mat({units(i).trials.lfp}'); end
+    triallen = cellfun(@(x) length(x), {units(1).trials.lfp});
+    sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+    fprintf('**********Computing pairwise coherence between LFPs********** \n');
+    [stats.crosslfp.coher , stats.crosslfp.phase, ~, ~, stats.crosslfp.freq] = ...
+        coherencyc_unequal_length_trials(lfp_concat, prs.spectrum_movingwin , spectralparams, sMarkers); % needs http://chronux.org/
 end

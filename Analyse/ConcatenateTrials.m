@@ -1,4 +1,4 @@
-function [xt,zt,yt,xt_pad,zt_pad,yt_pad] = ConcatenateTrials(x,z,tspk,ts,timewindow,duration_zeropad)
+function [xt,zt,yt,xt_pad,zt_pad,yt_pad] = ConcatenateTrials(x,z,tspk,ts,timewindow,duration_zeropad,duration_nanpad)
 
 % x, ts, and tspk are cell arrays of length N
 % x{i}: time-series of stimulus in trial i
@@ -8,13 +8,17 @@ function [xt,zt,yt,xt_pad,zt_pad,yt_pad] = ConcatenateTrials(x,z,tspk,ts,timewin
 % timewindow: Nx2 array - the columns corresponds to start and end of analysis window
 % e.g. to analyse all datapoints, timeindow(i,:) = [ts{i}(1) ts{i}(end)]
 
-if nargin<6, duration_zeropad = []; end
+if nargin<6, duration_zeropad = []; duration_nanpad = []; end
 ntrls = length(ts);
 twin = mat2cell(timewindow,ones(1,ntrls));
 
 %% concatenate data from different trials
 % concatenate spikes
-y = cellfun(@(x,y) hist(x,y),tspk,ts,'UniformOutput',false);
+if ~(length(tspk{1}) == length(ts{1})) % data as  spike times
+    y = cellfun(@(x,y) hist(x,y),tspk,ts,'UniformOutput',false);
+else % data already in spike counts
+    y = tspk;
+end
 t2 = cellfun(@(x) x(2:end-1),ts,'UniformOutput',false);
 y2 = cellfun(@(x) x(2:end-1)',y,'UniformOutput',false); 
 y2 = cellfun(@(x) x(:),y2,'UniformOutput',false); % transpose is to reshape to column vector
@@ -41,6 +45,12 @@ if ~isempty(duration_zeropad)
     if ~isempty(xt), xt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],xt(:),'UniformOutput',false)); else, xt_pad = []; end % zero-pad for cross-correlations
     if ~isempty(zt), zt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],zt(:),'UniformOutput',false)); else, zt_pad = []; end
     yt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],yt(:),'UniformOutput',false));
+elseif ~isempty(duration_nanpad)
+    dt = median(diff(ts{1}));
+    padding = nan(round(duration_nanpad/dt),1);
+    if ~isempty(xt), xt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],xt(:),'UniformOutput',false)); xt_pad = [xt_pad ; padding(:)]; else, xt_pad = []; end % zero-pad for cross-correlations
+    if ~isempty(zt), zt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],zt(:),'UniformOutput',false)); zt_pad = [zt_pad ; padding(:)]; else, zt_pad = []; end
+    yt_pad = cell2mat(cellfun(@(x) [padding(:) ; x(:)],yt(:),'UniformOutput',false)); yt_pad = [yt_pad ; padding(:)];
 else
     xt_pad = [];
     zt_pad = [];
