@@ -4,6 +4,7 @@ function t_events = GetEvents_plx(fname)
 [~, ts, sv] = plx_event_ts(fname, 257); count=0;
 t_events.start = ts(sv==1);
 ts(sv==1) = []; sv(sv==1) = [];
+ts(sv==8) = []; sv(sv==8) = [];
 nevents = find(sv==3,1,'last');
 for i=1:nevents
     if sv(i)==3

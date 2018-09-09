@@ -153,6 +153,7 @@ prs.bootstrap_trl = 50; % number of trials to bootstrap
 %% list of analyses to perform
 % *specify methods and variables for analyses (fewer => faster obvisously)*
 % traditional methods
+prs.hand_features = {'Finger1','Finger2','Finger3','Finger4','Wrist-down','Wrist-up','Hand-down','Hand-up'};
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
 prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'

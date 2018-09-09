@@ -14,8 +14,10 @@ if isempty(getch)
                 nunits = nunits+1;
                 units{nunits}.nspk = tscounts(j,i);
                 [~,~,units(nunits).tspk,units(nunits).spkwf] = plx_waves(fname,i-1,j-1);
-                units(nunits).chnl = i-1;
-                units(nunits).unit = j-1;
+                units(nunits).spkwf = mean(units(nunits).spkwf);
+                units(nunits).channel_id = i-1;
+                units(nunits).electrode_id = i-1;
+                units(nunits).cluster_id = j-1;
             end
         end
     end
@@ -25,8 +27,10 @@ else
             nunits = nunits+1;
             units(nunits).nspk = tscounts(j,getch+1);
             [~,~,units(nunits).tspk,units(nunits).spkwf] = plx_waves(fname,getch,j-1);
-            units(nunits).chnl = getch;
-            units(nunits).unit = j-1;
+            units(nunits).spkwf = mean(units(nunits).spkwf);
+            units(nunits).channel_id = getch;
+            units(nunits).electrode_id = getch;
+            units(nunits).cluster_id = j-1;
         end
     end
 end
