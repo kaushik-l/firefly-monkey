@@ -13,6 +13,8 @@ mintrialsforstats = prs.mintrialsforstats;
 evaluate_peaks = prs.evaluate_peaks;
 compute_tuning = prs.compute_tuning;
 fitGAM_tuning = prs.fitGAM_tuning;
+GAM_varexp = prs.GAM_varexp;
+fitNNM = prs.fitNNM;
 analyse_spikeLFPrelation = prs.analyse_spikeLFPrelation;
 analyse_spikeLFPrelation_allLFPs = prs.analyse_spikeLFPrelation_allLFPs;
 sta_window = prs.sta_window;
@@ -304,8 +306,114 @@ if fitGAM_tuning
             end
         end
     end
+    %% estimate variance explained by GAM
+    if GAM_varexp
+        if ~all(GAM_prs.varchoose == 0), warning('cannot compute variance explained if varchoose = 1');
+        elseif ~strcmpi(GAM_prs.method,'fastbackward'), warning('set "fastbackward" as your model selection method for computing variance explained');
+        else
+            nvars = numel(GAM_prs.varname);
+            modelclasses = cell2mat(stats.trialtype.all.GAM.log.class);            
+            varexp_full = models.trainFit{all(modelclasses == ones(1,nvars),2)}(:,1);
+%             if any(~strcmp(vartype,'event'))
+%                 GAM_prs.method = 'FastForward'; models_fwd = BuildGAM(xt,yt,GAM_prs); 
+%                 modelclasses_fwd = cell2mat(models_fwd.class); 
+%             end
+            for i=1:nvars
+                % for var explained by discrete events, use the reduction in varexp when removing that variable
+%                 if strcmpi(vartype{i},'event')
+                    indx = true(1,nvars); indx(i) = false;
+                    stats.trialtype.all.GAM.log.varexp{i} = mean(varexp_full - models.trainFit{all(modelclasses == indx,2)}(:,1));
+                    if strcmpi(vartype{i},'event')
+                        t_frac = (sum(~isnan(vars{i}))*diff(GAM_prs.binrange{i}))/(dt*numel(xt{i}));
+                        stats.trialtype.all.GAM.log.varexp{i} = stats.trialtype.all.GAM.log.varexp{i}/t_frac;
+                    end
+                % for var explained by continuous vars, use the varexp with just that variable as predictor
+%                 elseif any(strcmpi(vartype{i},{'1D','2D'}))
+%                     indx = false(1,nvars); indx(i) = true;
+%                     stats.trialtype.all.GAM.log.varexp{i} = mean(models_fwd.trainFit{all(modelclasses_fwd == indx,2)}(:,1));
+%                 end
+            end
+        end
+    end
 end
 
+%% Fit a 2-layer neural network model (requires spykesML Python package: https://github.com/KordingLab/spykesML.git)
+if fitNNM
+    NNM_prs.varname = prs.NNM_varname; varname = NNM_prs.varname;
+    NNM_prs.vartype = prs.NNM_vartype; vartype = NNM_prs.vartype;
+    NNM_prs.nbins = prs.NNM_nbins;
+    NNM_prs.binrange = [];
+    NNM_prs.filtwidth = prs.neuralfiltwidth;
+    NNM_prs.method = prs.NNM_method;
+    nvars = numel(NNM_prs.varname);
+    for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
+        nconds = length(behv_stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+        fprintf(['.........fitting Neural network model :: trialtype: ' (trialtypes{i}) '\n']);
+        for j=1:nconds
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).NNM.(NNM_prs.method) = stats.trialtype.all.NNM.(NNM_prs.method);
+            else
+                trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
+                events_temp = events(trlindx);
+                continuous_temp = continuous(trlindx);
+                trials_spks_temp = trials_spks(trlindx);
+                if ~isempty(lfps), trials_lfps_temp = lfps(prs.channel_id).trials(trlindx); end
+                %% select variables of interest and load their details
+                vars = cell(length(varname),1);
+                NNM_prs.binrange = cell(1,length(varname));
+                for k=1:length(varname)
+                    if isfield(continuous_temp,varname(k)), vars{k} = {continuous_temp.(varname{k})};
+                    elseif isfield(behv_stats.pos_rel,varname(k)), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
+                    elseif strcmp(varname(k),'d')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'phi')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'eye_ver')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                        if isnan_le, vars{k} = {continuous_temp.zre};
+                        elseif isnan_re, vars{k} = {continuous_temp.zle};
+                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                        end
+                    elseif strcmp(varname(k),'eye_hor')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                        if isnan_le, vars{k} = {continuous_temp.yre};
+                        elseif isnan_re, vars{k} = {continuous_temp.yle};
+                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                        end
+                    elseif strcmp(varname(k),'phase')
+                        vars{k} = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp.lfp},'UniformOutput',false);
+                    elseif strcmp(vartype(k),'event')
+                        if ~strcmp(varname(k),'spikehist'), vars{k} = [events_temp.(prs.varlookup(varname{k}))]; else, vars{k} = []; end
+                        if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
+                    end
+                    NNM_prs.binrange{k} = prs.binrange.(varname{k});
+                end
+                %% define time windows for computing tuning
+                timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
+                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
+                %% concatenate data from all trials
+                xt = []; yt = [];
+                for k=1:length(vars)
+                    if ~strcmp(vartype(k),'event')
+                        [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    elseif ~strcmp(varname(k),'spikehist')
+                        [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    end
+                end
+                if any(strcmp(varname,'spikehist')), xt(:,strcmp(varname,'spikehist')) = yt; end % pass spike train back as an input to fit spike-history kernel
+                %% model fitting and selection
+                xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
+                indx = find(strcmp(NNM_prs.vartype,'event')); for k=indx, NNM_prs.binrange{k} = round(NNM_prs.binrange{k}/dt); end
+                for k=1:nvars, x{k} = Encode1hot(xt{k}, NNM_prs.vartype{k}, NNM_prs.binrange{k}, NNM_prs.nbins{k}); end % use 1-hot encoding for neurons in the input layer
+                [messenger,model] = system(['python ' prs.filepath_neuralnet 'MLencoding.py']); % switch to command line to execute Python code
+                if ~messenger, stats.trialtype.(trialtypes{i})(j).NNM.(NNM_prs.method) = model;
+                else, warning(['python script failed with the following error: ' messenger]); end
+            end
+        end
+    end
+end
 
 %% Spike-LFP analysis
 if analyse_spikeLFPrelation

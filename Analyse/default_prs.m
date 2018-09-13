@@ -7,6 +7,7 @@ monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
 prs.filepath_behv = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
 prs.filepath_neur = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
+prs.filepath_neuralnet = 'C:\Users\jklakshm\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
@@ -152,21 +153,26 @@ prs.bootstrap_trl = 50; % number of trials to bootstrap
 
 %% list of analyses to perform
 % *specify methods and variables for analyses (fewer => faster obvisously)*
-% traditional methods
+%% traditional methods
 prs.hand_features = {'Finger1','Finger2','Finger3','Finger4','Wrist-down','Wrist-up','Hand-down','Hand-up'};
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
 prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
-% GAM fitting
-prs.GAM_varname = {'v','w','d','phi'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D'}; % type of variable: '1d', '1dcirc', 'event'
+%% GAM fitting
+prs.GAM_varname = {'v','w','d','phi','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10,10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_varchoose = [0,0,0,0,0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
 prs.GAM_method = 'FastBackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
-% population analysis
+%% NNM fitting
+prs.NNM_varname = prs.GAM_varname;
+prs.NNM_vartype = prs.GAM_vartype;
+prs.NNM_nbins = prs.GAM_nbins;
+prs.NNM_method = 'feedforward_nn'; % choose from 'feedforward_nn', 'random_forest' or 'xgboost'
+%% population analysis
 prs.canoncorr_vars = {'v','w','d','phi'}; % list of variables to include in the task variable matrix
 prs.simulate_vars = {'v','w','d','phi'}; % list of variables to use as inputs in simulation
 prs.popreadout_continuous = {'v','w','d','phi','r_targ','alpha','beta'};
@@ -180,11 +186,14 @@ prs.regress_eye = false; % regress eye position against target position
 %% spikes
 % traditional methods
 prs.evaluate_peaks = true; % evaluate significance of event-locked responses
-prs.compute_tuning = false; % compute tuning functions
-% GAM fitting
+prs.compute_tuning = true; % compute tuning functions
+%% GAM fitting
 prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.GAM_varexp = true; % compute variance explained by each prdictor using GAM
 prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
-% population analysis
+%% NNM fitting
+prs.fitNNM = true;
+%% population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models

@@ -20,3 +20,5 @@ end
 
 figure; plot(squeeze(pos_hand(1:4,1,:))',squeeze(pos_hand(1:4,2,:))','.','MarkerSize',0.25); 
 axis([0 720 0 480]); set(gca,'YDir','reverse');
+
+figure; plot(squeeze(pos_hand(1,1,:)));
