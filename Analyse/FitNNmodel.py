@@ -18,11 +18,11 @@ y = data_imported['y'][0]
 
 
 # instantiate model object
+"""
 glm_model = MLencoding(tunemodel = 'glm')
 Y_hat, varexp = glm_model.fit_cv(X,y, n_cv = 10, verbose = 2)
-
 """
+
 nn_model = MLencoding(tunemodel = 'feedforward_nn')
 Y_hat, varexp = nn_model.fit_cv(X,y, n_cv = 10, verbose = 2)
 print(varexp)
-"""

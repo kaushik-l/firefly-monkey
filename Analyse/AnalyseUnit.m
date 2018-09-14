@@ -23,6 +23,10 @@ phase_slidingwindow = prs.phase_slidingwindow;
 analyse_temporalphase = prs.analyse_temporalphase;
 ntrls = length(trials_spks);
 
+% prepare filter
+filtwidth = prs.neuralfiltwidth;
+t = linspace(-2*filtwidth,2*filtwidth,4*filtwidth + 1); h = exp(-t.^2/(2*filtwidth^2)); h = h/sum(h);
+
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
 events = cell2mat({trials_behv.events});
@@ -407,7 +411,10 @@ if fitNNM
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
                 indx = find(strcmp(NNM_prs.vartype,'event')); for k=indx, NNM_prs.binrange{k} = round(NNM_prs.binrange{k}/dt); end
                 for k=1:nvars, x{k} = Encode1hot(xt{k}, NNM_prs.vartype{k}, NNM_prs.binrange{k}, NNM_prs.nbins{k}); end % use 1-hot encoding for neurons in the input layer
-                [messenger,model] = system(['python ' prs.filepath_neuralnet 'MLencoding.py']); % switch to command line to execute Python code
+                X = cell2mat(x); y = (conv(yt,h,'same')')/dt;
+                save('tempdata_Xy.mat','X','y');  % store data in a .mat file for scipy to access
+                [messenger,model] = system(['python ' prs.filepath_neuralnet 'MLencoding.py']); % switch to command line to run Python code
+                delete('tempdata_Xy.mat'); % destroy the .mat file
                 if ~messenger, stats.trialtype.(trialtypes{i})(j).NNM.(NNM_prs.method) = model;
                 else, warning(['python script failed with the following error: ' messenger]); end
             end
