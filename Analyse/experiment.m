@@ -16,7 +16,7 @@ classdef experiment < handle
             prs = default_prs(monk_id,sess_id);
             this.sessions(end+1) = session(monk_id,sess_id,prs.coord);
             this.sessions(end).AddBehaviours(prs);
-%             this.sessions(end).AddLfps(prs);
+            this.sessions(end).AddLfps(prs);
 %             this.sessions(end).AnalyseLfps(prs);
             this.sessions(end).AddUnits(prs);
             this.sessions(end).AnalyseUnits(prs);

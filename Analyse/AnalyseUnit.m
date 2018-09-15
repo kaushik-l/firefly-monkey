@@ -24,7 +24,7 @@ analyse_temporalphase = prs.analyse_temporalphase;
 ntrls = length(trials_spks);
 
 % prepare filter
-filtwidth = prs.neuralfiltwidth;
+filtwidth = 5; %prs.neuralfiltwidth;
 t = linspace(-2*filtwidth,2*filtwidth,4*filtwidth + 1); h = exp(-t.^2/(2*filtwidth^2)); h = h/sum(h);
 
 %% load cases
@@ -377,13 +377,13 @@ if fitNNM
                         isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
                         if isnan_le, vars{k} = {continuous_temp.zre};
                         elseif isnan_re, vars{k} = {continuous_temp.zle};
-                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
                         end
                     elseif strcmp(varname(k),'eye_hor')
                         isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
                         if isnan_le, vars{k} = {continuous_temp.yre};
                         elseif isnan_re, vars{k} = {continuous_temp.yle};
-                        else vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                         end
                     elseif strcmp(varname(k),'phase')
                         vars{k} = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp.lfp},'UniformOutput',false);
@@ -411,9 +411,9 @@ if fitNNM
                 xt = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
                 indx = find(strcmp(NNM_prs.vartype,'event')); for k=indx, NNM_prs.binrange{k} = round(NNM_prs.binrange{k}/dt); end
                 for k=1:nvars, x{k} = Encode1hot(xt{k}, NNM_prs.vartype{k}, NNM_prs.binrange{k}, NNM_prs.nbins{k}); end % use 1-hot encoding for neurons in the input layer
-                X = cell2mat(x); y = (conv(yt,h,'same')')/dt;
+                X = cell2mat(x); y = yt'; %(conv(yt,h,'same')')/dt;
                 save('tempdata_Xy.mat','X','y');  % store data in a .mat file for scipy to access
-                [messenger,model] = system(['python ' prs.filepath_neuralnet 'MLencoding.py']); % switch to command line to run Python code
+                [messenger,model] = system(['python ' 'C:\Users\jklakshm\Documents\GitHub\firefly-monkey\Analyse\FitNNmodel.py']); % switch to command line to run Python code
                 delete('tempdata_Xy.mat'); % destroy the .mat file
                 if ~messenger, stats.trialtype.(trialtypes{i})(j).NNM.(NNM_prs.method) = model;
                 else, warning(['python script failed with the following error: ' messenger]); end

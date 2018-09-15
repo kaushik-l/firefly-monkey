@@ -159,13 +159,13 @@ prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choos
 prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
-prs.GAM_varname = {'v','w','d','phi','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_varname = {'v','w','d','phi','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10,10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10,10,10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [0,0,0,0,0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
 prs.GAM_method = 'FastBackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
@@ -189,10 +189,10 @@ prs.evaluate_peaks = true; % evaluate significance of event-locked responses
 prs.compute_tuning = true; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
-prs.GAM_varexp = true; % compute variance explained by each prdictor using GAM
+prs.GAM_varexp = false; % compute variance explained by each prdictor using GAM
 prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
-prs.fitNNM = true;
+prs.fitNNM = false;
 %% population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
