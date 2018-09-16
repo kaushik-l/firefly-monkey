@@ -17,8 +17,8 @@ classdef population < handle
             this.lfps = [];
         end
         %% function to add sessions
-        function AnalysePopulation(this,units,unittype,behaviours,prs)
-            this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,prs);
+        function AnalysePopulation(this,units,unittype,behaviours,lfps,prs)
+            this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs);
         end
     end
 end

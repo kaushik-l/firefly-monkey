@@ -140,9 +140,9 @@ classdef session < handle
             if strcmp(unittype,'lfps')
                 this.populations.AnalysePopulation(this.lfps,'lfps',this.behaviours,prs);
             elseif ~strcmp(unittype,'units')
-                this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours,prs);
+                this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours,this.lfps,prs);
             else
-                this.populations.AnalysePopulation(this.units,unittype,this.behaviours,prs);
+                this.populations.AnalysePopulation(this.units,unittype,this.behaviours,this.lfps,prs);
             end
         end
         %% plot behaviour
