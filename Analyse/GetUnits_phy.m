@@ -1,5 +1,6 @@
 function [sua, mua] = GetUnits_phy(f_spiketimes, f_spikeclusters, f_clustergroups, f_clusterlocations, electrode)
 
+cluster_locs = [];
 [~,electrode_id] = MapChannel2Electrode(electrode);
 spiketimes = readNPY(f_spiketimes);
 cluster_ids = readNPY(f_spikeclusters);
