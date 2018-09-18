@@ -116,8 +116,8 @@ end
 
 %% cannonical correlation analysis
 if compute_canoncorr
-    varname = prs.canoncorr_vars;
-    filtwidth = 10; %prs.neuralfiltwidth;
+    varname = prs.canoncorr_varname;
+    filtwidth = prs.neuralfiltwidth;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
@@ -131,6 +131,7 @@ if compute_canoncorr
                 events_temp = events(trlindx);
                 continuous_temp = continuous(trlindx);
                 %% select variables of interest and load their details
+                vars = cell(length(varname),1);
                 for k=1:length(varname)
                     if isfield(continuous_temp,varname{k}), vars{k} = {continuous_temp.(varname{k})};
                     elseif isfield(behv_stats.pos_rel,varname{k}), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
@@ -138,28 +139,44 @@ if compute_canoncorr
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname{k},'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'eye_ver')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                        if isnan_le, vars{k} = {continuous_temp.zre};
+                        elseif isnan_re, vars{k} = {continuous_temp.zle};
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                        end
+                    elseif strcmp(varname(k),'eye_hor')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                        if isnan_le, vars{k} = {continuous_temp.yre};
+                        elseif isnan_re, vars{k} = {continuous_temp.yle};
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                        end
                     end
                 end
                 %% define time windows for computing tuning
                 timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
+                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
                 %% concatenate stimulus data from all trials
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
                     xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    xt(isnan(xt(:,k)),k) = 0;
                 end
                 %% concatenate units
                 Yt = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
                 end
-                Yt_conv = SmoothSpikes(Yt, filtwidth);
+                Yt_conv = SmoothSpikes(Yt, 3*filtwidth);
                 %% compute canonlical correlation
-                [X,Y,R] = canoncorr(xt,Yt_conv/dt);
+                [X,Y,R,~,~,pstats] = canoncorr(xt,Yt_conv/dt);
                 stats.trialtype.(trialtypes{i})(j).canoncorr.stim = X;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.resp = Y;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coeff = R;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.pval = pstats;
             end
         end
     end
@@ -167,141 +184,85 @@ end
 
 %% compute population readout weights via ordinary-least-squares
 if regress_popreadout
-    getreadout = prs.popreadout_continuous;
-    prs.popreadout_continuous = {'d','phi'};
-    GD_alpha = prs.GD_alpha;
-    GD_niters = prs.GD_niters;
-    GD_featurescale = prs.GD_featurescale;
-    GD_modelname = prs.GD_modelname;
+    varname = prs.readout_varname;
+    decodertype = prs.decodertype;
     filtwidth = prs.neuralfiltwidth;
     for i=1 % i=1 means compute only for all trials together
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         for j=1:nconds
             trlindx = behv_stats.trialtype.(trialtypes{i})(j).trlindx;
             events_temp = events(trlindx);
+            continuous_temp = continuous(trlindx);
+            %% define time windows for decoding
             timewindow_move = [[events_temp.t_move]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
-            timewindow_path = [[events_temp.t_targ]' [events_temp.t_rew]']; % test
-%             timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
+            timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
             timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
                     [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
-            continuous_temp = continuous(trlindx);
             nunits = length(units);
-            %% linear velocity, v
-            if any(strcmp(getreadout,'v'))
-                xt = []; Yt = [];
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.v},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
-                end                
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).v.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).v.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).v.true = xt;
-                stats.(GD_modelname).v.pred = (Yt*stats.(GD_modelname).v.theta);
+            %% gather spikes from all units
+            Yt = [];
+            for k=1:nunits
+                trials_spks_temp = units(k).trials(trlindx);
+                [~,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.v},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
             end
-            %% angular velocity, w
-            if any(strcmp(getreadout,'w'))
-                xt = []; Yt = [];
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.w},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+            %% build decoder for each variable
+            vars = cell(length(varname),1);
+            trials_spks_temp = units(k).trials(trlindx);
+            for k=1:length(varname)
+                fprintf(['Building decoder for ' varname{k} '...\n']);
+                if isfield(continuous_temp,varname{k}), vars{k} = {continuous_temp.(varname{k})};
+                elseif isfield(behv_stats.pos_rel,varname{k}), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
+                elseif strcmp(varname{k},'d')
+                    vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                elseif strcmp(varname{k},'phi')
+                    vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                elseif strcmp(varname(k),'eye_ver')
+                    isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                    if isnan_le, vars{k} = {continuous_temp.zre};
+                    elseif isnan_re, vars{k} = {continuous_temp.zle};
+                    else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                    end
+                elseif strcmp(varname(k),'eye_hor')
+                    isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                    if isnan_le, vars{k} = {continuous_temp.yre};
+                    elseif isnan_re, vars{k} = {continuous_temp.yle};
+                    else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                    end
                 end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).w.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).w.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).w.true = xt;
-                stats.(GD_modelname).w.pred = (Yt*stats.(GD_modelname).w.theta);
-            end
-            %% distance to target, r_targ
-            if any(strcmp(getreadout,'r_targ'))
-                xt = []; Yt = [];
-                r_targ = behv_stats.pos_rel.r_targ(trlindx);
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials(r_targ,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                xt = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                xt(isnan(xt)) = 0;
+                filtwidths=1:5:100; decodingerror = nan(1,length(filtwidths));
+                fprintf('...optimising hyperparameter\n');
+                for l=1:length(filtwidths)
+                    Yt_temp = SmoothSpikes(Yt, filtwidths(l)); % smooth spiketrains before fitting model
+                    wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                    decodingerror(l) = sqrt(sum((Yt_temp*wts - xt).^2));
                 end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).r_targ.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).r_targ.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).r_targ.true = xt;
-                stats.(GD_modelname).r_targ.pred = (Yt*stats.(GD_modelname).r_targ.theta);
-            end
-            %% distance, d
-            if any(strcmp(getreadout,'d'))
-                xt = []; Yt = [];
-                d = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials(d,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
-                end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).d.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).d.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).d.true = xt;
-                stats.(GD_modelname).d.pred = (Yt*stats.(GD_modelname).d.theta);
-            end
-            %% heading, phi
-            if any(strcmp(getreadout,'phi'))
-                xt = []; Yt = [];
-                phi = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials(phi,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
-                end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).phi.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).phi.true = xt;
-                stats.(GD_modelname).phi.pred = (Yt*stats.(GD_modelname).phi.theta);
-            end
-            %% eye vertical, alpha
-            if any(strcmp(getreadout,'alpha'))
-                xt = []; Yt = [];
-                isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
-                if isnan_le, alpha = {continuous_temp.zre};
-                elseif isnan_re, alpha = {continuous_temp.zle};
-                else alpha = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
-                end
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials(alpha,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
-                end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-%                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).alpha.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).alpha.true = xt;
-                stats.(GD_modelname).alpha.pred = (Yt*stats.(GD_modelname).alpha.theta);
-            end
-            %% eye horizontal, beta
-            if any(strcmp(getreadout,'beta'))
-                xt = []; Yt = [];
-                isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
-                if isnan_le, beta = {continuous_temp.yre};
-                elseif isnan_re, beta = {continuous_temp.yle};
-                else beta = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
-                end
-                for k=1:nunits
-                    trials_spks_temp = units(k).trials(trlindx);
-                    [xt,~,Yt(:,k)] = ConcatenateTrials(beta,[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
-                end
-                Yt = SmoothSpikes(Yt, filtwidth); % smooth spiketrains before fitting model
-                %                 [stats.(GD_modelname).phi.theta, J] = GradientDescent(Yt, xt, GD_alpha, GD_niters, GD_featurescale, GD_modelname); % Init weights (theta) and run Gradient Descent
-                stats.(GD_modelname).beta.theta = (Yt'*Yt)\(Yt'*xt); % analytical
-                stats.(GD_modelname).beta.true = xt;
-                stats.(GD_modelname).beta.pred = (Yt*stats.(GD_modelname).beta.theta);
+                [~,bestindx] = min(decodingerror); bestfiltwidth = filtwidths(bestindx);
+                fprintf('**********decoding**********\n');
+                Yt_temp = SmoothSpikes(Yt, bestfiltwidth); % smooth spiketrains before fitting model
+                stats.(decodertype).(varname{k}).wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                stats.(decodertype).(varname{k}).true = xt;
+                stats.(decodertype).(varname{k}).pred = (Yt_temp*stats.(decodertype).(varname{k}).wts);
+                %% fixed filtwidth
+                Yt_temp = SmoothSpikes(Yt, 3*filtwidth); % smooth spiketrains before fitting model
+                stats.(decodertype).(varname{k}).wts2 = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                stats.(decodertype).(varname{k}).true2 = xt;
+                stats.(decodertype).(varname{k}).pred2 = (Yt_temp*stats.(decodertype).(varname{k}).wts);
             end
         end
     end
 end
 
-%% simulate 
-if simulate_population
-    varname = prs.simulate_vars;
-    filtwidth = 10; %prs.neuralfiltwidth;
+%% evaluate model responses for coupled and uncoupled models
+if simulate_population && fitGAM_coupled
+    varname = prs.simulate_varname;
+    vartype = prs.simulate_vartype;
+    filtwidth = prs.neuralfiltwidth;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
-        fprintf(['.........computing canonical correlations :: trialtype: ' (trialtypes{i}) '\n']);
+        fprintf(['.........computing canonical correlations for actual and model-simulated responses :: trialtype: ' (trialtypes{i}) '\n']);
         for j=1:nconds
             if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
                 stats.trialtype.(trialtypes{i})(j).canoncorr = stats.trialtype.all.canoncorr;
@@ -310,6 +271,7 @@ if simulate_population
                 events_temp = events(trlindx);
                 continuous_temp = continuous(trlindx);
                 %% select variables of interest and load their details
+                vars = cell(length(varname),1); binrange = cell(length(varname),1); nbins = cell(length(varname),1);
                 for k=1:length(varname)
                     if isfield(continuous_temp,varname{k}), vars{k} = {continuous_temp.(varname{k})};
                     elseif isfield(behv_stats.pos_rel,varname{k}), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
@@ -317,60 +279,77 @@ if simulate_population
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname{k},'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'eye_ver')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
+                        if isnan_le, vars{k} = {continuous_temp.zre};
+                        elseif isnan_re, vars{k} = {continuous_temp.zle};
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false);
+                        end
+                    elseif strcmp(varname(k),'eye_hor')
+                        isnan_le = all(isnan(cell2mat({continuous_temp.yle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.yre}')));
+                        if isnan_le, vars{k} = {continuous_temp.yre};
+                        elseif isnan_re, vars{k} = {continuous_temp.yle};
+                        else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
+                        end
                     end
+                    binrange{k} = GAM_prs.binrange{strcmp(GAM_prs.varname,varname{k})};
+                    nbins{k} = GAM_prs.nbins{strcmp(GAM_prs.varname,varname{k})};
                 end
                 %% define time windows for computing tuning
                 timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
+                timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
+                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
                 %% concatenate stimulus data from all trials
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full); 
+                    xt(isnan(xt(:,k)),k) = 0;
                 end
                 %% encode stimulus as one-hot variables
-                binrange(:,1) = prs.binrange.v;
-                binrange(:,2) = prs.binrange.w;
-                binrange(:,3) = prs.binrange.d;
-                binrange(:,4) = prs.binrange.phi;
-                for k=1:length(vars)
-                    x_1hot(:,:,k) = Encode1hot(xt,'1D',binrange(:,k),10);
-                end
-                %% simulate UCmodel
-                Yt_UCmodel = zeros(size(xt,1),nunits);
+                x_1hot = [];
+                for k=1:length(vars), x_1hot(:,:,k) = Encode1hot(xt,vartype{k},binrange{k},nbins{k}); end
+                %% simulate uncoupled model
+                Yt_uncoupled = zeros(size(xt,1),nunits);
                 for k=1:nunits
-                    y_temp = [];
-                    UCmodel = modelunits(k).Uncoupledmodel;                    
-                    wts = UCmodel.wts{end};
-                    for v = 1:length(vars)
-                        y_temp(v,:) = sum(repmat(wts{v},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,v)),2);
+                    y_temp = zeros(length(vars),size(xt,1));
+                    uncoupledmodel = stats.trialtype.all.models.log.units(k).Uncoupledmodel;                    
+                    if ~isnan(uncoupledmodel.bestmodel), wts = uncoupledmodel.wts{uncoupledmodel.bestmodel};
+                    else, wts = uncoupledmodel.wts{1}; end
+                    for l = 1:length(vars)
+                        % simulated response to each variable before exp
+                        y_temp(l,:) = sum(repmat(wts{strcmp(GAM_prs.varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
                     end
                     y_temp = exp(sum(y_temp));
-                    Yt_UCmodel(:,k) = y_temp;
+                    Yt_uncoupled(:,k) = y_temp;
                 end
-                Yt_UCmodel_conv = SmoothSpikes(Yt_UCmodel, filtwidth);
+                Yt_uncoupled = SmoothSpikes(Yt_uncoupled, 3*filtwidth);
                 % compute canonlical correlation
-                [X_UCmodel,Y_UCmodel,R_UCmodel,~,~,pstats] = canoncorr(xt,Yt_UCmodel_conv/dt);
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_stim = X;
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_resp = Y;
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_coeff = R;
-                %% simulate Cmodel
-                Yt_Cmodel = zeros(size(xt,1),nunits);
+                [X_uncoupled,Y_uncoupled,R_uncoupled,~,~,pstats_uncoupled] = canoncorr(xt,Yt_uncoupled/dt);
+                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_stim = X_uncoupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_resp = Y_uncoupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_coeff = R_uncoupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_pval = pstats_uncoupled;
+                %% simulate coupled model
+                Yt_coupled = zeros(size(xt,1),nunits);
                 for k=1:nunits
-                    y_temp = [];
-                    UCmodel = modelunits(k).Uncoupledmodel;
-                    wts = UCmodel.wts{end};
-                    for v = 1:length(vars)
-                        y_temp(v,:) = sum(repmat(wts{v},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,v)),2);
+                    y_temp = zeros(length(vars),size(xt,1));
+                    coupledmodel = stats.trialtype.all.models.log.units(k).Coupledmodel;
+                    wts = coupledmodel.wts;
+                    for l = 1:length(vars)
+                        % simulated response to each variable before exp
+                        y_temp(l,:) = sum(repmat(wts{strcmp(GAM_prs.varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
                     end
-                    y_temp2(:,k) = 0.5*sum(y_temp)' + sum(Yt(:,1:nunits~=k).*repmat(modelunits(k).Coupledmodel.wts{end},[size(Yt,1), 1]),2);
+                    Yt_coupled(:,k) = exp(sum(y_temp)' + ...
+                        sum(Yt(:,1:nunits~=k).*repmat(stats.trialtype.all.models.log.units(k).Coupledmodel.wts{end},[size(Yt,1), 1]),2));
                 end
-                Yt_Cmodel = exp(y_temp2);
-                Yt_Cmodel_conv = SmoothSpikes(Yt_Cmodel, filtwidth);
+                Yt_coupled = SmoothSpikes(Yt_coupled, 3*filtwidth);
                 % compute canonlical correlation
-                [X_Cmodel,Y_Cmodel,R_Cmodel] = canoncorr(xt,Yt_Cmodel_conv/dt);
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_stim = X;
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_resp = Y;
-                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_coeff = R;
+                [X_coupled,Y_coupled,R_coupled,~,~,pstats_coupled] = canoncorr(xt,Yt_coupled/dt);
+                stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_stim = X_coupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_resp = Y_coupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_coeff = R_coupled;
+                stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_pval = pstats_coupled;
             end
         end
     end

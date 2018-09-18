@@ -114,7 +114,7 @@ prs.binrange.w = [-90 ; 90]; %deg/s
 prs.binrange.r_targ = [0 ; 400]; %cm
 prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
-prs.binrange.eye_ver = [-25 ; 5]; %deg
+prs.binrange.eye_ver = [-25 ; 0]; %deg
 prs.binrange.eye_hor = [-40 ; 40]; %deg
 prs.binrange.phase = [-pi ; pi]; %rad
 prs.binrange.target_ON = [-0.24 ; 0.48];
@@ -128,11 +128,8 @@ prs.binrange.spikehist = [0.012 ; 0.252];
 prs.neuralfiltwidth = 10;
 prs.nfolds = 10; % number of folds for cross-validation
 
-% Gradient descent - parameters
-prs.GD_alpha = 1;
-prs.GD_niters = 200;
-prs.GD_featurescale = false;
-prs.GD_modelname = 'LR'; % name of model to fit: linear regression == 'LR'
+% decoder - parameters
+prs.decodertype = 'lineardecoder'; % name of model to fit: linear regression == 'LR'
 
 %% hash table to map layman terms to variable names
 prs.varlookup = containers.Map;
@@ -156,16 +153,16 @@ prs.bootstrap_trl = 50; % number of trials to bootstrap
 %% traditional methods
 prs.hand_features = {'Finger1','Finger2','Finger3','Finger4','Wrist-down','Wrist-up','Hand-down','Hand-up'};
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
-prs.tuning_continuous = {'v','w','d','phi'}; % continuous variables - choose from elements of continuous_vars (above)
+prs.tuning_continuous = {'v','w','eye_ver','eye_hor'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
-prs.GAM_varname = {'v','w','d','phi','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_varname = {'v','w','d','phi','eye_ver','eye_hor','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10,10,10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10,10,10,10,10,10,10,10}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
 prs.GAM_method = 'FastBackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
@@ -173,9 +170,10 @@ prs.NNM_vartype = prs.GAM_vartype;
 prs.NNM_nbins = prs.GAM_nbins;
 prs.NNM_method = 'feedforward_nn'; % choose from 'feedforward_nn', 'random_forest' or 'xgboost'
 %% population analysis
-prs.canoncorr_vars = {'v','w','d','phi'}; % list of variables to include in the task variable matrix
-prs.simulate_vars = {'v','w','d','phi'}; % list of variables to use as inputs in simulation
-prs.popreadout_continuous = {'v','w','d','phi','r_targ','alpha','beta'};
+prs.canoncorr_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to include in the task variable matrix
+prs.simulate_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to use as inputs in simulation
+prs.simulate_vartype = {'1D','1D','1D','1D','1D','1D'};
+prs.readout_varname = {'v','w','d','phi','r_targ','eye_ver','eye_hor'};
 
 %% ****which analyses to do****
 %% behavioural
@@ -185,18 +183,18 @@ prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = true; % evaluate significance of event-locked responses
-prs.compute_tuning = true; % compute tuning functions
+prs.evaluate_peaks = false; % evaluate significance of event-locked responses
+prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
-prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each prdictor using GAM
-prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis
-prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
-prs.regress_popreadout = false; % regress population activity against individual task variables
-prs.simulate_population = false; % simulate population activity by running the encoding models
+prs.compute_canoncorr = true; % compute cannonical correlation between population response and task variables
+prs.regress_popreadout = true; % regress population activity against individual task variables
+prs.simulate_population = true; % simulate population activity by running the encoding models
 
 %% LFP
 prs.event_potential = false;

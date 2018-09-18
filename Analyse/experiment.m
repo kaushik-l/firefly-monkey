@@ -20,7 +20,7 @@ classdef experiment < handle
 %             this.sessions(end).AnalyseLfps(prs);
             this.sessions(end).AddUnits(prs);
             this.sessions(end).AnalyseUnits(prs);
-            this.sessions(end).AddPopulation('lfps',prs);
+            this.sessions(end).AddPopulation('units',prs);
         end
         %% function to plot behavioural data
         function PlotBehaviour(this,monk_id,sess_id,plot_type)
