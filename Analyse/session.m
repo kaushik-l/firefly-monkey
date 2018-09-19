@@ -56,6 +56,9 @@ classdef session < handle
                 [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.electrode); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
                 fprintf(['... reading events from ' file_nev.name '\n']);
                 [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK 
+                if length(this.behaviours.trials)~=length(events_nev.t_end)
+                    events_nev = FixEvents_nev(events_nev,this.behaviours.trials);
+                end
                 if length(this.behaviours.trials)==length(events_nev.t_end)
                     if ~isempty(sua)
                         for i=1:length(sua)
