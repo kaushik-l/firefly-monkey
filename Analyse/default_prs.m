@@ -5,9 +5,9 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur = ['C:\Users\jklakshm\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
-prs.filepath_neuralnet = 'C:\Users\jklakshm\Documents\GitHub\spykesML\MLencoding\';
+prs.filepath_behv = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
+prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
@@ -39,7 +39,7 @@ prs.saccadeduration = 0.05; % saccades last ~50ms
 % behavioural analysis
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
-prs.saccade_thresh = 60; % deg/s
+prs.saccade_thresh = 200; % deg/s
 prs.saccade_duration = 0.15; %seconds
 prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
@@ -51,6 +51,8 @@ prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 prs.maxtrialduration = 4; % (s) more than this is abnormal
 prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey position during teleportation (cm)
 prs.minpeakprominence.flypos = 1; % expected magnitude of change in fly position in consecutive trials (cm)
+prs.fixateduration = 0.75; % length of fixation epochs (s)
+prs.fixate_thresh = 4; % max eye velocity during fixation (deg/s)
 
 % lfp
 prs.lfp_filtorder = 4;
@@ -95,7 +97,7 @@ prs.corr_lag = 1; % timescale of correlograms +/-(s)
 prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 
 % define no. of bins for tuning curves by binning method
-prs.tuning.nbins1d_binning = 10; % bin edges for tuning curves by 'binning' method
+prs.tuning.nbins1d_binning = 20; % bin edges for tuning curves by 'binning' method
 prs.tuning.nbins2d_binning = [20;20]; % define bin edges for 2-D tuning curves by 'binning' method
 % define no. of nearest neighbors for tuning curves by k-nearest neighbors method
 prs.tuning.k_knn = @(x) round(sqrt(x)); % k=sqrt(N) where N is the total no. of observations
@@ -107,6 +109,7 @@ prs.tuning.nbins_nw = []; prs.tuning.nbins2d_nw = [];
 % define kernel type for tuning curves by local linear regression
 prs.tuning.kernel_locallinear = 'Gaussian'; % choose from 'Uniform', 'Epanechnikov', 'Biweight', 'Gaussian'
 prs.tuning.bandwidth_locallinear = [];
+prs.tuning.use_binrange = true;
 
 % range of stimulus values [min max]
 prs.binrange.v = [0 ; 200]; %cm/s
@@ -116,6 +119,8 @@ prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
 prs.binrange.eye_ver = [-25 ; 0]; %deg
 prs.binrange.eye_hor = [-40 ; 40]; %deg
+prs.binrange.veye_vel = [-15 ; 5]; %deg
+prs.binrange.heye_vel = [-30 ; 30]; %deg
 prs.binrange.phase = [-pi ; pi]; %rad
 prs.binrange.target_ON = [-0.24 ; 0.48];
 prs.binrange.target_OFF = [-0.36 ; 0.36];
@@ -130,6 +135,10 @@ prs.nfolds = 10; % number of folds for cross-validation
 
 % decoder - parameters
 prs.decodertype = 'lineardecoder'; % name of model to fit: linear regression == 'LR'
+prs.lineardecoder_fitkernelwidth = true;
+prs.lineardecoder_subsample = false;
+prs.N_neurons = 2.^(0:9); % number of neurons to sample
+prs.N_neuralsamples = 20; % number of times to resample neurons
 
 %% hash table to map layman terms to variable names
 prs.varlookup = containers.Map;
@@ -163,7 +172,7 @@ prs.GAM_nbins = {10,10,10,10,10,10,10,10,10,10,10}; % number of bins for each va
 prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
 prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
-prs.GAM_method = 'FastBackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
+prs.GAM_method = 'Forward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
 prs.NNM_vartype = prs.GAM_vartype;
@@ -173,7 +182,7 @@ prs.NNM_method = 'feedforward_nn'; % choose from 'feedforward_nn', 'random_fores
 prs.canoncorr_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to include in the task variable matrix
 prs.simulate_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to use as inputs in simulation
 prs.simulate_vartype = {'1D','1D','1D','1D','1D','1D'};
-prs.readout_varname = {'v','w','d','phi','r_targ','eye_ver','eye_hor'};
+prs.readout_varname = {'dv','dw'};
 
 %% ****which analyses to do****
 %% behavioural
@@ -188,20 +197,20 @@ prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each prdictor using GAM
-prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis
-prs.compute_canoncorr = true; % compute cannonical correlation between population response and task variables
-prs.regress_popreadout = true; % regress population activity against individual task variables
-prs.simulate_population = true; % simulate population activity by running the encoding models
+prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
+prs.regress_popreadout = false; % regress population activity against individual task variables
+prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% LFP
 prs.event_potential = false;
-prs.compute_spectrum = false;
-prs.analyse_theta = false;
-prs.analyse_beta = false;
-prs.compute_coherencyLFP = false;
+prs.compute_spectrum = true;
+prs.analyse_theta = true;
+prs.analyse_beta = true;
+prs.compute_coherencyLFP = true;
 
 %% Spike-LFP
 prs.analyse_spikeLFPrelation = false;

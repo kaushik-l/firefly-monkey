@@ -18,7 +18,15 @@ classdef population < handle
         end
         %% function to add sessions
         function AnalysePopulation(this,units,unittype,behaviours,lfps,prs)
-            this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs);
+            if strcmp(unittype,'units')
+                if prs.fitGAM_tuning
+                    this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs);
+                else
+                    this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs,[]);
+                end
+            elseif strcmp(unittype,'lfps')
+                this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs);
+            end
         end
     end
 end

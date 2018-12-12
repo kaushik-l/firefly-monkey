@@ -114,10 +114,18 @@ switch plot_type
                     axis tight; xlim([-0.2 0.2]); box on; set(gca,'XTick',[]); set(gca,'YTick',[]);
                 end
         end
+        
     case 'sfc'
+        count = 0;
         for i=1:nunits
-            f(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.f;
-            sfc(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.sfc;
+            if ~isempty(units(i).stats.trialtype.all.continuous.lfps.sta.f)
+                count = count + 1;
+                f(count,:) = units(i).stats.trialtype.all.continuous.lfps.sta.f;
+                sfc(count,:) = units(i).stats.trialtype.all.continuous.lfps.sta.sfc;
+                r(count) = mean(units(i).stats.trialtype.all.continuous.lfps.phase.tuning.rate.mu);
+                spkwidth(count) = units(i).spkwidth;
+                electrode_id(count) = units(i).electrode_id;
+            end
         end
         electrode_ids = [units.electrode_id];
         switch electrode
@@ -131,6 +139,36 @@ switch plot_type
                 end
         end
     case 'phase'
+        for i=1:nunits
+            pval(i) = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.pval;
+            phi = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.stim.mu;
+            rate = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.rate.mu;
+            rate = (rate - min(rate))/max(rate - min(rate));
+            pref(i) = atan2(mean(rate.*sin(phi)),mean(rate.*cos(phi)));
+            rate2(i,:) = (rate)/max(rate);
+%             phi2(i,:) = [phi ; phi(1)];
+%             rate2(i,:) = [rate ; rate(1)];
+            spkwidth(i) = units(i).spkwidth;
+            spkwf(i,:) = units(i).spkwf;
+            spkwf(i,:) = spkwf(i,:) - min(spkwf(i,:));
+            spkwf(i,:) = spkwf(i,:)/max(spkwf(i,:));
+        end
+        electrode_ids = [units.electrode_id];
+        switch electrode
+            case 'utah96'
+                cmap = cool(nunits); [~,indx] = sort(pref); cmap(indx,:) = cmap;
+                figure;
+                for i=1:nunits
+                    if pval(i) < 1e-3, polarplot(phi2(i,:),rate2(i,:),'Color',cmap(i,:)); hold on; end
+                end
+            case 'utah2x48'
+                cmap = cool(nunits); [~,indx] = sort(pref); cmap(indx,:) = cmap;
+                figure;
+                for i=1:nunits
+                    if pval(i)<1e-3 && electrode_ids(i)<=48, polarplot(phi2(i,:),rate2(i,:),'Color',cmap(i,:)); hold on; end
+                end
+        end
+    case 'phase_array'
         for i=1:nunits
             phi(i,:) = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.stim.mu;
             rate(i,:) = units(i).stats.trialtype.all.continuous.lfps.phase.tuning.rate.mu;
@@ -147,6 +185,33 @@ switch plot_type
                 end
         end
         
+    case 'spkwf'
+        spkwf = [units.spkwf];
+        electrode_ids = [units.electrode_id];
+        cmap = parula(nunits); cmap = cmap(randperm(nunits),:);
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                figure; hold on;
+                for i=1:nunits
+                    subplot(10,10,10*(xloc(electrode_ids(i))-1) + yloc(electrode_ids(i))); hold on;
+                    if strcmp(units(i).type,'singleunit'), plot(spkwf(:,i),'Color',cmap(i,:)); 
+                    elseif strcmp(units(i).type,'multiunit'), plot(spkwf(:,i),'Color',[0.5 0.5 0.5]); end; axis off;
+                    axis tight; box on; set(gca,'XTick',[]); set(gca,'YTick',[]);
+                end
+        end
+        
+    case 'spiketrain'
+        electrode_ids = [units.electrode_id];
+        cmap = parula(nunits); cmap = cmap(randperm(nunits),:);
+        figure; hold on;
+        for i=1:nunits
+            trials_temp = units(i).trials(15:25); % just some random trials
+            tspk = 0;
+            for j=1:numel(trials_temp), tspk = [tspk ; tspk(end)+trials_temp(j).tspk]; end
+            if strcmp(units(i).type,'singleunit'), plot(tspk,electrode_ids(i),'.','Color',cmap(i,:),'Markersize',0.5);
+            elseif strcmp(units(i).type,'multiunit'), plot(tspk,electrode_ids(i),'.','Color',[0.5 0.5 0.5],'Markersize',0.5); end
+        end
 end
 
 for j=1:nunits

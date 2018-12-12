@@ -1,10 +1,11 @@
-function tuningstats = ComputeTuning(x,ts,tspk,timewindow,duration_zeropad,corr_lag,nbootstraps,tuning_prs,tuning_method)
+function tuningstats = ComputeTuning(x,ts,tspk,timewindow,duration_zeropad,corr_lag,nbootstraps,tuning_prs,tuning_method,tuning_binrange)
 
 ntrls = length(x);
 if ntrls < nbootstraps % not enough trials
     tuningstats = [];
     return;
 end
+if nargin<10, tuning_binrange = []; end
 
 %% concatenate data from different trials
 [xt,~,yt,xt_pad,~,yt_pad] = ConcatenateTrials(x,[],tspk,ts,timewindow,duration_zeropad);
@@ -23,7 +24,7 @@ tuningstats.xcorr.lag = lags*temporal_binwidth;
 %% compute tuning curves
 if strcmp(tuning_method,'binning')
     nbins = tuning_prs.nbins1d_binning; % load predefined number of bins
-    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,temporal_binwidth,nbins,nbootstraps);
+    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,temporal_binwidth,nbins,nbootstraps,tuning_binrange);
 elseif strcmp(tuning_method,'k-nearest')
     k = arrayfun(tuning_prs.k_knn,numel(xt)); % compute k from predefined anonymous function
     nbins = tuning_prs.nbins1d_binning; % load predefined number of bins

@@ -113,7 +113,7 @@ classdef session < handle
                     NS1 = openNSx(['/' file_ns1.name],'report','read', 'uV');
                     if NS1.MetaTags.ChannelCount ~= prs.maxchannels, warning('Channel count in the file not equal to prs.maxchannels \n'); end
                     [ch_id,electrode_id] = MapChannel2Electrode('utah96'); % assuming 96 channel array -- need to generalise this line of code
-                    for j=1:prs.maxchannels
+                    for j=1%:prs.maxchannels
                         channel_id = NS1.MetaTags.ChannelID(j);
                         fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
                         this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id));
@@ -132,7 +132,7 @@ classdef session < handle
         %% analyse lfps
         function AnalyseLfps(this,prs)
             nlfps = length(this.lfps);
-            for i=1:nlfps
+            for i=1%:nlfps
                 fprintf(['... Analysing lfp ' num2str(i) ' :: channel ' num2str(this.lfps(i).channel_id) '\n']);
                 this.lfps(i).AnalyseLfp(this.behaviours,prs);
             end
@@ -141,7 +141,7 @@ classdef session < handle
         function AddPopulation(this,unittype,prs)
             this.populations(end+1) = population();
             if strcmp(unittype,'lfps')
-                this.populations.AnalysePopulation(this.lfps,'lfps',this.behaviours,prs);
+                this.populations.AnalysePopulation(this.lfps,'lfps',this.behaviours,this.lfps,prs);
             elseif ~strcmp(unittype,'units')
                 this.populations.AnalysePopulation(this.units(strcmp({this.units.type},unittype)),unittype,this.behaviours,this.lfps,prs);
             else
@@ -160,9 +160,14 @@ classdef session < handle
                 error('unit id should be an non-negative integer');
             end
             if unit_id~=0
-                unit = this.units(unit_id);
-                figure; hold on; suptitle(['m' num2str(this.monk_id) 's' num2str(this.sess_id) 'u' num2str(unit_id)]);
-                PlotUnit(behv,unit,plot_type,prs);        % plot data from one specific unit
+                if ~strcmp(plot_type,'GAM')
+                    unit = this.units(unit_id);
+                    figure; hold on; suptitle(['m' num2str(this.monk_id) 's' num2str(this.sess_id) 'u' num2str(unit_id)]);
+                    PlotUnit(behv,unit,plot_type,prs);        % plot data from one specific unit
+                else
+                    unit = this.populations.units.stats.trialtype.all.models.log.units(unit_id);
+                    PlotUnit(behv,unit,plot_type,prs);
+                end
             else
                 PlotUnits(behv,this.units,plot_type,prs); % plot data from all units
             end
@@ -180,5 +185,10 @@ classdef session < handle
                 end
             end
         end
+        %% plot population
+        function PlotPopulation(this,unit_type,plot_type,prs)
+            behv = this.behaviours;
+            PlotPopulation(behv,this.populations.(unit_type),plot_type,prs);
+        end            
     end
 end

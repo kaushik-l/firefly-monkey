@@ -101,6 +101,17 @@ min_isi = prs.min_intersaccade;
 t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
+%% detect periods of fixation
+de_smooth = conv(de,h,'same')/dt;
+fixateduration = prs.fixateduration; fixate_thresh = prctile(de_smooth,90); % set thresh to 90th prctile
+fixateduration_samples = round(fixateduration/dt);
+fixateindx = false(1,numel(ts) - round(2*fixateduration/dt));
+for i=1:(numel(ts) - round(2*fixateduration/dt))
+    if mean(de_smooth(i:i+fixateduration_samples)) < fixate_thresh && max(de_smooth(i:i+fixateduration_samples)) < 1.5*fixate_thresh, fixateindx(i) = true; end
+end
+fixation_switch = diff(fixateindx);
+t.fix = ts(fixation_switch>0);
+
 %% replace the broken eye coil (if any) with NaNs
 if var(ch.zle) < 10 || var(ch.zle) > 1000
     ch.zle(:) = nan;
@@ -179,6 +190,9 @@ for j=1:length(t.end)
     trl(j).events.t_stop = t.stop(j);
     % saccade time
     trl(j).events.t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
+    % fixation start times
+    trl(j).events.t_fix = t.fix(t.fix>(t.beg(j)-3*pretrial) & t.fix<(t.end(j)+3*posttrial)); % wider search-range because fixation might be outside trial
+    t.fix(t.fix>(t.beg(j)-3*pretrial) & t.fix<(t.end(j)+3*posttrial)) = []; % remove from list
     % reward time
     if any(t.reward>t.beg(j) & t.reward<t.end(j))
         trl(j).logical.reward = true;
@@ -206,6 +220,7 @@ for i=1:length(trl)
     trl(i).events.t_rew = trl(i).events.t_rew - exp_beg - trl(i).events.t_beg; % who cares about absolute time?!
     trl(i).events.t_end = trl(i).events.t_end - exp_beg - trl(i).events.t_beg;    
     trl(i).events.t_sac = trl(i).events.t_sac - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_fix = trl(i).events.t_fix - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;

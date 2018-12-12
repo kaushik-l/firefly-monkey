@@ -1,4 +1,4 @@
-function stats = AnalyseLfp(trials_lfps,stationary_lfps,mobile_lfps,trials_behv,behv_stats,prs)
+function stats = AnalyseLfp(trials_lfps,stationary_lfps,mobile_lfps,eyesfixed_lfps,eyesfree_lfps,trials_behv,behv_stats,prs)
 
 stats = [];
 %% load analysis params
@@ -15,6 +15,7 @@ compute_spectrum = prs.compute_spectrum;
 analyse_theta = prs.analyse_theta;
 analyse_beta = prs.analyse_beta;
 ntrls = length(trials_lfps);
+fixateduration = prs.fixateduration;
 
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
@@ -124,6 +125,32 @@ if compute_spectrum
     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
     [stats.trialtype.mobile.spectrum.psd , stats.trialtype.mobile.spectrum.freq] = ...
         mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
+    
+    % eyes-fixed period
+%     eyesfixed_lfps_temp = []; sMarkers = [];
+%     for i=1:length(eyesfixed_lfps)
+%         if ~isempty(eyesfixed_lfps(i).lfp)
+%             eyesfixed_lfps_temp(end+1).lfp = eyesfixed_lfps(i).lfp;
+%         end
+%     end
+%     lfp_concat = cell2mat({eyesfixed_lfps_temp.lfp}); % concatenate trials
+%     triallen = cellfun(@(x) length(x), {eyesfixed_lfps_temp.lfp});
+%     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+%     [stats.trialtype.eyesfixed.spectrum.psd , stats.trialtype.eyesfixed.spectrum.freq] = ...
+%         mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
+    
+    % eyes-free period
+%     eyesfree_lfps_temp = []; sMarkers = [];
+%     for i=1:length(eyesfree_lfps)
+%         if ~isempty(eyesfree_lfps(i).lfp)
+%             eyesfree_lfps_temp(end+1).lfp = eyesfree_lfps(i).lfp;
+%         end
+%     end
+%     lfp_concat = cell2mat({eyesfree_lfps_temp.lfp}); % concatenate trials
+%     triallen = cellfun(@(x) length(x), {eyesfree_lfps_temp.lfp});
+%     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+%     [stats.trialtype.eyesfree.spectrum.psd , stats.trialtype.eyesfree.spectrum.freq] = ...
+%         mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
 end
 
 %% theta LFP
@@ -150,6 +177,19 @@ if analyse_theta
             %% angular velocity, w
             stats.trialtype.(trialtypes{i})(j).continuous.w.thetafreq = ...
                 ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+            %% vw
+            stats.trialtype.(trialtypes{i})(j).continuous.vw.thetafreq = ...
+                ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
+            %% horizontal eye velocity
+%             heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
+%             heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false);
+%             stats.trialtype.(trialtypes{i})(j).continuous.heyevel.thetafreq = ...
+%                 ComputeTuning(heyevel,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
+            %% vertical velocity
+%             veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
+%             veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);
+%             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.thetafreq = ...
+%                 ComputeTuning(veyevel,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
         end        
     end
 end
@@ -178,6 +218,19 @@ if analyse_beta
             %% angular velocity, w
             stats.trialtype.(trialtypes{i})(j).continuous.w.betafreq = ...
                 ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+            %% vw
+            stats.trialtype.(trialtypes{i})(j).continuous.vw.betafreq = ...
+                ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
+            %% horizontal eye velocity
+%             heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
+%             heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false);
+%             stats.trialtype.(trialtypes{i})(j).continuous.heyevel.betafreq = ...
+%                 ComputeTuning(heyevel,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
+            %% vertical velocity
+%             veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
+%             veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);
+%             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.betafreq = ...
+%                 ComputeTuning(veyevel,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
         end
     end
 end

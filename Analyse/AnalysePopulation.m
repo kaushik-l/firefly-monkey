@@ -1,4 +1,4 @@
-function stats = AnalysePopulation(units,trials_behv,behv_stats,lfps,prs)
+function stats = AnalysePopulation(units,trials_behv,behv_stats,lfps,prs,stats)
 
 nunits = length(units);
 dt = prs.dt; % sampling resolution (s)
@@ -15,9 +15,9 @@ trialtypes = fields(behv_stats.trialtype);
 events = cell2mat({trials_behv.events});
 continuous = cell2mat({trials_behv.continuous});
 
-stats = [];
 %% fit GAM with cross-neuronal coupling
 if fitGAM_coupled
+    stats = [];
     GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
     GAM_prs.vartype = prs.GAM_vartype; vartype = GAM_prs.vartype;
     GAM_prs.nbins = prs.GAM_nbins;
@@ -137,6 +137,10 @@ if compute_canoncorr
                     elseif isfield(behv_stats.pos_rel,varname{k}), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
                     elseif strcmp(varname{k},'d')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname{k},'dv')
+                        vars{k} = cellfun(@(x) [0 ; diff(x)/dt],{continuous_temp.v},'UniformOutput',false);
+                    elseif strcmp(varname{k},'dw')
+                        vars{k} = cellfun(@(x) [0 ; diff(x)/dt],{continuous_temp.w},'UniformOutput',false);
                     elseif strcmp(varname{k},'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'eye_ver')
@@ -161,22 +165,42 @@ if compute_canoncorr
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     xt(isnan(xt(:,k)),k) = 0;
                 end
                 %% concatenate units
                 Yt = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     trials_spks_temp = units(k).trials(trlindx);
-                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_path);
+                    [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
-                Yt_conv = SmoothSpikes(Yt, 3*filtwidth);
-                %% compute canonlical correlation
-                [X,Y,R,~,~,pstats] = canoncorr(xt,Yt_conv/dt);
+                Yt_smooth = SmoothSpikes(Yt, 3*filtwidth);
+                %% compute canonical correlation
+                [X,Y,R,~,~,pstats] = canoncorr(xt,Yt_smooth/dt);
                 stats.trialtype.(trialtypes{i})(j).canoncorr.stim = X;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.resp = Y;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coeff = R;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.pval = pstats;
+                %% canonical task dimensionality
+                Dmax = numel(R); taskcov = zeros(1,Dmax);
+                for k=1:Dmax
+                    wx = X(:,k)/sqrt(X(:,k)'*X(:,k));
+                    wy = Y(:,k)/sqrt(Y(:,k)'*Y(:,k));
+                    xt_proj = xt*wx; yt_proj = (Yt_smooth/dt)*wy;
+                    cov_temp = cov([xt_proj yt_proj]);
+                    taskcov(k) = cov_temp(1,2); % off-diagonal entry                    
+                end
+                stats.trialtype.(trialtypes{i})(j).canoncorr.dimensionality = sum(taskcov)^2/sum(taskcov.^2); % defined analogously to participation ratio
+                %% compute pairwise correlations
+                stats.trialtype.(trialtypes{i})(j).responsecorr_raw = corr(Yt);
+                stats.trialtype.(trialtypes{i})(j).responsecorr_smooth = corr(Yt_smooth);
+                %% compute pairwise noise correlations
+                for k=1:numel(varname)
+                    binrange{k} = prs.binrange.(varname{k}); 
+                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})}; 
+                end
+                [stats.trialtype.(trialtypes{i})(j).noisecorr_raw,...
+                    stats.trialtype.(trialtypes{i})(j).noisecorr_smooth] = ComputeNoisecorr(Yt,xt,binrange,nbins);
             end
         end
     end
@@ -214,6 +238,10 @@ if regress_popreadout
                 elseif isfield(behv_stats.pos_rel,varname{k}), vars{k} = behv_stats.pos_rel.(varname{k})(trlindx);
                 elseif strcmp(varname{k},'d')
                     vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                elseif strcmp(varname{k},'dv')
+                    vars{k} = cellfun(@(x) [0 ; diff(x)/dt],{continuous_temp.v},'UniformOutput',false);
+                elseif strcmp(varname{k},'dw')
+                    vars{k} = cellfun(@(x) [0 ; diff(x)/dt],{continuous_temp.w},'UniformOutput',false);
                 elseif strcmp(varname{k},'phi')
                     vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                 elseif strcmp(varname(k),'eye_ver')
@@ -230,32 +258,57 @@ if regress_popreadout
                     end
                 end
                 xt = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                % filter dv and dw
+                t = linspace(-2*filtwidth,2*filtwidth,4*filtwidth + 1); h = exp(-t.^2/(2*filtwidth^2)); h = h/sum(h);
+                if any(strcmp(varname{k},{'dv','dw'})), xt = conv(xt,h,'same'); end
                 xt(isnan(xt)) = 0;
-                filtwidths=1:5:100; decodingerror = nan(1,length(filtwidths));
-                fprintf('...optimising hyperparameter\n');
-                for l=1:length(filtwidths)
-                    Yt_temp = SmoothSpikes(Yt, filtwidths(l)); % smooth spiketrains before fitting model
-                    wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
-                    decodingerror(l) = sqrt(sum((Yt_temp*wts - xt).^2));
+                %% fit smoothing window
+                if prs.lineardecoder_fitkernelwidth
+                    filtwidths=1:5:100; decodingerror = nan(1,length(filtwidths));
+                    fprintf('...optimising hyperparameter\n');
+                    for l=1:length(filtwidths)
+                        Yt_temp = SmoothSpikes(Yt, filtwidths(l)); % smooth spiketrains before fitting model
+                        wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                        decodingerror(l) = sqrt(sum((Yt_temp*wts - xt).^2));
+                    end
+                    [~,bestindx] = min(decodingerror); bestfiltwidth = filtwidths(bestindx);
+                    stats.(decodertype).(varname{k}).bestfiltwidth = bestfiltwidth;
+                    fprintf('**********decoding**********\n');
+                    Yt_temp = SmoothSpikes(Yt, bestfiltwidth); % smooth spiketrains before fitting model
+                    stats.(decodertype).(varname{k}).wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                    stats.(decodertype).(varname{k}).true = xt;
+                    stats.(decodertype).(varname{k}).pred = (Yt_temp*stats.(decodertype).(varname{k}).wts);
+                    stats.(decodertype).(varname{k}).corr = corr(stats.(decodertype).(varname{k}).true,stats.(decodertype).(varname{k}).pred);
                 end
-                [~,bestindx] = min(decodingerror); bestfiltwidth = filtwidths(bestindx);
-                fprintf('**********decoding**********\n');
-                Yt_temp = SmoothSpikes(Yt, bestfiltwidth); % smooth spiketrains before fitting model
-                stats.(decodertype).(varname{k}).wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
-                stats.(decodertype).(varname{k}).true = xt;
-                stats.(decodertype).(varname{k}).pred = (Yt_temp*stats.(decodertype).(varname{k}).wts);
+                %% subsample neurons
+                if prs.lineardecoder_subsample
+                    N_neurons = prs.N_neurons; N_samples = prs.N_neuralsamples; Nt = size(Yt,1);
+                    for l=1:numel(N_neurons)
+                        fprintf(['.........decoding ' num2str(N_neurons(l)) ' neuron(s) \n']);
+                        if N_neurons(l)< nunits, sampleindx = cell2mat(arrayfun(@(x) randperm(nunits,N_neurons(l))',1:N_samples,'UniformOutput',false));
+                        else, sampleindx = [repmat((1:nunits)',1,N_samples) ; randi(nunits,[N_neurons(l)-nunits N_samples])]; end
+                        Yt_temp = reshape(Yt(:,sampleindx),[Nt N_neurons(l) N_samples]);
+                        Yt_temp = SmoothSpikes(Yt_temp, stats.(decodertype).(varname{k}).bestfiltwidth);
+                        for m=1:N_samples
+                            stats.(decodertype).(varname{k}).corr_subsample(l,m) = ...
+                                corr(xt,squeeze(Yt_temp(:,:,m))*((squeeze(Yt_temp(:,:,m))'*squeeze(Yt_temp(:,:,m)))\(squeeze(Yt_temp(:,:,m))'*xt)));
+                            stats.(decodertype).(varname{k}).popsize_subsample(l,m) = N_neurons(l);
+                        end
+                    end
+                end
                 %% fixed filtwidth
                 Yt_temp = SmoothSpikes(Yt, 3*filtwidth); % smooth spiketrains before fitting model
                 stats.(decodertype).(varname{k}).wts2 = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
                 stats.(decodertype).(varname{k}).true2 = xt;
-                stats.(decodertype).(varname{k}).pred2 = (Yt_temp*stats.(decodertype).(varname{k}).wts);
+                stats.(decodertype).(varname{k}).pred2 = (Yt_temp*stats.(decodertype).(varname{k}).wts2);
+                stats.(decodertype).(varname{k}).corr2 = corr(stats.(decodertype).(varname{k}).true2,stats.(decodertype).(varname{k}).pred2);
             end
         end
     end
 end
 
 %% evaluate model responses for coupled and uncoupled models
-if simulate_population && fitGAM_coupled
+if simulate_population && exist('stats','var') && isfield(stats.trialtype.all,'models')
     varname = prs.simulate_varname;
     vartype = prs.simulate_vartype;
     filtwidth = prs.neuralfiltwidth;
@@ -292,8 +345,8 @@ if simulate_population && fitGAM_coupled
                         else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                         end
                     end
-                    binrange{k} = GAM_prs.binrange{strcmp(GAM_prs.varname,varname{k})};
-                    nbins{k} = GAM_prs.nbins{strcmp(GAM_prs.varname,varname{k})};
+                    binrange{k} = prs.binrange.(varname{k});
+                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})};
                 end
                 %% define time windows for computing tuning
                 timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % when the subject is integrating path
@@ -318,18 +371,38 @@ if simulate_population && fitGAM_coupled
                     else, wts = uncoupledmodel.wts{1}; end
                     for l = 1:length(vars)
                         % simulated response to each variable before exp
-                        y_temp(l,:) = sum(repmat(wts{strcmp(GAM_prs.varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
+                        y_temp(l,:) = sum(repmat(wts{strcmp(prs.GAM_varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
                     end
                     y_temp = exp(sum(y_temp));
                     Yt_uncoupled(:,k) = y_temp;
                 end
-                Yt_uncoupled = SmoothSpikes(Yt_uncoupled, 3*filtwidth);
-                % compute canonlical correlation
-                [X_uncoupled,Y_uncoupled,R_uncoupled,~,~,pstats_uncoupled] = canoncorr(xt,Yt_uncoupled/dt);
+                Yt_uncoupled_smooth = SmoothSpikes(Yt_uncoupled, 3*filtwidth);
+                %% compute canonical correlation
+                [X_uncoupled,Y_uncoupled,R_uncoupled,~,~,pstats_uncoupled] = canoncorr(xt,Yt_uncoupled_smooth/dt);
                 stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_stim = X_uncoupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_resp = Y_uncoupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_coeff = R_uncoupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_pval = pstats_uncoupled;
+                %% canonical task dimensionality
+                Dmax = numel(R_uncoupled); taskcov = zeros(1,Dmax);
+                for k=1:Dmax
+                    wx = X_uncoupled(:,k)/sqrt(X_uncoupled(:,k)'*X_uncoupled(:,k));
+                    wy = Y_uncoupled(:,k)/sqrt(Y_uncoupled(:,k)'*Y_uncoupled(:,k));
+                    xt_proj = xt*wx; yt_proj = (Yt_uncoupled_smooth/dt)*wy;
+                    cov_temp = cov([xt_proj yt_proj]);
+                    taskcov(k) = cov_temp(1,2); % off-diagonal entry
+                end
+                stats.trialtype.(trialtypes{i})(j).canoncorr.uncoupled_dimensionality = sum(taskcov)^2/sum(taskcov.^2); % defined analogously to participation ratio
+                %% compute pairwise correlations
+                stats.trialtype.(trialtypes{i})(j).responsecorr_uncoupled_raw = corr(Yt_uncoupled);
+                stats.trialtype.(trialtypes{i})(j).responsecorr_uncoupled_smooth = corr(SmoothSpikes(Yt_uncoupled, filtwidth));
+                %% compute pairwise noise correlations
+                for k=1:numel(varname)
+                    binrange{k} = prs.binrange.(varname{k});
+                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})};
+                end
+                [stats.trialtype.(trialtypes{i})(j).noisecorr_uncoupled_raw,...
+                    stats.trialtype.(trialtypes{i})(j).noisecorr_uncoupled_smooth] = ComputeNoisecorr(Yt_uncoupled,xt,binrange,nbins);
                 %% simulate coupled model
                 Yt_coupled = zeros(size(xt,1),nunits);
                 for k=1:nunits
@@ -338,18 +411,38 @@ if simulate_population && fitGAM_coupled
                     wts = coupledmodel.wts;
                     for l = 1:length(vars)
                         % simulated response to each variable before exp
-                        y_temp(l,:) = sum(repmat(wts{strcmp(GAM_prs.varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
+                        y_temp(l,:) = sum(repmat(wts{strcmp(prs.GAM_varname,varname{l})},[size(x_1hot,1),1]).*squeeze(x_1hot(:,:,l)),2);
                     end
                     Yt_coupled(:,k) = exp(sum(y_temp)' + ...
                         sum(Yt(:,1:nunits~=k).*repmat(stats.trialtype.all.models.log.units(k).Coupledmodel.wts{end},[size(Yt,1), 1]),2));
                 end
-                Yt_coupled = SmoothSpikes(Yt_coupled, 3*filtwidth);
-                % compute canonlical correlation
-                [X_coupled,Y_coupled,R_coupled,~,~,pstats_coupled] = canoncorr(xt,Yt_coupled/dt);
+                Yt_coupled_smooth = SmoothSpikes(Yt_coupled, 3*filtwidth);
+                %% compute canonical correlation
+                [X_coupled,Y_coupled,R_coupled,~,~,pstats_coupled] = canoncorr(xt,Yt_coupled_smooth/dt);
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_stim = X_coupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_resp = Y_coupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_coeff = R_coupled;
                 stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_pval = pstats_coupled;
+                %% canonical task dimensionality
+                Dmax = numel(R_coupled); taskcov = zeros(1,Dmax);
+                for k=1:Dmax
+                    wx = X_coupled(:,k)/sqrt(X_coupled(:,k)'*X_coupled(:,k));
+                    wy = Y_coupled(:,k)/sqrt(Y_coupled(:,k)'*Y_coupled(:,k));
+                    xt_proj = xt*wx; yt_proj = (Yt_coupled_smooth/dt)*wy;
+                    cov_temp = cov([xt_proj yt_proj]);
+                    taskcov(k) = cov_temp(1,2); % off-diagonal entry
+                end
+                stats.trialtype.(trialtypes{i})(j).canoncorr.coupled_dimensionality = sum(taskcov)^2/sum(taskcov.^2); % defined analogously to participation ratio
+                %% compute pairwise correlations
+                stats.trialtype.(trialtypes{i})(j).responsecorr_coupled_raw = corr(Yt_coupled);
+                stats.trialtype.(trialtypes{i})(j).responsecorr_coupled_smooth = corr(SmoothSpikes(Yt_coupled, filtwidth));
+                %% compute pairwise noise correlations
+                for k=1:numel(varname)
+                    binrange{k} = prs.binrange.(varname{k});
+                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})};
+                end
+                [stats.trialtype.(trialtypes{i})(j).noisecorr_coupled_raw,...
+                    stats.trialtype.(trialtypes{i})(j).noisecorr_coupled_smooth] = ComputeNoisecorr(Yt_coupled,xt,binrange,nbins);
             end
         end
     end
@@ -358,14 +451,15 @@ end
 
 %% coherence between LFPs
 if compute_coherencyLFP
-    lfp_concat = nan(length(cell2mat({units(1).trials.lfp}')),nunits);
+    trlindx = behv_stats.trialtype.all.trlindx;
+    lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
     % params
     spectralparams.tapers = prs.spectrum_tapers;
     spectralparams.Fs = 1/dt;
     spectralparams.trialave = prs.spectrum_trialave;
     % data
-    for i=1:nunits, lfp_concat(:,i) = cell2mat({units(i).trials.lfp}'); end
-    triallen = cellfun(@(x) length(x), {units(1).trials.lfp});
+    for i=1:nunits, lfp_concat(:,i) = cell2mat({units(i).trials(trlindx).lfp}'); end
+    triallen = cellfun(@(x) length(x), {units(1).trials(trlindx).lfp});
     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
     fprintf('**********Computing pairwise coherence between LFPs********** \n');
     [stats.crosslfp.coher , stats.crosslfp.phase, ~, ~, stats.crosslfp.freq] = ...
