@@ -113,7 +113,7 @@ classdef session < handle
                     NS1 = openNSx(['/' file_ns1.name],'report','read', 'uV');
                     if NS1.MetaTags.ChannelCount ~= prs.maxchannels, warning('Channel count in the file not equal to prs.maxchannels \n'); end
                     [ch_id,electrode_id] = MapChannel2Electrode('utah96'); % assuming 96 channel array -- need to generalise this line of code
-                    for j=1%:prs.maxchannels
+                    for j=1:prs.maxchannels
                         channel_id = NS1.MetaTags.ChannelID(j);
                         fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
                         this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id));
@@ -132,7 +132,7 @@ classdef session < handle
         %% analyse lfps
         function AnalyseLfps(this,prs)
             nlfps = length(this.lfps);
-            for i=1%:nlfps
+            for i=1:nlfps
                 fprintf(['... Analysing lfp ' num2str(i) ' :: channel ' num2str(this.lfps(i).channel_id) '\n']);
                 this.lfps(i).AnalyseLfp(this.behaviours,prs);
             end
