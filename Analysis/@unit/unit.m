@@ -21,14 +21,5 @@ classdef unit < handle
             this.spkwidth = Compute_SpikeWidth(unit.spkwf,Fs);
             this.type = unittype;
         end
-        %% add spike times
-        function AddTrials(this,tspk,events_spk,behaviours,prs)
-            this.trials = AddTrials2Unit(tspk,events_spk,behaviours.trials,prs);
-        end
-        %% analyse spikes
-        function AnalyseUnit(this,behaviours,lfps,prs)
-            prs.channel_id = this.channel_id; % slip in the channel_id property into prs for analysis
-            this.stats = AnalyseUnit(this.trials,behaviours.trials,behaviours.stats,lfps,prs);
-        end
     end
 end
