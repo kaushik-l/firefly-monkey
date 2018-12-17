@@ -212,6 +212,38 @@ switch plot_type
             if strcmp(units(i).type,'singleunit'), plot(tspk,electrode_ids(i),'.','Color',cmap(i,:),'Markersize',0.5);
             elseif strcmp(units(i).type,'multiunit'), plot(tspk,electrode_ids(i),'.','Color',[0.5 0.5 0.5],'Markersize',0.5); end
         end
+        
+    case 'GAM'
+        nvars = 8; cmap = jet(nvars); cmap(5,2) = 0.25;
+        for i=1:nunits
+            models = units(i).stats.trialtype.all.GAM.log;
+            bestmodel = models.bestmodel;
+            varindx = find(models.class{bestmodel});
+            %% tuning of this unit
+            figure(i); hold on;
+            for j=varindx
+                subplot(2,4,j); hold on;
+                plot(models.x{j},models.marginaltunings{bestmodel}{j},'Color',cmap(j,:));
+                if j==6 || j==8
+                    set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[models.x{j}(1) models.x{j}(end)],'XTicklabel',[0 0.6]);
+                elseif j>4
+                    set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
+                end
+            end            
+            %% tuning of all units
+            for k=1:nvars
+                figure(50+k); hold on;
+                if any(varindx==k)
+                    subplot(6,6,i); hold on;
+                    plot(models.x{k},models.marginaltunings{bestmodel}{k},'Color',cmap(k,:));
+                    if k==6 || k==8
+                        set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[models.x{k}(1) models.x{k}(end)],'XTicklabel',[0 0.6]);
+                    elseif k>4
+                        set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
+                    end
+                end
+            end
+        end
 end
 
 for j=1:nunits
