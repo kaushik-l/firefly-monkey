@@ -1,6 +1,6 @@
 %% function to add sessions
 function AddSessions(this,monk_id,sess_id,content) % e.g. content = {'behv','lfps','units','pop'}
-    islfps = strcmp(content,'lfps'); isunits = strcmp(content,'units'); ispop = strcmp(content,'pop');
+    islfps = any(strcmp(content,'lfps')); isunits = any(strcmp(content,'units')); ispop = any(strcmp(content,'pop'));
     allsessions = this.sessions; old_instance = find([allsessions.monk_id] == monk_id & [allsessions.sess_id] == sess_id);
     if ~isempty(old_instance)
         ovwrt = logical(input('This session was already analysed once. Press 1 to overwrite, 0 to quit \n'));
