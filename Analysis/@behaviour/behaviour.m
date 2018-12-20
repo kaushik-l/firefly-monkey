@@ -3,6 +3,7 @@ classdef behaviour < handle
     properties
         comments
         trials
+        states
         stats
     end    
     %%

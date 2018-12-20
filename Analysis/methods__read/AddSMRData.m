@@ -1,4 +1,4 @@
-function trl = AddSMRData(data,prs)
+function [trl,st] = AddSMRData(data,prs)
 
 %% check channel headers
 nch = length(data);
@@ -112,6 +112,19 @@ end
 fixation_switch = diff(fixateindx);
 t.fix = ts(fixation_switch>0);
 
+%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold) %% Eric 
+eyemove_thresh = prs.eyemove_thresh; 
+indx_eyemove = de_smooth > eyemove_thresh; 
+eyemove_duration = prs.eyemove_duration; 
+eyemove_duration_samples = round(eyemove_duration/dt);
+freeindx = false(1,numel(ts)); 
+for i=1:(numel(ts) - round(2*eyemove_duration/dt))
+    if mean(de_smooth(i:i+eyemove_duration_samples)) > eyemove_thresh, freeindx(i) = true; end
+end
+t.free_move = ts(freeindx);
+st.eye_move_indx = freeindx';
+st.ts_move = ts;
+
 %% replace the broken eye coil (if any) with NaNs
 if var(ch.zle) < 10 || var(ch.zle) > 1000
     ch.zle(:) = nan;
@@ -146,32 +159,58 @@ end
 t_beg_correction = t.beg - t_beg_original;
 
 
-%% detect start-of-movement and end-of-movement times for each trial
-v_thresh = prs.v_thresh;
+%% detect start-of-movement and end-of-movement times for each trial for v    %%% Eric
+v_thresh = prs.v_thresh; 
 v_time2thresh = prs.v_time2thresh;
 v = ch.v;
 for j=1:length(t.end)
    % start-of-movement
-   if j==1, t.move(j) = t.beg(j); % first trial is special because there is no pre-trial period
+   if j==1, t.move_v(j) = t.beg(j); % first trial is special because there is no pre-trial period
    else
        indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
-       if ~isempty(indx), t.move(j) = t.end(j-1) + indx*dt;
-       else, t.move(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+       if ~isempty(indx), t.move_v(j) = t.end(j-1) + indx*dt;
+       else, t.move_v(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
    end
    % end-of-movement
-   indx = find(v(ts>t.move(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
-   if ~isempty(indx), t.stop(j) = t.move(j) + indx*dt;
-   else, t.stop(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+   indx = find(v(ts>t.move_v(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+   if ~isempty(indx), t.stop_v(j) = t.move_v(j) + indx*dt;
+   else, t.stop_v(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
    % if monkey stopped prematurely, set movement end = trial end
-   if (t.stop(j)<t.beg(j) || (t.stop(j)-t.move(j))<prs.mintrialduration), t.stop(j) = t.end(j); end
+   if (t.stop_v(j)<t.beg(j) || (t.stop_v(j)-t.move_v(j))<prs.mintrialduration), t.stop_v(j) = t.end(j); end
 end
+
+% get periods of movement for the whole experiment. 
+v_moveindx = double(v>v_thresh);
+
+%% detect start-of-movement and end-of-movement times for each trial for w   %%% Eric
+w_thresh = prs.w_thresh; 
+w = ch.w;
+for j=1:length(t.end)
+   % start-of-movement
+   if j==1, t.move_w(j) = t.beg(j); % first trial is special because there is no pre-trial period
+   else
+       indx = find(abs(w(ts>t.end(j-1) & ts<t.end(j))) > w_thresh,1); % first upward threshold-crossing
+       if ~isempty(indx), t.move_w(j) = t.end(j-1) + indx*dt;
+       else, t.move_w(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+   end
+   % end-of-movement
+   indx = find(abs(w(ts>t.move_w(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
+   if ~isempty(indx), t.stop_w(j) = t.move_w(j) + indx*dt;
+   else, t.stop_w(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+   % if monkey stopped prematurely, set movement end = trial end
+   if (t.stop_w(j)<t.beg(j) || (t.stop_w(j)-t.move_w(j))<prs.mintrialduration), t.stop_w(j) = t.end(j); end
+end
+w_moveindx = double(w>w_thresh);
+st.monk_move_indx = v_moveindx | w_moveindx;
 
 %% extract trials and downsample for storage
 dt_original = dt;
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
+    % get first movement (either v or w) and use that index to determine onset
+    t.move(j) = min([t.move_v(j) t.move_w(j)]); 
     % define pretrial period
-    pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first
+    pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first  %%% Eric
     posttrial = prs.posttrial; % extract everything until "t_end + posttrial"
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
@@ -186,13 +225,15 @@ for j=1:length(t.end)
     trl(j).continuous.firefly = trl(j).continuous.ts>=0 & trl(j).continuous.ts<(0+prs.fly_ONduration);
     trl(j).events.t_beg = t.beg(j);
     trl(j).events.t_end = t.end(j);
-    trl(j).events.t_move = t.move(j);
-    trl(j).events.t_stop = t.stop(j);
+    trl(j).events.t_move = t.move(j);   %%% Eric
+    trl(j).events.t_stop = max([t.stop_v(j) t.stop_w(j)]);   %%% Eric
     % saccade time
     trl(j).events.t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
     % fixation start times
     trl(j).events.t_fix = t.fix(t.fix>(t.beg(j)-3*pretrial) & t.fix<(t.end(j)+3*posttrial)); % wider search-range because fixation might be outside trial
     t.fix(t.fix>(t.beg(j)-3*pretrial) & t.fix<(t.end(j)+3*posttrial)) = []; % remove from list
+    % periods of free eye mov
+    
     % reward time
     if any(t.reward>t.beg(j) & t.reward<t.end(j))
         trl(j).logical.reward = true;
