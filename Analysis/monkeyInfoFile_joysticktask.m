@@ -1858,6 +1858,18 @@ monkeyInfo (end).folder = 'Quigley\U-probe\Jan 17 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
 monkeyInfo (end).electrode = 'V-probe';
 
+%% session 155
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 155;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\U-probe\Jan 17 2018';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+monkeyInfo (end).electrode = 'V-probe';
+
 %% Bruno
 
 %% session 1
@@ -3154,6 +3166,19 @@ monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\Utah Array\Mar 12 2018';
+monkeyInfo (end).comments = {'fixed groud, no perturbations, one density, no landmarks, random DCI, random ITI'};
+monkeyInfo (end).eyechannels = 'both';
+monkeyInfo (end).electrode = 'utah2x48';
+
+%% session 54
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 154;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 12 2018';
 monkeyInfo (end).comments = {'fixed groud, no perturbations, one density, no landmarks, random DCI, random ITI'};
