@@ -26,7 +26,7 @@ switch plot_type
             uncoupledmodel = units(i).Uncoupledmodel;
             coupledmodel = units(i).Coupledmodel;
             bestmodel = uncoupledmodel.bestmodel;
-            Jij([1:i-1 i+1:end]) = coupledmodel.marginaltunings{end};
+            Jij(i,[1:i-1 i+1:end]) = coupledmodel.marginaltunings{end};
             if ~isnan(bestmodel)
                 LL_uncoupled = [LL_uncoupled nanmean(units(i).Uncoupledmodel.testFit{bestmodel}(:,3))];
                 LL_coupled = [LL_coupled nanmean(units(i).Coupledmodel.testFit(:,3))];
@@ -67,7 +67,8 @@ switch plot_type
                 end
                 file_name=[file_name_root num2str(i)];
 %                 saveas(gcf, file_name, 'epsc')
-                figure; errorbar([1 2],[mean(LL_uncoupled) mean(LL_coupled)],[std(LL_uncoupled) std(LL_coupled)]/sqrt(nunits)); xlim([0.5 2.5]);
             end
         end
+        figure; errorbar([1 2],[mean(LL_uncoupled) mean(LL_coupled)],[std(LL_uncoupled) std(LL_coupled)]/sqrt(nunits)); xlim([0.5 2.5]);
+        figure; imagesc(Jij./repmat(max(Jij,[],2),[1 nunits]));
 end

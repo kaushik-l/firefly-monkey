@@ -174,7 +174,7 @@ if prs.regress_eye
     zre = {continuous.zre}; yre = {continuous.yre};
     t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts};
     trialtypes = fields(stats.trialtype);
-    for i=1:length(trialtypes)
+    for i=1%:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         for j=1:nconds
             trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
