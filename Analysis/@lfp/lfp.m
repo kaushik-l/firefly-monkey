@@ -8,6 +8,10 @@ classdef lfp < handle
         mobile
         eyesfixed
         eyesfree
+        eyesfree_mobile
+        eyesfree_stationary
+        eyesfixed_mobile
+        eyesfixed_stationary
         stats
     end
     %%

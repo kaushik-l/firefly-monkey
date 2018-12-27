@@ -203,6 +203,13 @@ end
 w_moveindx = double(w>w_thresh);
 st.monk_move_indx = v_moveindx | w_moveindx;
 
+%% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
+
+st.free_mobile_indx = st.eye_move_indx & st.monk_move_indx; 
+st.fixed_mobile_indx = ~st.eye_move_indx & st.monk_move_indx; 
+st.free_stationary_indx = st.eye_move_indx & ~st.monk_move_indx; 
+st.fixed_stationary_indx = ~st.eye_move_indx & ~st.monk_move_indx;
+
 %% extract trials and downsample for storage
 dt_original = dt;
 dt = dt*prs.factor_downsample;

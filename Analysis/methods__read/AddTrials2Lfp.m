@@ -1,8 +1,8 @@
-function [trials, stationary, mobile, eyesfixed, eyesfree] = AddTrials2Lfp(lfp,fs,trialevents,trials_behv,prs)
+function [trials, stationary, mobile, eyesfixed, eyesfree, eyesfree_mobile, eyesfree_stationary, eyesfixed_mobile, eyesfixed_stationary] = AddTrials2Lfp(lfp,fs,trialevents,trials_behv,prs)
 
 ntrls = length(trialevents.t_end);
-trials(ntrls) = struct(); stationary(ntrls) = struct(); mobile(ntrls) = struct(); eyesfixed(ntrls) = struct(); eyesfree(ntrls) = struct();
-dt = 1/fs; 
+trials(ntrls) = struct(); stationary(ntrls) = struct(); mobile(ntrls) = struct(); %eyesfixed(ntrls) = struct(); eyesfree(ntrls) = struct();
+dt = 1/fs;
 nt = length(lfp);
 ts = dt*(1:nt);
 
@@ -10,20 +10,20 @@ ts = dt*(1:nt);
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin prs.lfp_freqmax]/(fs/2));
 lfp = filtfilt(b,a,lfp);
 
-%% trials (raw)
-trials(ntrls) = struct();
-for i=1:ntrls
-    if ~isnan(trialevents.t_beg(i))
-        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
-        t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
-        t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
-        lfp_raw = lfp(ts > (t_beg + t1) & ts < (t_beg + t2));
-        t_raw = linspace(t1,t2,length(lfp_raw));
-        trials(i).lfp = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % resample to match behavioural recording
-    else
-        trials(i).lfp = nan(length(trials_behv.trials(i).continuous.ts),1);
-    end
-end
+% %% trials (raw)
+% trials(ntrls) = struct(); ts_mobile = [];
+% for i=1:ntrls
+%     if ~isnan(trialevents.t_beg(i))
+%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
+%         t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
+%         t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
+%         lfp_raw = lfp(ts > (t_beg + t1) & ts < (t_beg + t2)); ts_mobile = [ts_mobile; ts > (t_beg + t1) & ts < (t_beg + t2)];
+%         t_raw = linspace(t1,t2,length(lfp_raw));
+%         trials(i).lfp = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % resample to match behavioural recording
+%     else
+%         trials(i).lfp = nan(length(trials_behv.trials(i).continuous.ts),1);
+%     end
+% end
 
 %% stationary period (raw)
 stationary(ntrls-1) = struct(); % obviously only N-1 inter-trials
@@ -91,53 +91,172 @@ for i=1:ntrls
 end
 
 %% fixation period (raw)
-eyesfixed = struct(); count = 0;
-for i=1:ntrls
-    if ~isnan(trialevents.t_beg(i))
-        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
-        if ~isempty(trials_behv.trials(i).events.t_fix)
-            for k=1:numel(trials_behv.trials(i).events.t_fix)
-                count = count + 1;
-                t_fix = trials_behv.trials(i).events.t_fix(k);
-                lfp_raw = lfp(ts > (t_beg + t_fix) & ts < (t_beg + t_fix + prs.fixateduration));
-                t_raw = linspace(0,1,length(lfp_raw));
-                t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
-                eyesfixed(count).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
-            end            
-        end
-    end
-end
-
-%% eye movement period (raw)
-eyesfree = struct(); count = 0;
-for i=1:ntrls
-    if ~isnan(trialevents.t_beg(i))
-        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
-        if ~isempty(trials_behv.trials(i).events.t_fix)
-            for k=1:numel(trials_behv.trials(i).events.t_fix)
-                count = count + 1;
-                t_fix = trials_behv.trials(i).events.t_fix(k);
-                lfp_raw = lfp(ts > (t_beg + t_fix + prs.fixateduration) & ts < (t_beg + t_fix + 2*prs.fixateduration));
-                t_raw = linspace(0,1,length(lfp_raw));
-                t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
-                eyesfree(count).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
-            end            
-        end
-    end
-end
-%% free eye movement periods 
+% eyesfixed = struct(); count = 0;
+% for i=1:ntrls
+%     if ~isnan(trialevents.t_beg(i))
+%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
+%         if ~isempty(trials_behv.trials(i).events.t_fix)
+%             for k=1:numel(trials_behv.trials(i).events.t_fix)
+%                 count = count + 1;
+%                 t_fix = trials_behv.trials(i).events.t_fix(k);
+%                 lfp_raw = lfp(ts > (t_beg + t_fix) & ts < (t_beg + t_fix + prs.fixateduration));
+%                 t_raw = linspace(0,1,length(lfp_raw));
+%                 t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
+%                 eyesfixed(count).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
+%             end
+%         end
+%     end
+% end
+%
+% %% eye movement period (raw)
+% eyesfree = struct(); count = 0;
+% for i=1:ntrls
+%     if ~isnan(trialevents.t_beg(i))
+%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
+%         if ~isempty(trials_behv.trials(i).events.t_fix)
+%             for k=1:numel(trials_behv.trials(i).events.t_fix)
+%                 count = count + 1;
+%                 t_fix = trials_behv.trials(i).events.t_fix(k);
+%                 lfp_raw = lfp(ts > (t_beg + t_fix + prs.fixateduration) & ts < (t_beg + t_fix + 2*prs.fixateduration));
+%                 t_raw = linspace(0,1,length(lfp_raw));
+%                 t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
+%                 eyesfree(count).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
+%             end
+%         end
+%     end
+% end
+%% free eye movement periods
 fs_smr = prs.fs_smr;
-nfiles = numel(trials_behv.states);
-eye_move_all = []; 
+nfiles = numel(trialevents.t_start);
+indx_move = trials_behv.states;
+t_start_eye = []; t_end_eye=[];
 for i = 1:nfiles
-    trials_behv.states(i).eye_move_indx; % concatenate files
+    ts_eye = trials_behv.states(i).ts_move(1:end-1);
+    t_start_eye = [t_start_eye ;(ts_eye(diff(indx_move(i).eye_move_indx)>0))' + trialevents.t_start(i)]; % extract start time
+    t_end_eye =[t_end_eye ; (ts_eye(diff(indx_move(i).eye_move_indx)<0))' + trialevents.t_start(i)]; % extract end time
 end
-ts_eye = fs_smr;   % chose times at which there's eye movements. 
-eye_move_indx = trials_behv.states.eye_move_indx;
-lfp_raw = lfp(ts > (t_beg + t1))
- 
+% check if end_eye happens before start_eye
+if (t_start_eye(2) - t_end_eye(1)) < 0
+    t_end_eye = t_end_eye(2:end);
+end
+% extract lfp where the eye is moving and not moving
+count_free=1; count_fixed=1;
+for j=1:length(t_start_eye)
+    try
+        eye_move = lfp(ts >= t_start_eye(j) & ts < t_end_eye(j));
+        
+        if (t_end_eye(j)- t_start_eye(j))> 0 & (t_end_eye(j)- t_start_eye(j)) > 0.125
+            eyesfree(count_free).lfp = lfp(ts >= t_start_eye(j) & ts < t_end_eye(j));
+            count_free = count_free+1;
+        else
+            eyesfree(count_free).lfp = NaN; 
+            count_free = count_free+1;
+        end
+        eye_fix = lfp(ts >= t_end_eye(j) & ts < t_start_eye(j+1));
+        if (t_start_eye(j+1)- t_end_eye(j))> 0 & (t_start_eye(j+1) - t_end_eye(j)) > 0.125
+            eyesfixed(count_fixed).lfp = lfp(ts >= t_end_eye(j) & ts < t_start_eye(j+1));
+            count_fixed=count_fixed+1;
+        else
+             eyesfixed(count_fixed).lfp = NaN; 
+             count_free = count_free+1;
+        end
+    catch
+    end
+end
+%% Comparison periods
+%% eye move + mobile
+indx = trials_behv.states;
+t_start_comp = []; t_end_comp=[];
+for i = 1:nfiles
+    ts_eye = trials_behv.states(i).ts_move(1:end-1);
+    t_start_comp = [t_start_comp ;(ts_eye(diff(indx(i).free_mobile_indx)>0))' + trialevents.t_start(i)]; % extract start time
+    t_end_comp =[t_end_comp ; (ts_eye(diff(indx(i).free_mobile_indx)<0))' + trialevents.t_start(i)]; % extract end time
+end
+% check if end_eye happens before start_eye
+if (t_end_comp(1) - t_start_comp(1)) < 0
+    t_end_comp = t_end_comp(2:end);
+end
+% extract lfp where the eye is moving and not moving
+count=1;
+for j=1:length(t_start_comp)
+    try
+        if (t_end_comp(j)- t_start_comp(j))> 0 & (t_end_comp(j)- t_start_comp(j)) > 0.125
+            eyesfree_mobile(count).lfp = lfp(ts >= t_start_comp(j) & ts < t_end_comp(j));
+            count = count+1;
+        end
+    catch
+        disp('lfp extraction completed')
+    end
+end
+%% eye move + stationary
+t_start_comp = []; t_end_comp=[];
+for i = 1:nfiles
+    ts_eye = trials_behv.states(i).ts_move(1:end-1);
+    t_start_comp = [t_start_comp ;(ts_eye(diff(indx(i).free_stationary_indx)>0))' + trialevents.t_start(i)]; % extract start time
+    t_end_comp =[t_end_comp ; (ts_eye(diff(indx(i).free_stationary_indx)<0))' + trialevents.t_start(i)]; % extract end time
+end
+% check if end_eye happens before start_eye
+if (t_end_comp(1) - t_start_comp(1)) < 0
+    t_end_comp = t_end_comp(2:end);
+end
+% extract lfp where the eye is moving and not moving
+count=1;
+for j=1:length(t_start_comp)
+    try
+        if (t_end_comp(j)- t_start_comp(j))> 0 & (t_end_comp(j)- t_start_comp(j)) > 0.125
+            eyesfree_stationary(count).lfp = lfp(ts >= t_start_comp(j) & ts < t_end_comp(j));
+            count = count+1;
+        end
+    catch
+        disp('lfp extraction completed')
+    end
+end
+%% eye fixed + mobile
+t_start_comp = []; t_end_comp=[];
+for i = 1:nfiles
+    ts_eye = trials_behv.states(i).ts_move(1:end-1);
+    t_start_comp = [t_start_comp ;(ts_eye(diff(indx(i).fixed_mobile_indx)>0))' + trialevents.t_start(i)]; % extract start time
+    t_end_comp =[t_end_comp ; (ts_eye(diff(indx(i).fixed_mobile_indx)<0))' + trialevents.t_start(i)]; % extract end time
+end
+% check if end_eye happens before start_eye
+if (t_end_comp(1) - t_start_comp(1)) < 0
+    t_end_comp = t_end_comp(2:end);
+end
+% extract lfp where the eye is moving and not moving
+count=1;
+for j=1:length(t_start_comp)
+    try
+        if (t_end_comp(j)- t_start_comp(j))> 0 & (t_end_comp(j)- t_start_comp(j)) > 0.125
+            eyesfixed_mobile(count).lfp = lfp(ts >= t_start_comp(j) & ts < t_end_comp(j));
+            count = count+1;
+        end
+    catch
+        disp('lfp extraction completed')
+    end
+end
 
+%% eye fixed + stationary
+t_start_comp = []; t_end_comp=[];
+for i = 1:nfiles
+    ts_eye = trials_behv.states(i).ts_move(1:end-1);
+    t_start_comp = [t_start_comp ;(ts_eye(diff(indx(i).fixed_stationary_indx)>0))' + trialevents.t_start(i)]; % extract start time
+    t_end_comp =[t_end_comp ; (ts_eye(diff(indx(i).fixed_stationary_indx)<0))' + trialevents.t_start(i)]; % extract end time
+end
+% check if end_eye happens before start_eye
+if (t_end_comp(1) - t_start_comp(1)) < 0
+    t_end_comp = t_end_comp(2:end);
+end
+% extract lfp where the eye is moving and not moving
+count=1;
+for j=1:length(t_start_comp)
+    try
+        if (t_end_comp(j)- t_start_comp(j))> 0 & (t_end_comp(j)- t_start_comp(j)) > 0.125
+            eyesfixed_stationary(count).lfp = lfp(ts >= t_start_comp(j) & ts < t_end_comp(j));
+            count = count+1;
+        end
+    catch
+        disp('lfp extraction completed')        
+    end
+end
 
-
-
-
+end

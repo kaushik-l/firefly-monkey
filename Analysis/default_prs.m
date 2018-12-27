@@ -5,8 +5,8 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['C:\Users\eao5\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur = ['C:\Users\eao5\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
+prs.filepath_behv = ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\behavioural data\'];       %['C:\Users\eao5\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur = ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\neural data\'];       %['C:\Users\eao5\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\'];
 prs.filepath_neuralnet = 'C:\Users\eao5\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
@@ -41,8 +41,8 @@ prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningfu
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
 prs.saccade_thresh = 200; % deg/s
 prs.saccade_duration = 0.15; %seconds
-prs.eyemove_thresh = 15; % deg/s
-prs.eyemove_duration = 0.02; % eye movement needs to last at least N ms to be detected as eye movement
+prs.eyemove_thresh = 25; % deg/s
+prs.eyemove_duration = 0.2; % eye movement needs to last at least N ms to be detected as eye movement
 prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa

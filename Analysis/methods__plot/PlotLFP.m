@@ -57,6 +57,47 @@ if electrode_id ~= 0
             figure; hold on; 
             plot(ts_temp1,lfp_temp1,'k'); plot(ts_temp2,lfp_temp2,'r');
             plot(ts_temp3,lfp_temp3,'k'); plot(ts_temp4,lfp_temp4,'r');
+            
+        case 'PSD_eye_move'
+            figure; hold on;
+            f1 = lfp.stats.trialtype.eyesfree_mobile.spectrum.freq;
+            psd1 = lfp.stats.trialtype.eyesfree_mobile.spectrum.psd;
+            f2 = lfp.stats.trialtype.eyesfree_stationary.spectrum.freq;
+            psd2 = lfp.stats.trialtype.eyesfree_stationary.spectrum.psd;
+            f3 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
+            psd3 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            f4 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
+            psd4 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            
+            plot(f1,psd1,'g'); plot(f2,psd2,'r'); plot(f3,psd3,'b'); plot(f4,psd4,'c');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            legend('eyesfree mobile', 'eyesfree stationary', 'eyesfixed mobile', 'eyesfixed stationary')
+        
+        case 'PSD_eyes_free'
+            figure; hold on;
+            f1 = lfp.stats.trialtype.eyesfree_mobile.spectrum.freq;
+            psd1 = lfp.stats.trialtype.eyesfree_mobile.spectrum.psd;
+            f2 = lfp.stats.trialtype.eyesfree_stationary.spectrum.freq;
+            psd2 = lfp.stats.trialtype.eyesfree_stationary.spectrum.psd;
+            
+            hold on; subplot(1,2,1); plot(f1,psd1,'g'); plot(f2,psd2,'r');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            subplot(1,2,2); plot(f1,psd2./psd1);
+            axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            title('Eye free vs mobile and stationary')
+            
+        case 'PSD_eyes_fixed'
+            figure; hold on;
+            f1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
+            psd1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            f2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
+            psd2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            
+            hold on; subplot(1,2,1); plot(f1,psd1,'g'); plot(f2,psd2,'r');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            subplot(1,2,2); plot(f1,psd2./psd1);
+            axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            title('Eye fixed vs mobile and stationary')
     end
 else
     nlfps = length(lfps);
