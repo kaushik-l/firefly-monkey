@@ -12,6 +12,13 @@ if electrode_id ~= 0
             psd = lfp.stats.trialtype.all.spectrum.psd;
             figure; plot(f,psd);
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+        case 'PSD_all'
+            f = lfp.stats.trialtype.all.spectrum.freq;
+            for i = 1:48%length(lfps)
+                psd(i,:) = lfps(i).stats.trialtype.all.spectrum.psd;
+            end
+            figure; plot(f,nanmean(psd), 'LineWidth',2);
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
         case 'PSD_movement'
             figure; hold on;
             f1 = lfp.stats.trialtype.stationary.spectrum.freq;
@@ -52,9 +59,9 @@ if electrode_id ~= 0
             lfp_temp1 = lfp.stationary(trlindx).lfp; lfp_temp2 = lfp.mobile(trlindx).lfp;
             lfp_temp3 = lfp.stationary(trlindx+1).lfp; lfp_temp4 = lfp.mobile(trlindx+1).lfp;
             dt = prs.dt;
-            ts_temp1 = dt:dt:dt*numel(lfp_temp1); ts_temp2 = ts_temp1(end) + [dt:dt:dt*numel(lfp_temp2)]; 
+            ts_temp1 = dt:dt:dt*numel(lfp_temp1); ts_temp2 = ts_temp1(end) + [dt:dt:dt*numel(lfp_temp2)];
             ts_temp3 = ts_temp2(end) + [dt:dt:dt*numel(lfp_temp3)]; ts_temp4 = ts_temp3(end) + [dt:dt:dt*numel(lfp_temp4)];
-            figure; hold on; 
+            figure; hold on;
             plot(ts_temp1,lfp_temp1,'k'); plot(ts_temp2,lfp_temp2,'r');
             plot(ts_temp3,lfp_temp3,'k'); plot(ts_temp4,lfp_temp4,'r');
             
@@ -72,90 +79,38 @@ if electrode_id ~= 0
             plot(f1,psd1,'g'); plot(f2,psd2,'r'); plot(f3,psd3,'b'); plot(f4,psd4,'c');
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
             legend('eyesfree mobile', 'eyesfree stationary', 'eyesfixed mobile', 'eyesfixed stationary')
-        
+            
         case 'PSD_eye_move_all'
             %extrac
-            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq; 
-            for i = 1:48;%length(lfps)
+            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            for i = 1:48%length(lfps)
                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
             end
             %plot
+            %figure('Position',[680 678 326 420]); hold on;
             figure; hold on;
-            shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
-            shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
-            shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
-            shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            set(gca, 'TickDir', 'out','ylim',[0 300],'yTick', [0 300], 'FontSize',18);
+            %             shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
+            %             shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
+            %             shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
+            %             shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
+            plot(freq,nanmean(eyesfree_mobile),'r', 'LineWidth', 2);
+            plot(freq,nanmean(eyesfree_stationary),'k', 'LineWidth', 2);
+            plot(freq,nanmean(eyesfixed_mobile),'m', 'LineWidth', 2);
+            plot(freq,nanmean(eyesfixed_stationary),'b', 'LineWidth', 2);
             
-        case 'PSD_eyes_free'
-           freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq; 
-           for i = 1:length(lfps)
-                eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
-                eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
-                eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
-                eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
-           end
-            psd_eyesfree = mean([mean(eyesfree_mobile); mean(eyesfree_stationary)]);
-            psd_eyesfree_std = std([std(eyesfree_mobile); mean(eyesfree_stationary)]);
-            psd_eyesfixed = mean([mean(eyesfixed_mobile); mean(eyesfixed_stationary)]);
-            psd_eyesfixed_std = std([std(eyesfixed_mobile); mean(eyesfixed_stationary)]);
-
-            shadedErrorBar(freq,psd_eyesfree,psd_eyesfree_std,'lineprops','r');
-            shadedErrorBar(freq,psd_eyesfixed,psd_eyesfixed_std,'lineprops','k');
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            set(gca, 'TickDir', 'out','ylim',[0 700] ,'yTick', [0 700], 'FontSize',18);
-            title('Eye free vs eyes fixed')
-            
-%%        case 'PSD_eyes_free_all'
-            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq; 
-            for i = 1:length(lfps)
-                eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
-                eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
-            end
-            figure; hold on;
-            shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
-            shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
-            title('Eyes free vs mobile and stationary')
-            
-        case 'PSD_eyes_fixed'
-            figure; hold on;
-            f1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
-            psd1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
-            f2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
-            psd2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            
-            hold on; subplot(1,2,1); plot(f1,psd1,'b'); plot(f2,psd2,'c');
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            subplot(1,2,2); plot(f1,psd2./psd1);
-            axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
-            %title('Eye fixed vs mobile and stationary')
-            
-%%        case 'PSD_eyes_fixed_all'
-            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            for i = 1:length(lfps)
-                eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
-                eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            end
-            figure; hold on;
-            shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
-            shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
-            set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            %title('Eye fixed vs mobile and stationary')
+            set(gca, 'TickDir', 'out','ylim',[0 150],'yTick', [0 150], 'FontSize',18);
         case 'PSD_eyes_move_array'
-            [xloc,yloc] = map_utaharray([],electrode); 
+            [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx); nlfps = length(lfps); %48;
             figure; hold on;
-            f = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq; 
-            for i=1:nlfps
+            f = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            for i=1:48%nlfps
                 psd1 = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 psd2 = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 psd3 = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
@@ -163,10 +118,69 @@ if electrode_id ~= 0
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
                 plot(f,psd1,'r'); axis([2 50 0 250]); axis off; box off;
                 plot(f,psd2,'k'); axis([2 50 0 250]); axis off; box off;
-                plot(f,psd3,'m'); axis([2 50 0 250]); axis off; box off;
+                %plot(f,psd3,'m'); axis([2 50 0 250]); axis off; box off;
                 plot(f,psd4,'b'); axis([2 50 0 250]); axis off; box off;
-                xlim([2 50]); ylim([0 300]);
+                xlim([2 50]); ylim([0 100]);
             end
+            
+        case 'PSD_eyes_free'
+            %%           freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            %            for i = 1:length(lfps)
+            %                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
+            %                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
+            %                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            %                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            %            end
+            %             psd_eyesfree = mean([mean(eyesfree_mobile); mean(eyesfree_stationary)]);
+            %             psd_eyesfree_std = std([std(eyesfree_mobile); mean(eyesfree_stationary)]);
+            %             psd_eyesfixed = mean([mean(eyesfixed_mobile); mean(eyesfixed_stationary)]);
+            %             psd_eyesfixed_std = std([std(eyesfixed_mobile); mean(eyesfixed_stationary)]);
+            %
+            %             shadedErrorBar(freq,psd_eyesfree,psd_eyesfree_std,'lineprops','r');
+            %             shadedErrorBar(freq,psd_eyesfixed,psd_eyesfixed_std,'lineprops','k');
+            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            %             set(gca, 'TickDir', 'out','ylim',[0 700] ,'yTick', [0 700], 'FontSize',18);
+            %             title('Eye free vs eyes fixed')
+            
+        case 'PSD_eyes_free_all'
+%             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+%             for i = 1:length(lfps)
+%                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
+%                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
+%             end
+%             figure; hold on;
+%             shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
+%             shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
+%             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+%             set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
+%             title('Eyes free vs mobile and stationary')
+            
+        case 'PSD_eyes_fixed'
+            %           figure; hold on;
+            %             f1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
+            %             psd1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            %             f2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
+            %             psd2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            %
+            %             hold on; subplot(1,2,1); plot(f1,psd1,'b'); plot(f2,psd2,'c');
+            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            %             subplot(1,2,2); plot(f1,psd2./psd1);
+            %             axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            %             %title('Eye fixed vs mobile and stationary')
+            
+        case 'PSD_eyes_fixed_all'
+            %             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            %             for i = 1:length(lfps)
+            %                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            %                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            %             end
+            %             figure; hold on;
+            %             shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
+            %             shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
+            %             set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
+            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            %             %title('Eye fixed vs mobile and stationary')
+
             
         case 'PSD_densities'
             
@@ -196,7 +210,7 @@ else
             figure; shadedErrorBar(f,mean(psd),std(psd)/sqrt(nlfps));
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
         case 'PSDarray'
-            [xloc,yloc] = map_utaharray([],electrode); 
+            [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx);
@@ -278,7 +292,7 @@ else
             figure; shadedErrorBar(t,mean(v_mu),std(v_mu)/sqrt(nlfps));
             xlim([-1 1]); hline(0,'k'); vline(0,'k'); xlabel('Time rel. to target onset (s)'); ylabel('Event-related potential (\muV)');
         case 'ERParray_targ'
-            [xloc,yloc] = map_utaharray([],electrode);            
+            [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx);
@@ -295,7 +309,7 @@ else
             figure; shadedErrorBar(t,mean(v_mu),std(v_mu)/sqrt(nlfps));
             xlim([-1 1]); hline(0,'k'); vline(0,'k'); xlabel('Time rel. to movement onset (s)'); ylabel('Event-related potential (\muV)');
         case 'ERParray_move'
-            [xloc,yloc] = map_utaharray([],electrode);            
+            [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx);
@@ -312,7 +326,7 @@ else
             figure; shadedErrorBar(t,mean(v_mu),std(v_mu)/sqrt(nlfps));
             xlim([-1 1]); hline(0,'k'); vline(0,'k'); xlabel('Time rel. to end of movement (s)'); ylabel('Event-related potential (\muV)');
         case 'ERParray_stop'
-            [xloc,yloc] = map_utaharray([],electrode);            
+            [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx);
@@ -411,7 +425,7 @@ else
                     spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
                     plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
                     axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
-%                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)'); 
+                    %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
                     set(gca,'Fontsize',10);
                 case 'utah2x48'
                     [xloc,yloc] = map_utaharray([],electrode); [~,electrode_id] = MapChannel2Electrode(electrode);
@@ -425,7 +439,7 @@ else
                             spatial_loc(end+1,:) = (chan2elec(i,j) <= 48); % true = 1:48, false = 49:96
                         end
                     end
-                    set1 = prod(spatial_loc,2); 
+                    set1 = prod(spatial_loc,2);
                     spatial_dist1 = spatial_dist; spatial_dist1(set1 == 0) = 20;
                     spatial_distances = unique(spatial_dist1);
                     spatial_coher_mu = cell2mat(arrayfun(@(x,y) mean(spatial_coher(spatial_dist1==x,:)), spatial_distances, 'UniformOutput', false)');
@@ -442,7 +456,7 @@ else
                     spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
                     plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
                     axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
-%                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)'); 
+                    %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
                     set(gca,'Fontsize',10);
             end
         case 'phase_dist'
@@ -464,7 +478,7 @@ else
                         end
                     end
                     %% theta phase map
-                    %             [~,theta] = min(abs(f - theta_peak)); 
+                    %             [~,theta] = min(abs(f - theta_peak));
                     %% beta phase map
                     [~,beta] = min(abs(f - beta_peak));
                     phasediffs = mean(squeeze(spatial_phasediff(:,:,beta)),2);
@@ -495,14 +509,14 @@ else
                     spatial_phasediff_beta = squeeze(spatial_phasediff(:,:,beta)); spatial_phasediff_beta = spatial_phasediff_beta(:);
                     spatial_dists = unique(spatial_dist);
                     for i=2:numel(spatial_dists)
-                        median_phasediff_beta(i) = median(abs(spatial_phasediff_beta(spatial_dist(:)==spatial_dists(i)))); 
+                        median_phasediff_beta(i) = median(abs(spatial_phasediff_beta(spatial_dist(:)==spatial_dists(i))));
                         sem_phasediff_beta(i) = 1.2533*std(abs(spatial_phasediff_beta(spatial_dist(:)==spatial_dists(i))))/sqrt(sum(spatial_dist(:)==spatial_dists(i)));
-                        [F,X] = ecdf(abs(spatial_phasediff_beta(spatial_dist(:)==spatial_dists(i)))); 
+                        [F,X] = ecdf(abs(spatial_phasediff_beta(spatial_dist(:)==spatial_dists(i))));
                         [X,indx] = unique(X); F = F(indx);
                         ecdf_phasediff_beta(i,:) = interp1(X,F,linspace(0,0.5,101));
                     end
                     figure; surf(spatial_dists',linspace(0,0.5,101)',ecdf_phasediff_beta'); colormap(goodcolormap('bwr',100)); set(gca,'YDir','reverse')
-                    hold on; plot(spatial_dists,median_phasediff_beta,'dk'); axis([0 9.5 0 0.2906]); % 0.2325 rad @ 18.5 Hz => 2ms  
+                    hold on; plot(spatial_dists,median_phasediff_beta,'dk'); axis([0 9.5 0 0.2906]); % 0.2325 rad @ 18.5 Hz => 2ms
                 case 'utah2x48'
                     [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
                     spatial_phasediff = zeros(nlfps,nlfps,numel(f)); spatial_dist = zeros(nlfps,nlfps);
@@ -541,8 +555,8 @@ else
                         plot(xloc(electrode_id_sorted(i)),yloc(electrode_id_sorted(i)),'o','Color',cmap(i,:),'MarkerFaceColor',cmap(i,:));
                     end
                     % fill in the edges of the array (for smoothing utah96)
-%                     zloc(1,1) = 0.5*(zloc(1,2) + zloc(2,1)); zloc(1,end) = 0.5*(zloc(1,end-1) + zloc(2,end));
-%                     zloc(end,1) = 0.5*(zloc(end-1,1) + zloc(end,2)); zloc(end,end) = 0.5*(zloc(end,end-1) + zloc(end-1,end));
+                    %                     zloc(1,1) = 0.5*(zloc(1,2) + zloc(2,1)); zloc(1,end) = 0.5*(zloc(1,end-1) + zloc(2,end));
+                    %                     zloc(end,1) = 0.5*(zloc(end-1,1) + zloc(end,2)); zloc(end,end) = 0.5*(zloc(end,end-1) + zloc(end-1,end));
                     axis([0 11 0 11]); axis off; colormap(cool); colorbar;
                     maxtimelag = ((phasediffs_sorted(end) - phasediffs_sorted(1))/(2*pi))*(1/beta_peak)*1e3;
                     colorbar('Ticks',[0,1],'TickLabels',{[num2str(0) ' ms'],[num2str(round(maxtimelag*10)/10) ' ms']},'Fontsize',14);
