@@ -26,37 +26,37 @@ for i=1:ntrls
 end
 
 %% stationary period (raw)
-% stationary(ntrls-1) = struct(); % obviously only N-1 inter-trials
-% for i=1:ntrls-1
-%     if ~isnan(trialevents.t_beg(i))
-%         t_beg1 = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
-%         t_beg2 = trialevents.t_beg(i+1) + trials_behv.trials(i+1).events.t_beg_correction;
-%         t_stop = t_beg1 + trials_behv.trials(i).events.t_stop;
-%         t_move = t_beg2 + trials_behv.trials(i+1).events.t_move;
-%         if (t_move-t_stop) > prs.min_stationary + prs.dt
-%             lfp_raw = lfp(ts > t_stop & ts < t_move);
-%             t_raw = linspace(0,1,length(lfp_raw));
-%             t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
-%             stationary(i).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
-%         end
-%     end
-% end
+stationary(ntrls-1) = struct(); % obviously only N-1 inter-trials
+for i=1:ntrls-1
+    if ~isnan(trialevents.t_beg(i))
+        t_beg1 = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
+        t_beg2 = trialevents.t_beg(i+1) + trials_behv.trials(i+1).events.t_beg_correction;
+        t_stop = t_beg1 + trials_behv.trials(i).events.t_stop;
+        t_move = t_beg2 + trials_behv.trials(i+1).events.t_move;
+        if (t_move-t_stop) > prs.min_stationary + prs.dt
+            lfp_raw = lfp(ts > t_stop & ts < t_move);
+            t_raw = linspace(0,1,length(lfp_raw));
+            t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
+            stationary(i).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
+        end
+    end
+end
 
 %% motion period (raw)
-% mobile(ntrls) = struct(); % obviously only N-1 inter-trials
-% for i=1:ntrls
-%     if ~isnan(trialevents.t_beg(i))
-%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
-%         t_move = t_beg + trials_behv.trials(i).events.t_move;
-%         t_stop = t_beg + trials_behv.trials(i).events.t_stop;
-%         if (t_stop-t_move) > prs.min_mobile + prs.dt
-%             lfp_raw = lfp(ts > t_move & ts < t_stop);
-%             t_raw = linspace(0,1,length(lfp_raw));
-%             t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
-%             mobile(i).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
-%         end
-%     end
-% end
+mobile(ntrls) = struct(); % obviously only N-1 inter-trials
+for i=1:ntrls
+    if ~isnan(trialevents.t_beg(i))
+        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction;
+        t_move = t_beg + trials_behv.trials(i).events.t_move;
+        t_stop = t_beg + trials_behv.trials(i).events.t_stop;
+        if (t_stop-t_move) > prs.min_mobile + prs.dt
+            lfp_raw = lfp(ts > t_move & ts < t_stop);
+            t_raw = linspace(0,1,length(lfp_raw));
+            t_interp = linspace(0,1,round(length(lfp_raw)*(dt/prs.dt)));
+            mobile(i).lfp = interp1(t_raw,lfp_raw,t_interp,'linear'); % resample to match behavioural recording
+        end
+    end
+end
 
 %% trials (theta-band analytic form)
 % [b,a] = butter(prs.lfp_filtorder,[prs.lfp_theta(1) prs.lfp_theta(2)]/(fs/2));

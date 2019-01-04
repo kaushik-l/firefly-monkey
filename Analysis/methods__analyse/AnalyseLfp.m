@@ -102,65 +102,65 @@ if compute_spectrum
         end
     end
     %%
-    %     % stationary period
-    %     stationary_lfps_temp = []; sMarkers = [];
-    %     for i=1:length(stationary_lfps)
-    %         if ~isempty(stationary_lfps(i).lfp) % gather available inter-trials
-    %             stationary_lfps_temp(end+1).lfp = stationary_lfps(i).lfp;
-    %         end
-    %     end
-    %     lfp_concat = cell2mat({stationary_lfps_temp.lfp}); % concatenate trials
-    %     triallen = cellfun(@(x) length(x), {stationary_lfps_temp.lfp});
-    %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
-    %     [stats.trialtype.stationary.spectrum.psd , stats.trialtype.stationary.spectrum.freq] = ...
-    %         mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
-    %
-    %     % mobile period
-    %     mobile_lfps_temp = []; sMarkers = [];
-    %     trlindx = behv_stats.trialtype.all.trlindx; mobile_lfps = mobile_lfps(trlindx);
-    %     for i=1:length(mobile_lfps)
-    %         if ~isempty(mobile_lfps(i).lfp) % gather available inter-trials
-    %             mobile_lfps_temp(end+1).lfp = mobile_lfps(i).lfp;
-    %         end
-    %     end
-    %     lfp_concat = cell2mat({mobile_lfps_temp.lfp}); % concatenate trials
-    %     triallen = cellfun(@(x) length(x), {mobile_lfps_temp.lfp});
-    %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
-    %     [stats.trialtype.mobile.spectrum.psd , stats.trialtype.mobile.spectrum.freq] = ...
-    %         mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
+        % stationary period
+        stationary_lfps_temp = []; sMarkers = [];
+        for i=1:length(stationary_lfps)
+            if ~isempty(stationary_lfps(i).lfp) % gather available inter-trials
+                stationary_lfps_temp(end+1).lfp = stationary_lfps(i).lfp;
+            end
+        end
+        lfp_concat = cell2mat({stationary_lfps_temp.lfp}); % concatenate trials
+        triallen = cellfun(@(x) length(x), {stationary_lfps_temp.lfp});
+        sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+        [stats.trialtype.stationary.spectrum.psd , stats.trialtype.stationary.spectrum.freq] = ...
+            mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
     
-    %     % eyes-fixed period
-    %     spectralparams.Fs = 500;
-    %     eyesfixed_lfps_temp = []; sMarkers = [];
-    %     for i=1:length(eyesfixed_lfps)
-    %         if ~isempty(eyesfixed_lfps(i).lfp)
-    %             ts_filt = linspace(-pi/2,pi/2,length(eyesfixed_lfps(i).lfp));
-    %             cos_filter = cos(ts_filt);
-    %             eyesfixed_lfps_temp(end+1).lfp = (eyesfixed_lfps(i).lfp).*(cos_filter);
-    %         end
-    %     end
-    %     lfp_concat = cell2mat({eyesfixed_lfps_temp.lfp}); % concatenate trials
-    %     triallen = cellfun(@(x) length(x), {eyesfixed_lfps_temp.lfp});
-    %     %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
-    %     sMarkers(:,1) = size(lfp_concat,1); sMarkers(:,2) =  size(lfp_concat,2); % demarcate trial onset and end
-    %     [stats.trialtype.eyesfixed.spectrum.psd , stats.trialtype.eyesfixed.spectrum.freq] = ...
-    %         mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
-    %
-    %     % eyes-free period
-    %     eyesfree_lfps_temp = []; sMarkers = [];
-    %     for i=1:length(eyesfree_lfps)
-    %         if ~isempty(eyesfree_lfps(i).lfp)
-    %             ts_filt = linspace(-pi/2,pi/2,length(eyesfree_lfps(i).lfp));
-    %             cos_filter = cos(ts_filt);
-    %             eyesfree_lfps_temp(end+1).lfp = (eyesfree_lfps(i).lfp).*(cos_filter);
-    %         end
-    %     end
-    %     lfp_concat = cell2mat({eyesfree_lfps_temp.lfp}); % concatenate trials
-    %     triallen = cellfun(@(x) length(x), {eyesfree_lfps_temp.lfp});
-    %     %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
-    %     sMarkers(:,1) = size(lfp_concat,1); sMarkers(:,2) =  size(lfp_concat,2); % demarcate trial onset and end
-    %     [stats.trialtype.eyesfree.spectrum.psd , stats.trialtype.eyesfree.spectrum.freq] = ...
-    %         mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
+        % mobile period
+        mobile_lfps_temp = []; sMarkers = [];
+        trlindx = behv_stats.trialtype.all.trlindx; mobile_lfps = mobile_lfps(trlindx);
+        for i=1:length(mobile_lfps)
+            if ~isempty(mobile_lfps(i).lfp) % gather available inter-trials
+                mobile_lfps_temp(end+1).lfp = mobile_lfps(i).lfp;
+            end
+        end
+        lfp_concat = cell2mat({mobile_lfps_temp.lfp}); % concatenate trials
+        triallen = cellfun(@(x) length(x), {mobile_lfps_temp.lfp});
+        sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+        [stats.trialtype.mobile.spectrum.psd , stats.trialtype.mobile.spectrum.freq] = ...
+            mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
+    
+%         % eyes-fixed period
+%         spectralparams.Fs = 500;
+%         eyesfixed_lfps_temp = []; sMarkers = [];
+%         for i=1:length(eyesfixed_lfps)
+%             if ~isempty(eyesfixed_lfps(i).lfp)
+%                 ts_filt = linspace(-pi/2,pi/2,length(eyesfixed_lfps(i).lfp));
+%                 cos_filter = cos(ts_filt);
+%                 eyesfixed_lfps_temp(end+1).lfp = (eyesfixed_lfps(i).lfp).*(cos_filter);
+%             end
+%         end
+%         lfp_concat = cell2mat({eyesfixed_lfps_temp.lfp}); % concatenate trials
+%         triallen = cellfun(@(x) length(x), {eyesfixed_lfps_temp.lfp});
+%         %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+%         sMarkers(:,1) = size(lfp_concat,1); sMarkers(:,2) =  size(lfp_concat,2); % demarcate trial onset and end
+%         [stats.trialtype.eyesfixed.spectrum.psd , stats.trialtype.eyesfixed.spectrum.freq] = ...
+%             mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
+%     
+%         % eyes-free period
+%         eyesfree_lfps_temp = []; sMarkers = [];
+%         for i=1:length(eyesfree_lfps)
+%             if ~isempty(eyesfree_lfps(i).lfp)
+%                 ts_filt = linspace(-pi/2,pi/2,length(eyesfree_lfps(i).lfp));
+%                 cos_filter = cos(ts_filt);
+%                 eyesfree_lfps_temp(end+1).lfp = (eyesfree_lfps(i).lfp).*(cos_filter);
+%             end
+%         end
+%         lfp_concat = cell2mat({eyesfree_lfps_temp.lfp}); % concatenate trials
+%         triallen = cellfun(@(x) length(x), {eyesfree_lfps_temp.lfp});
+%         %     sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+%         sMarkers(:,1) = size(lfp_concat,1); sMarkers(:,2) =  size(lfp_concat,2); % demarcate trial onset and end
+%         [stats.trialtype.eyesfree.spectrum.psd , stats.trialtype.eyesfree.spectrum.freq] = ...
+%             mtspectrumc_unequal_length_trials(lfp_concat(:), [fixateduration fixateduration] , spectralparams, sMarkers); % needs http://chronux.org/
     
     % eyes free, mobile period
     fs = 500; dt = 1/fs;
