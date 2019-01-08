@@ -23,8 +23,8 @@ chno.v = find(strcmp(ch_title,'ForwardV')); chno.w = find(strcmp(ch_title,'Angul
 %% scale
 scaling.t = data(chno.mrk).hdr.tim.Scale*data(chno.mrk).hdr.tim.Units;
 scaling.yle = data(chno.yle).hdr.adc.Scale; offset.yle = data(chno.yle).hdr.adc.DC;
-scaling.yre = data(chno.yre).hdr.adc.Scale; offset.yre = data(chno.yre).hdr.adc.DC; 
-scaling.zle = data(chno.zle).hdr.adc.Scale; offset.zle = data(chno.zle).hdr.adc.DC; 
+scaling.yre = data(chno.yre).hdr.adc.Scale; offset.yre = data(chno.yre).hdr.adc.DC;
+scaling.zle = data(chno.zle).hdr.adc.Scale; offset.zle = data(chno.zle).hdr.adc.DC;
 scaling.zre = data(chno.zre).hdr.adc.Scale; offset.zre = data(chno.zre).hdr.adc.DC;
 scaling.xfp = data(chno.xfp).hdr.adc.Scale; offset.xfp = data(chno.xfp).hdr.adc.DC;
 scaling.yfp = -data(chno.yfp).hdr.adc.Scale; offset.yfp = -data(chno.yfp).hdr.adc.DC;
@@ -37,8 +37,8 @@ scaling.w = data(chno.w).hdr.adc.Scale; offset.w = data(chno.w).hdr.adc.DC;
 markers = data(chno.mrk).imp.mrk(:,1);
 %% event times
 t.events = double(data(chno.mrk).imp.tim)*scaling.t;
-t.beg = t.events(markers ==2); 
-t.end = t.events(markers ==3); 
+t.beg = t.events(markers ==2);
+t.end = t.events(markers ==3);
 t.reward = t.events(markers ==4);
 t.beg = t.beg(1:length(t.end));
 t.ptb = t.events(markers==5 | markers==8);
@@ -62,14 +62,14 @@ end
 if length(unique(dt))==1
     dt = dt(1);
 else
-   error('channels must all have identical sampling rates');
+    error('channels must all have identical sampling rates');
 end
 
 %% filter position and velocity channels
 for i=1:length(chnames)
     if ~any(strcmp(chnames{i},{'mrk','yle','yre','zle','zre'}))
         ch.(chnames{i}) = conv(ch.(chnames{i})(1:MAX_LENGTH),h,'same');
-%         ch.(chnames{i}) = ch.(chnames{i})(sz/2+1:end);
+        %         ch.(chnames{i}) = ch.(chnames{i})(sz/2+1:end);
     end
 end
 ch.yle = ch.yle(1:MAX_LENGTH);
@@ -81,12 +81,21 @@ ts = dt:dt:length(ch.(chnames{end}))*dt;
 %% detect saccade times
 % take derivative of eye position = eye velocity
 if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil
-    dze = diff(ch.zle);
+    dze = diff(ch.zle); %
     dye = diff(ch.yle);
 else
     dze = diff(ch.zre);
     dye = diff(ch.yre);
 end
+
+%% Get vel per channel (divide by sec per sample to get deg/s)  
+% if prs.eye_distr
+%     eye_distr(ch,ts,dt); 
+% end 
+
+%%
+v_eye_vel = dze/dt; 
+h_eye_vel = dye/dt;
 de = sqrt(dze.^2 + dye.^2); % speed of eye movement
 
 % apply threshold on eye speed
@@ -112,12 +121,12 @@ end
 fixation_switch = diff(fixateindx);
 t.fix = ts(fixation_switch>0);
 
-%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold) %% Eric 
-eyemove_thresh = prs.eyemove_thresh; 
-indx_eyemove = de_smooth > eyemove_thresh; 
-eyemove_duration = prs.eyemove_duration; 
+%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold) %% Eric
+eyemove_thresh = prs.eyemove_thresh;
+indx_eyemove = de_smooth > eyemove_thresh;
+eyemove_duration = prs.eyemove_duration;
 eyemove_duration_samples = round(eyemove_duration/dt);
-freeindx = false(1,numel(ts)); 
+freeindx = false(1,numel(ts));
 for i=1:(numel(ts) - round(2*eyemove_duration/dt))
     if mean(de_smooth(i:i+eyemove_duration_samples)) > eyemove_thresh, freeindx(i) = true; end
 end
@@ -160,54 +169,54 @@ t_beg_correction = t.beg - t_beg_original;
 
 
 %% detect start-of-movement and end-of-movement times for each trial for v    %%% Eric
-v_thresh = prs.v_thresh; 
+v_thresh = prs.v_thresh;
 v_time2thresh = prs.v_time2thresh;
 v = ch.v;
 for j=1:length(t.end)
-   % start-of-movement
-   if j==1, t.move_v(j) = t.beg(j); % first trial is special because there is no pre-trial period
-   else
-       indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
-       if ~isempty(indx), t.move_v(j) = t.end(j-1) + indx*dt;
-       else, t.move_v(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
-   end
-   % end-of-movement
-   indx = find(v(ts>t.move_v(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
-   if ~isempty(indx), t.stop_v(j) = t.move_v(j) + indx*dt;
-   else, t.stop_v(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
-   % if monkey stopped prematurely, set movement end = trial end
-   if (t.stop_v(j)<t.beg(j) || (t.stop_v(j)-t.move_v(j))<prs.mintrialduration), t.stop_v(j) = t.end(j); end
+    % start-of-movement
+    if j==1, t.move_v(j) = t.beg(j); % first trial is special because there is no pre-trial period
+    else
+        indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
+        if ~isempty(indx), t.move_v(j) = t.end(j-1) + indx*dt;
+        else, t.move_v(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+    end
+    % end-of-movement
+    indx = find(v(ts>t.move_v(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+    if ~isempty(indx), t.stop_v(j) = t.move_v(j) + indx*dt;
+    else, t.stop_v(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+    % if monkey stopped prematurely, set movement end = trial end
+    if (t.stop_v(j)<t.beg(j) || (t.stop_v(j)-t.move_v(j))<prs.mintrialduration), t.stop_v(j) = t.end(j); end
 end
 
-% get periods of movement for the whole experiment. 
+% get periods of movement for the whole experiment.
 v_moveindx = double(v>v_thresh);
 
 %% detect start-of-movement and end-of-movement times for each trial for w   %%% Eric
-w_thresh = prs.w_thresh; 
+w_thresh = prs.w_thresh;
 w = ch.w;
 for j=1:length(t.end)
-   % start-of-movement
-   if j==1, t.move_w(j) = t.beg(j); % first trial is special because there is no pre-trial period
-   else
-       indx = find(abs(w(ts>t.end(j-1) & ts<t.end(j))) > w_thresh,1); % first upward threshold-crossing
-       if ~isempty(indx), t.move_w(j) = t.end(j-1) + indx*dt;
-       else, t.move_w(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
-   end
-   % end-of-movement
-   indx = find(abs(w(ts>t.move_w(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
-   if ~isempty(indx), t.stop_w(j) = t.move_w(j) + indx*dt;
-   else, t.stop_w(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
-   % if monkey stopped prematurely, set movement end = trial end
-   if (t.stop_w(j)<t.beg(j) || (t.stop_w(j)-t.move_w(j))<prs.mintrialduration), t.stop_w(j) = t.end(j); end
+    % start-of-movement
+    if j==1, t.move_w(j) = t.beg(j); % first trial is special because there is no pre-trial period
+    else
+        indx = find(abs(w(ts>t.end(j-1) & ts<t.end(j))) > w_thresh,1); % first upward threshold-crossing
+        if ~isempty(indx), t.move_w(j) = t.end(j-1) + indx*dt;
+        else, t.move_w(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+    end
+    % end-of-movement
+    indx = find(abs(w(ts>t.move_w(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
+    if ~isempty(indx), t.stop_w(j) = t.move_w(j) + indx*dt;
+    else, t.stop_w(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+    % if monkey stopped prematurely, set movement end = trial end
+    if (t.stop_w(j)<t.beg(j) || (t.stop_w(j)-t.move_w(j))<prs.mintrialduration), t.stop_w(j) = t.end(j); end
 end
 w_moveindx = double(w>w_thresh);
 st.monk_move_indx = v_moveindx | w_moveindx;
 
 %% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
 
-st.free_mobile_indx = st.eye_move_indx & st.monk_move_indx; 
-st.fixed_mobile_indx = ~st.eye_move_indx & st.monk_move_indx; 
-st.free_stationary_indx = st.eye_move_indx & ~st.monk_move_indx; 
+st.free_mobile_indx = st.eye_move_indx & st.monk_move_indx;
+st.fixed_mobile_indx = ~st.eye_move_indx & st.monk_move_indx;
+st.free_stationary_indx = st.eye_move_indx & ~st.monk_move_indx;
 st.fixed_stationary_indx = ~st.eye_move_indx & ~st.monk_move_indx;
 
 %% extract trials and downsample for storage
@@ -215,7 +224,7 @@ dt_original = dt;
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
     % get first movement (either v or w) and use that index to determine onset
-    t.move(j) = min([t.move_v(j) t.move_w(j)]); 
+    t.move(j) = min([t.move_v(j) t.move_w(j)]);
     % define pretrial period
     pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first  %%% Eric
     posttrial = prs.posttrial; % extract everything until "t_end + posttrial"
@@ -266,7 +275,7 @@ exp_end = t.events(find(markers==3,1,'last'));
 for i=1:length(trl)
     trl(i).events.t_beg = trl(i).events.t_beg - exp_beg;
     trl(i).events.t_rew = trl(i).events.t_rew - exp_beg - trl(i).events.t_beg; % who cares about absolute time?!
-    trl(i).events.t_end = trl(i).events.t_end - exp_beg - trl(i).events.t_beg;    
+    trl(i).events.t_end = trl(i).events.t_end - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_sac = trl(i).events.t_sac - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_fix = trl(i).events.t_fix - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
