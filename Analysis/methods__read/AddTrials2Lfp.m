@@ -166,7 +166,7 @@ end
 %% Comparison periods
 %% eye move + mobile
 indx = trials_behv.states; nfiles = numel(trialevents.t_start);
-indx_all = []; ts_eye = []; 
+indx_all = []; ts_eye = []; indx_resamp=[];
 for i = 1:nfiles
     indx_all = [indx_all ; indx(i).free_mobile_indx]; 
     ts_eye = [ts_eye trials_behv.states(i).ts_move + trialevents.t_start(i)];
@@ -179,7 +179,7 @@ eyesfree_mobile.ts = ts;
 
 
 %% eye move + stationary
-indx_all = []; 
+indx_all = []; indx_resamp=[];
 for i = 1:nfiles
     indx_all = [indx_all ; indx(i).free_stationary_indx];
     eyesfree_stationary.tstart_file(i) = trialevents.t_start(i);
@@ -189,7 +189,7 @@ indx_resamp = interp1(ts_eye,indx_all,ts,'linear'); indx_resamp(isnan(indx_resam
 eyesfree_stationary.lfp = lfp(logical(indx_resamp));
 
 %% eye fixed + mobile
-indx_all = [];
+indx_all = [];indx_resamp=[];
 for i = 1:nfiles
     indx_all = [indx_all ; indx(i).fixed_mobile_indx];
     eyesfixed_mobile.tstart_file(i) = trialevents.t_start(i);
@@ -199,7 +199,7 @@ indx_resamp = interp1(ts_eye,indx_all,ts,'linear'); indx_resamp(isnan(indx_resam
 eyesfixed_mobile.lfp = lfp(logical(indx_resamp));
 
 %% eye fixed + stationary
-indx_all = []; 
+indx_all = []; indx_resamp=[];
 for i = 1:nfiles
     indx_all = [indx_all ; indx(i).fixed_stationary_indx]; 
     eyesfixed_stationary.tstart_file(i) = trialevents.t_start(i);
@@ -207,4 +207,15 @@ end
 %resample lfp to match indx sample and then extract lfp
 indx_resamp = interp1(ts_eye,indx_all,ts,'linear'); indx_resamp(isnan(indx_resamp))=0;
 eyesfixed_stationary.lfp = lfp(logical(indx_resamp));
+
+%% No saccades
+indx_all = []; indx_resamp=[];
+for i = 1:nfiles
+     indx_all = [indx_all ; indx(i).nosacc_indx];
+     nosaccades.tstart_file(i) = trialevents.t_start(i);
+end 
+%resample lfp to match indx sample and then extract lfp
+indx_resamp = interp1(ts_eye,indx_all,ts,'linear'); indx_resamp(isnan(indx_resamp))=0;
+nosaccades.lfp = lfp(logical(indx_resamp));
+
 end

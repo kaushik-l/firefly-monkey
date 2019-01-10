@@ -14,11 +14,24 @@ if electrode_id ~= 0
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
         case 'PSD_all'
             f = lfp.stats.trialtype.all.spectrum.freq;
-            for i = 1:48%length(lfps)
+            for i = 1:length(lfps) % for Schro
                 psd(i,:) = lfps(i).stats.trialtype.all.spectrum.psd;
             end
             figure; plot(f,nanmean(psd), 'LineWidth',2);
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+        case 'PSDarray'
+            nlfps = 48;
+            [xloc,yloc] = map_utaharray([],electrode);
+            [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+            [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+            lfps = lfps(reorderindx);
+            figure; hold on;
+            f = lfps(1).stats.trialtype.all.spectrum.freq;
+            for i=1:nlfps
+                psd = lfps(i).stats.trialtype.all.spectrum.psd;
+                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                plot(f,psd); axis([2 50 0 75]); axis off; box off;
+            end
         case 'PSD_movement'
             figure; hold on;
             f1 = lfp.stats.trialtype.stationary.spectrum.freq;
@@ -64,7 +77,6 @@ if electrode_id ~= 0
             figure; hold on;
             plot(ts_temp1,lfp_temp1,'k'); plot(ts_temp2,lfp_temp2,'r');
             plot(ts_temp3,lfp_temp3,'k'); plot(ts_temp4,lfp_temp4,'r');
-            
         case 'PSD_eye_move'
             figure; hold on;
             f1 = lfp.stats.trialtype.eyesfree_mobile.spectrum.freq;
@@ -75,22 +87,17 @@ if electrode_id ~= 0
             psd3 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
             f4 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
             psd4 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            
             plot(f1,psd1,'g'); plot(f2,psd2,'r'); plot(f3,psd3,'b'); plot(f4,psd4,'c');
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
             legend('eyesfree mobile', 'eyesfree stationary', 'eyesfixed mobile', 'eyesfixed stationary')
-            
         case 'PSD_eye_move_all'
-            %extrac
             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            for i = 1:48%length(lfps)
+            for i = 1:length(lfps); % 48; % 48 for Schro 
                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
             end
-            %plot
-            %figure('Position',[680 678 326 420]); hold on;
             figure; hold on;
             %             shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
             %             shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
@@ -100,9 +107,8 @@ if electrode_id ~= 0
             plot(freq,nanmean(eyesfree_stationary),'k', 'LineWidth', 2);
             plot(freq,nanmean(eyesfixed_mobile),'m', 'LineWidth', 2);
             plot(freq,nanmean(eyesfixed_stationary),'b', 'LineWidth', 2);
-            
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            set(gca, 'TickDir', 'out','ylim',[0 150],'yTick', [0 150], 'FontSize',18);
+            set(gca, 'TickDir', 'out','ylim',[0 200],'yTick', [0 200], 'FontSize',18);
         case 'PSD_eyes_move_array'
             [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
@@ -110,96 +116,136 @@ if electrode_id ~= 0
             lfps = lfps(reorderindx); nlfps = length(lfps); %48;
             figure; hold on;
             f = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            for i=1:48%nlfps
+            for i=1:48 % nlfps % 48 for Schro
                 psd1 = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 psd2 = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 psd3 = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
                 psd4 = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                plot(f,psd1,'r'); axis([2 50 0 250]); axis off; box off;
-                plot(f,psd2,'k'); axis([2 50 0 250]); axis off; box off;
-                %plot(f,psd3,'m'); axis([2 50 0 250]); axis off; box off;
-                plot(f,psd4,'b'); axis([2 50 0 250]); axis off; box off;
-                xlim([2 50]); ylim([0 100]);
+                plot(f,psd1,'r'); axis([2 50 0 100]); axis off; box off;
+                plot(f,psd2,'k'); axis([2 50 0 100]); axis off; box off;
+                %plot(f,psd3,'m'); axis([2 50 0 100]); axis off; box off;
+                plot(f,psd4,'b'); axis([2 50 0 100]); axis off; box off;
+                xlim([2 50]); ylim([0 110]);
             end
-            
         case 'PSD_eyes_free'
-            %%           freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            %            for i = 1:length(lfps)
-            %                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
-            %                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
-            %                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
-            %                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            %            end
-            %             psd_eyesfree = mean([mean(eyesfree_mobile); mean(eyesfree_stationary)]);
-            %             psd_eyesfree_std = std([std(eyesfree_mobile); mean(eyesfree_stationary)]);
-            %             psd_eyesfixed = mean([mean(eyesfixed_mobile); mean(eyesfixed_stationary)]);
-            %             psd_eyesfixed_std = std([std(eyesfixed_mobile); mean(eyesfixed_stationary)]);
-            %
-            %             shadedErrorBar(freq,psd_eyesfree,psd_eyesfree_std,'lineprops','r');
-            %             shadedErrorBar(freq,psd_eyesfixed,psd_eyesfixed_std,'lineprops','k');
-            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            %             set(gca, 'TickDir', 'out','ylim',[0 700] ,'yTick', [0 700], 'FontSize',18);
-            %             title('Eye free vs eyes fixed')
+            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            for i = 1:length(lfps)
+                eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
+                eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
+                eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
+                eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            end
+            psd_eyesfree = mean([mean(eyesfree_mobile); mean(eyesfree_stationary)]);
+            psd_eyesfree_std = std([std(eyesfree_mobile); mean(eyesfree_stationary)]);
+            psd_eyesfixed = mean([mean(eyesfixed_mobile); mean(eyesfixed_stationary)]);
+            psd_eyesfixed_std = std([std(eyesfixed_mobile); mean(eyesfixed_stationary)]);
+            
+            shadedErrorBar(freq,psd_eyesfree,psd_eyesfree_std,'lineprops','r');
+            shadedErrorBar(freq,psd_eyesfixed,psd_eyesfixed_std,'lineprops','k');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            set(gca, 'TickDir', 'out','ylim',[0 700] ,'yTick', [0 700], 'FontSize',18);
+            title('Eye free vs eyes fixed')
             
         case 'PSD_eyes_free_all'
-%             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-%             for i = 1:length(lfps)
-%                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
-%                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
-%             end
-%             figure; hold on;
-%             shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
-%             shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
-%             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-%             set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
-%             title('Eyes free vs mobile and stationary')
-            
+            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            for i = 1:length(lfps)
+                eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
+                eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
+            end
+            figure; hold on;
+            shadedErrorBar(freq,nanmean(eyesfree_mobile),nanstd(eyesfree_mobile),'lineprops','r');
+            shadedErrorBar(freq,nanmean(eyesfree_stationary),nanstd(eyesfree_stationary),'lineprops','k');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
+            title('Eyes free vs mobile and stationary')
         case 'PSD_eyes_fixed'
-            %           figure; hold on;
-            %             f1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
-            %             psd1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
-            %             f2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
-            %             psd2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            %
-            %             hold on; subplot(1,2,1); plot(f1,psd1,'b'); plot(f2,psd2,'c');
-            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            %             subplot(1,2,2); plot(f1,psd2./psd1);
-            %             axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
-            %             %title('Eye fixed vs mobile and stationary')
+            figure; hold on;
+            f1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.freq;
+            psd1 = lfp.stats.trialtype.eyesfixed_mobile.spectrum.psd;
+            f2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.freq;
+            psd2 = lfp.stats.trialtype.eyesfixed_stationary.spectrum.psd;
             
+            hold on; subplot(1,2,1); plot(f1,psd1,'b'); plot(f2,psd2,'c');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            subplot(1,2,2); plot(f1,psd2./psd1);
+            axis([1 50 0 1.5]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            title('Eye fixed vs mobile and stationary')
         case 'PSD_eyes_fixed_all'
-            %             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            %             for i = 1:length(lfps)
-            %                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
-            %                 eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
-            %             end
-            %             figure; hold on;
-            %             shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
-            %             shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
-            %             set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
-            %             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
-            %             %title('Eye fixed vs mobile and stationary')
-
-            
+            freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
+            for i = 1:length(lfps)
+                eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
+                eyesfixed_stationary(i,:) = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
+            end
+            figure; hold on;
+            shadedErrorBar(freq,nanmean(eyesfixed_mobile),nanstd(eyesfixed_mobile),'lineprops','m');
+            shadedErrorBar(freq,nanmean(eyesfixed_stationary),nanstd(eyesfixed_stationary),'lineprops','b');
+            set(gca, 'TickDir', 'out','ylim',[0 300] ,'yTick', [0 300], 'FontSize',18);
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            title('Eye fixed vs mobile and stationary')
         case 'PSD_densities'
-            
-            
-        case 'PSDarray'
-            nlfps = 48;
+            nlfps = length(lfps);
+            figure; hold on;
+            f1 = lfps(1).stats.trialtype.density(1).spectrum.freq;
+            for i=1:nlfps, psd1(i,:) = lfps(i).stats.trialtype.density(1).spectrum.psd; end
+            f2 = lfps(1).stats.trialtype.density(2).spectrum.freq;
+            for i=1:nlfps, psd2(i,:) = lfps(i).stats.trialtype.density(2).spectrum.psd; end
+            subplot(1,2,1); hold on;
+            fg1 = shadedErrorBar(f1,mean(psd1),std(psd1),'lineprops','b'); fg2 = shadedErrorBar(f2,mean(psd2),std(psd2),'lineprops','r');
+            set(fg1.mainLine, 'LineWidth', 2);  set(fg1.edge, 'LineStyle', 'none'); set(fg2.mainLine, 'LineWidth', 2);  set(fg2.edge, 'LineStyle', 'none');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)'); legend('low density', 'high density');
+            set(gca, 'TickDir', 'out', 'FontSize',18);
+            subplot(1,2,2); fg3 = shadedErrorBar(f1,mean(psd2./psd1),std(psd2./psd1)); axis([1 50 0 1.5]); hline(1,'k');
+            set(fg3.mainLine, 'LineWidth', 2); set(gca, 'TickDir', 'out', 'FontSize',18);
+            xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+        case 'PSD_densities_array'
             [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
-            lfps = lfps(reorderindx);
+            lfps = lfps(reorderindx); nlfps = length(lfps); %48;
             figure; hold on;
-            f = lfps(1).stats.trialtype.all.spectrum.freq;
-            for i=1:nlfps
-                psd = lfps(i).stats.trialtype.all.spectrum.psd;
+            f1 = lfps(1).stats.trialtype.density(1).spectrum.freq;
+            f2 = lfps(1).stats.trialtype.density(2).spectrum.freq;
+            for i=1:nlfps % 48 % 48 for Schro
+                psd1 = lfps(i).stats.trialtype.density(1).spectrum.psd;
+                psd2 = lfps(i).stats.trialtype.density(2).spectrum.psd;
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                plot(f,psd); axis([2 50 0 75]); axis off; box off;
+                plot(f1,psd1,'b'); axis([2 50 0 250]); axis off; box off;
+                plot(f2,psd2,'r'); axis([2 50 0 250]); axis off; box off;
+                xlim([2 50]); ylim([0 75]);
             end
+        case 'PSD_accuracy'
+            nlfps = length(lfps);
+            figure; hold on;
+            f1 = lfps(1).stats.trialtype.reward(1).spectrum.freq;
+            for i=1:nlfps, psd1(i,:) = lfps(i).stats.trialtype.reward(1).spectrum.psd; end % unrewarded
+            f2 = lfps(1).stats.trialtype.density(2).spectrum.freq;
+            for i=1:nlfps, psd2(i,:) = lfps(i).stats.trialtype.reward(2).spectrum.psd; end % rewarded
+            subplot(1,2,1); hold on;
+            fg1 = shadedErrorBar(f1,mean(psd1),std(psd1),'lineprops','k'); fg2 = shadedErrorBar(f2,mean(psd2),std(psd2),'lineprops','g');
+            set(fg1.mainLine, 'LineWidth', 2);  set(fg1.edge, 'LineStyle', 'none'); set(fg2.mainLine, 'LineWidth', 2);  set(fg2.edge, 'LineStyle', 'none');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)'); legend('Unrewarded', 'high density');
+            set(gca, 'TickDir', 'out', 'FontSize',18);
+            subplot(1,2,2); fg3 = shadedErrorBar(f1,mean(psd2./psd1),std(psd2./psd1)); axis([1 50 0 1.5]); hline(1,'k');
+            set(fg3.mainLine, 'LineWidth', 2); set(gca, 'TickDir', 'out', 'FontSize',18);
+            xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
             
-            
+        case 'PSD_accuracy_array'
+            [xloc,yloc] = map_utaharray([],electrode);
+            [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+            [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+            lfps = lfps(reorderindx); nlfps = length(lfps); %48;
+            figure; hold on;
+            f1 = lfps(1).stats.trialtype.reward(1).spectrum.freq;
+            f2 = lfps(1).stats.trialtype.reward(2).spectrum.freq;
+            for i=1:nlfps % 48 % 48 for Schro
+                psd1 = lfps(i).stats.trialtype.reward(1).spectrum.psd;
+                psd2 = lfps(i).stats.trialtype.reward(2).spectrum.psd;
+                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                plot(f1,psd1,'b'); axis([2 50 0 250]); axis off; box off;
+                plot(f2,psd2,'r'); axis([2 50 0 250]); axis off; box off;
+                xlim([2 50]); ylim([0 75]);
+            end
     end
 else
     nlfps = length(lfps);

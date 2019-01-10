@@ -88,11 +88,6 @@ else
     dye = diff(ch.yre);
 end
 
-%% Get vel per channel (divide by sec per sample to get deg/s)  
-% if prs.eye_distr
-%     eye_distr(ch,ts,dt); 
-% end 
-
 %%
 v_eye_vel = dze/dt; 
 h_eye_vel = dye/dt;
@@ -121,7 +116,7 @@ end
 fixation_switch = diff(fixateindx);
 t.fix = ts(fixation_switch>0);
 
-%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold) %% Eric
+%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold)
 eyemove_thresh = prs.eyemove_thresh;
 indx_eyemove = de_smooth > eyemove_thresh;
 eyemove_duration = prs.eyemove_duration;
@@ -162,13 +157,13 @@ tflyON_minus_teleport = nanmedian(t_flyON_trl - t_teleport_trl);
 t_beg_original = t.beg;
 for i=1:length(t.beg)
     if ~isnan(t_flyON_trl(i)), t.beg(i) = t_flyON_trl(i);
-    elseif ~isnan(t_teleport_trl(i)), t.beg(i) = t_teleport_trl(i) + tflyON_minus_teleport;
+       elseif ~isnan(t_teleport_trl(i)), t.beg(i) = t_teleport_trl(i) + tflyON_minus_teleport;
     end
 end
 t_beg_correction = t.beg - t_beg_original;
 
 
-%% detect start-of-movement and end-of-movement times for each trial for v    %%% Eric
+%% detect start-of-movement and end-of-movement times for each trial for v  
 v_thresh = prs.v_thresh;
 v_time2thresh = prs.v_time2thresh;
 v = ch.v;
@@ -191,7 +186,7 @@ end
 % get periods of movement for the whole experiment.
 v_moveindx = double(v>v_thresh);
 
-%% detect start-of-movement and end-of-movement times for each trial for w   %%% Eric
+%% detect start-of-movement and end-of-movement times for each trial for w   
 w_thresh = prs.w_thresh;
 w = ch.w;
 for j=1:length(t.end)
@@ -212,12 +207,14 @@ end
 w_moveindx = double(w>w_thresh);
 st.monk_move_indx = v_moveindx | w_moveindx;
 
+
 %% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
 
 st.free_mobile_indx = st.eye_move_indx & st.monk_move_indx;
 st.fixed_mobile_indx = ~st.eye_move_indx & st.monk_move_indx;
 st.free_stationary_indx = st.eye_move_indx & ~st.monk_move_indx;
 st.fixed_stationary_indx = ~st.eye_move_indx & ~st.monk_move_indx;
+st.nosacc_indx = ~st.eye_move_indx;
 
 %% extract trials and downsample for storage
 dt_original = dt;
