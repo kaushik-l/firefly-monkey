@@ -18,11 +18,4 @@ behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect
 %%
 switch plot_type
     case 'GAM'
-        units = units.stats.trialtype.all.models.log.units(unitindx);
-        nunits = length(units);
-        %% population statistics
-        %% tuning functions
-        %% variance explained
-        %% coupled vs uncoupled
-        %% coupling (effect of distance)
 end
