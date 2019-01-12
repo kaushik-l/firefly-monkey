@@ -1,4 +1,4 @@
-function PlotPopulation(behv,units,plot_type,prs)
+function PlotPopulation(behv,units,unitindx,plot_type,prs)
 
 %% parameters
 binwidth_abs = prs.binwidth_abs;
@@ -18,6 +18,11 @@ behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect
 %%
 switch plot_type
     case 'GAM'
-        units = units.stats.trialtype.all.models.log.units;
-        nunits = length(units);        
+        units = units.stats.trialtype.all.models.log.units(unitindx);
+        nunits = length(units);
+        %% population statistics
+        %% tuning functions
+        %% variance explained
+        %% coupled vs uncoupled
+        %% coupling (effect of distance)
 end

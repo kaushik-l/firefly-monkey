@@ -45,8 +45,8 @@ prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0.1; % (s) // duration to extract before target onset or movement onset, whichever is earlier
-prs.posttrial = 0.1; % (s) // duration to extract following end-of-trial timestamp
+prs.pretrial = 0.5; % (s) // duration to extract before target onset or movement onset, whichever is earlier
+prs.posttrial = 0.5; % (s) // duration to extract following end-of-trial timestamp
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 prs.maxtrialduration = 4; % (s) more than this is abnormal
 prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey position during teleportation (cm)
@@ -192,7 +192,7 @@ prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = false; % evaluate significance of event-locked responses
+prs.evaluate_peaks = true; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors

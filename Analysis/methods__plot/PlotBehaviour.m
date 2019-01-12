@@ -176,7 +176,7 @@ switch plot_type
         % saccade relative to trial onset
         ts_beg = linspace(-1,3,100); psac = [];
         for i=1:1000
-            indx = randperm(length(t_sac_beg)); indx = indx(1:3000);
+            indx = randperm(length(t_sac_beg)); indx = indx(1:2000);
             [psac(i,:),~] = hist(t_sac_beg(indx),ts_beg);
         end
         psac_beg_mu = mean(psac);
@@ -184,7 +184,7 @@ switch plot_type
         % saccade relative to stopping time
         ts_stop = linspace(-2,2,100); psac = [];
         for i=1:1000
-            indx = randperm(length(t_sac_stop)); indx = indx(1:3000);
+            indx = randperm(length(t_sac_stop)); indx = indx(1:2000);
             [psac(i,:),~] = hist(t_sac_stop(indx),ts_stop);
         end
         psac_stop_mu = mean(psac);
@@ -351,15 +351,87 @@ switch plot_type
         end
         hold on; plot(corr_gazefly);
     case 'vergence'
+        fly_ONduration = prs.fly_ONduration;
+        saccade_duration = prs.saccade_duration;
+        pretrial = prs.pretrial;
+        posttrial = prs.posttrial;
         trials = behv.trials(~crazy);
-        r_fly = behv.stats.pos_rel.r_fly(~crazy);
-        theta_fly = behv.stats.pos_rel.theta_fly(~crazy);
-        x_reye = behv.stats.pos_rel.x_leye(~crazy);
-        y_reye = behv.stats.pos_rel.y_leye(~crazy);
         for i=1:ntrls
-            ts = behv.trials(i).ts;
-            verg(i,:) = rebin(ts,(behv.stats.pos_abs.y_reye{i} - behv.stats.pos_abs.y_leye{i}),150);
+            % identify time of target fixation
+            sacstart = []; sacend = []; sacampli = [];
+            t_sac{i} = trials(i).events.t_sac;
+            t_sac2 = t_sac{i};
+            ts{i} = trials(i).continuous.ts;
+            t_stop(i) = trials(i).events.t_stop;
+            zle{i} = trials(i).continuous.zle;
+            yle{i} = trials(i).continuous.yle;
+            zre{i} = trials(i).continuous.zre;
+            yre{i} = trials(i).continuous.yre;
+            sac_indx = t_sac{i}>0 & t_sac{i}<2*fly_ONduration;
+            if any(sac_indx)
+                t_sacs = t_sac{i}(sac_indx);
+                for j=1:length(t_sacs)
+                    sacstart(j) = find(ts{i}>(t_sacs(j)), 1);
+                    sacend(j) = find(ts{i}>(t_sacs(j) + saccade_duration), 1);
+                    sacampli(j) = nanmean([sum(abs(zle{i}(sacstart(j)) - zle{i}(sacend(j)))^2 + abs(yle{i}(sacstart(j)) - yle{i}(sacend(j)))^2) ...
+                        sum(abs(zre{i}(sacstart(j)) - zre{i}(sacend(j)))^2 + abs(yre{i}(sacstart(j)) - yre{i}(sacend(j)))^2)]);
+                end
+                t_fix(i) = t_sacs(sacampli == max(sacampli)) + saccade_duration/2;
+            else, t_fix(i) = 0 + saccade_duration/2;
+            end % if no saccade detected, assume monkey was already fixating on target
+            % remove saccade periods from eye position data
+            sacstart = []; sacend = [];
+            for j=1:length(t_sac2)
+                sacstart(j) = find(ts{i}>(t_sac2(j) - saccade_duration/2), 1);
+                sacend(j) = find(ts{i}>(t_sac2(j) + saccade_duration/2), 1);
+%                 xt{i}(sacstart(j):sacend(j)) = nan;  % fly x - position
+                yle{i}(sacstart(j):sacend(j)) = nan; % left eye horizontal position
+                yre{i}(sacstart(j):sacend(j)) = nan; % right eye horizontal position
+%                 yt{i}(sacstart(j):sacend(j)) = nan;  % fly y - position
+                zle{i}(sacstart(j):sacend(j)) = nan; % left eye vertical position
+                zre{i}(sacstart(j):sacend(j)) = nan; % right eye vertical position
+            end
+%             t_fix(i) = 0;
+            pretrial = 0; posttrial = 0;
+            % select data between target fixation and end of movement
+%             xt{i} = x_fly{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); yt{i} = y_fly{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+%             xt{i}(isnan(xt{i})) = xt{i}(find(~isnan(xt{i}),1)); yt{i}(isnan(yt{i})) = yt{i}(find(~isnan(yt{i}),1));
+            yle{i} = yle{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); yre{i} = yre{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+            zle{i} = zle{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); zre{i} = zre{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+            
+            % actual eye position
+            ver_mean{i} = nanmean([zle{i} , zre{i}],2); % mean vertical eye position (of the two eyes)
+            hor_mean{i} = nanmean([yle{i} , yre{i}],2); % mean horizontal eye position
+            ver_diff{i} = 0.5*(zle{i} - zre{i}); % 0.5*difference between vertical eye positions (of the two eyes)
+            hor_diff{i} = 0.5*(yle{i} - yre{i}); % 0.5*difference between horizontal eye positions
+            % fly position
+%             rt{i} = sqrt(xt{i}.^2 + yt{i}.^2);
+%             thetat{i} = atan2d(xt{i},yt{i});
         end
+        %%
+%         figure; hold on;
+%         for i=1:ntrls
+%             plot((1/Fs)*(1:length(hor_diff{i})),hor_diff{i},'Color',[0.5 0.5 0.5]);
+%             if ~isempty(hor_diff{i})
+%                 plot((1/Fs)*1,hor_diff{i}(find(~isnan(hor_diff{i}),1)),'.b');
+%                 plot((1/Fs)*length(hor_diff{i}),hor_diff{i}(find(~isnan(hor_diff{i}),1,'last')),'.r');
+%             end
+%         end
+%         ylim([-4 4]);
+        %%
+        hor_diff_beg = nan(ntrls,1); hor_diff_end = nan(ntrls,1);
+        for i=1:ntrls
+            if ~isempty(hor_diff{i})
+                hor_diff_beg(i) = hor_diff{i}(find(~isnan(hor_diff{i}),1));
+                hor_diff_end(i) = hor_diff{i}(find(~isnan(hor_diff{i}),1,'last'));
+            end
+        end
+        figure; hold on;
+        [F,X,FLO,FUP] = ecdf(hor_diff_beg);
+        shadedErrorBar(X+0.5,F,[F-FLO FUP-F],'lineprops','-b');
+        [F,X,FLO,FUP] = ecdf(hor_diff_end);
+        shadedErrorBar(X+0.5,F,[F-FLO FUP-F],'lineprops','-r');
+        axis([0 4 0 1]);
     case 'left_right'
         trials = behv.trials(~crazy);
         x_reye = behv.stats.pos_rel.x_reye(~crazy);

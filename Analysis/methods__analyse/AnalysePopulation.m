@@ -102,7 +102,7 @@ if fitGAM_coupled
                     [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
                 %% fit fully coupled GAM model to each unit
-                for k=1:2%nunits
+                for k=1:nunits
                     % replace xt(:,'phase') with the unit-specific LFP channel
                     if any(strcmp(varname,'spikehist')), xt(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full); end
                     xt_k = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
