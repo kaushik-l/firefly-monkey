@@ -2468,6 +2468,18 @@ monkeyInfo (end).folder = 'Bruno\U-probe\Apr 4 2018';
 monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI'};
 monkeyInfo (end).electrode = 'linearprobe24';
 
+%% session 124
+monkeyInfo (end+1).monk_id = 51;
+monkeyInfo (end).session_id = 124;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Bruno\U-probe\Apr 5 2018';
+monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, random DCI, random ITI'};
+monkeyInfo (end).electrode = 'linearprobe24';
+
 %% Schro
 
 %% session 1
