@@ -90,9 +90,9 @@ if electrode_id ~= 0
             plot(f1,psd1,'g'); plot(f2,psd2,'r'); plot(f3,psd3,'b'); plot(f4,psd4,'c');
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
             legend('eyesfree mobile', 'eyesfree stationary', 'eyesfixed mobile', 'eyesfixed stationary')
-        case 'PSD_eye_move_all'
+        case 'PSD_eye_move_all'  % main plot
             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            for i = 1:length(lfps); % 48; % 48 for Schro 
+            for i = 1:length(lfps); % 48; % 48 for Schro
                 eyesfree_mobile(i,:) = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 eyesfree_stationary(i,:) = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 eyesfixed_mobile(i,:) = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
@@ -109,24 +109,24 @@ if electrode_id ~= 0
             plot(freq,nanmean(eyesfixed_stationary),'b', 'LineWidth', 2);
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
             set(gca, 'TickDir', 'out','ylim',[0 200],'yTick', [0 200], 'FontSize',18);
-        case 'PSD_eyes_move_array'
+        case 'PSD_eye_move_array'  % main plot
             [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
             [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
             lfps = lfps(reorderindx); nlfps = length(lfps); %48;
             figure; hold on;
             f = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
-            for i=1:48 % nlfps % 48 for Schro
+            for i=1:48  %nlfps; % 48 % 48 for Schro
                 psd1 = lfps(i).stats.trialtype.eyesfree_mobile.spectrum.psd;
                 psd2 = lfps(i).stats.trialtype.eyesfree_stationary.spectrum.psd;
                 psd3 = lfps(i).stats.trialtype.eyesfixed_mobile.spectrum.psd;
                 psd4 = lfps(i).stats.trialtype.eyesfixed_stationary.spectrum.psd;
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                plot(f,psd1,'r'); axis([2 50 0 100]); axis off; box off;
-                plot(f,psd2,'k'); axis([2 50 0 100]); axis off; box off;
-                %plot(f,psd3,'m'); axis([2 50 0 100]); axis off; box off;
-                plot(f,psd4,'b'); axis([2 50 0 100]); axis off; box off;
-                xlim([2 50]); ylim([0 110]);
+                plot(f,psd1,'r'); axis([2 50 0 150]); axis off; box off;
+                plot(f,psd2,'k'); axis([2 50 0 150]); axis off; box off;
+                plot(f,psd3,'m'); axis([2 50 0 150]); axis off; box off;
+                plot(f,psd4,'b'); axis([2 50 0 150]); axis off; box off;
+                xlim([2 50]); ylim([0 100]);
             end
         case 'PSD_eyes_free'
             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
@@ -184,20 +184,37 @@ if electrode_id ~= 0
             xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
             title('Eye fixed vs mobile and stationary')
         case 'PSD_densities'
-            nlfps = length(lfps);
+            l_lim = 13 ; h_lim = 20;             % theta 6-10, beta 13-20
+            nlfps = 48 ; % length(lfps); %48
             figure; hold on;
             f1 = lfps(1).stats.trialtype.density(1).spectrum.freq;
             for i=1:nlfps, psd1(i,:) = lfps(i).stats.trialtype.density(1).spectrum.psd; end
             f2 = lfps(1).stats.trialtype.density(2).spectrum.freq;
-            for i=1:nlfps, psd2(i,:) = lfps(i).stats.trialtype.density(2).spectrum.psd; end
+            for i=1:nlfps, psd2(i,:) = lfps(i).stats.trialtype.density(2).spectrum.psd;  end
             subplot(1,2,1); hold on;
             fg1 = shadedErrorBar(f1,mean(psd1),std(psd1),'lineprops','b'); fg2 = shadedErrorBar(f2,mean(psd2),std(psd2),'lineprops','r');
-            set(fg1.mainLine, 'LineWidth', 2);  set(fg1.edge, 'LineStyle', 'none'); set(fg2.mainLine, 'LineWidth', 2);  set(fg2.edge, 'LineStyle', 'none');
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)'); legend('low density', 'high density');
-            set(gca, 'TickDir', 'out', 'FontSize',18);
+            set(fg1.mainLine, 'LineWidth', 1);  set(fg1.edge, 'LineStyle', 'none'); set(fg2.mainLine, 'LineWidth', 1);  set(fg2.edge, 'LineStyle', 'none');
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            set(gca, 'TickDir', 'out', 'FontSize',18); ylim([0 100]);
             subplot(1,2,2); fg3 = shadedErrorBar(f1,mean(psd2./psd1),std(psd2./psd1)); axis([1 50 0 1.5]); hline(1,'k');
-            set(fg3.mainLine, 'LineWidth', 2); set(gca, 'TickDir', 'out', 'FontSize',18);
-            xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            set(fg3.mainLine, 'LineWidth', 1); set(gca, 'TickDir', 'out', 'FontSize',18);
+            xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio'); ylim([0.5 1.5]);
+            f1_band = f1(f1>l_lim & f1<h_lim); f2_band = f2(f2>l_lim & f2<h_lim);
+            for i=1:nlfps, psd1_band(i,:) = mean(psd1(i,(f1>l_lim & f1<h_lim))); end
+            for i=1:nlfps, psd2_band(i,:) = mean(psd2(i,(f2>l_lim & f2<h_lim))); end
+            figure;subplot(1,2,1); hold on;
+            errorbar(1,mean(psd1_band),std(psd1_band)/sqrt(nlfps),'b','LineWidth',1); % plot(1,psd1_theta,'.k');
+            errorbar(2,mean(psd2_band),std(psd2_band)/sqrt(nlfps),'r','LineWidth',1); %  plot(2,psd2_theta,'.k');
+            ymin = floor(min([min(psd2_band) min(psd2_band)]));
+            ymax=(ceil(max([max(psd2_band) max(psd2_band)])));
+            set(gca,'xlim', [0 3], 'xTick',[],'yLim',[round(mean(psd1_band)-10) round(mean(psd1_band)+10)], 'yTick',[round(mean(psd1_band)-10) round(mean(psd1_band)+10)],'TickDir', 'out', 'FontSize',18);
+            ylabel('Power spectral density (\muV^2/Hz)');
+            subplot(1,2,2); hold on; plot(psd1_band,psd2_band, '.k', 'MarkerSize',18); plot(0:ymax,0:ymax, '--k');
+            set(gca,'TickDir', 'out', 'FontSize',22, 'xTick', [ymin ymax],'yTick', [ymin ymax]);
+            xlabel('PSD low density'); ylabel('PSD high density');
+            axis([ymin ymax ymin ymax]);
+            [h,p] = ttest(psd1_band,psd2_band)
+            
         case 'PSD_densities_array'
             [xloc,yloc] = map_utaharray([],electrode);
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
@@ -212,23 +229,40 @@ if electrode_id ~= 0
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
                 plot(f1,psd1,'b'); axis([2 50 0 250]); axis off; box off;
                 plot(f2,psd2,'r'); axis([2 50 0 250]); axis off; box off;
+                vline(15);
                 xlim([2 50]); ylim([0 75]);
             end
         case 'PSD_accuracy'
-            nlfps = length(lfps);
+            l_lim = 13 ; h_lim = 20;             % theta 6-10, beta 13-20
+            nlfps = 48 % length(lfps); % 48
             figure; hold on;
             f1 = lfps(1).stats.trialtype.reward(1).spectrum.freq;
             for i=1:nlfps, psd1(i,:) = lfps(i).stats.trialtype.reward(1).spectrum.psd; end % unrewarded
-            f2 = lfps(1).stats.trialtype.density(2).spectrum.freq;
+            f2 = lfps(1).stats.trialtype.reward(2).spectrum.freq;
             for i=1:nlfps, psd2(i,:) = lfps(i).stats.trialtype.reward(2).spectrum.psd; end % rewarded
             subplot(1,2,1); hold on;
-            fg1 = shadedErrorBar(f1,mean(psd1),std(psd1),'lineprops','k'); fg2 = shadedErrorBar(f2,mean(psd2),std(psd2),'lineprops','g');
+            fg1 = shadedErrorBar(f1,mean(psd1),std(psd1),'lineprops','r'); fg2 = shadedErrorBar(f2,mean(psd2),std(psd2),'lineprops','g');
             set(fg1.mainLine, 'LineWidth', 2);  set(fg1.edge, 'LineStyle', 'none'); set(fg2.mainLine, 'LineWidth', 2);  set(fg2.edge, 'LineStyle', 'none');
-            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)'); legend('Unrewarded', 'high density');
-            set(gca, 'TickDir', 'out', 'FontSize',18);
+            xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (\muV^2/Hz)');
+            set(gca, 'TickDir', 'out', 'FontSize',18);                                                                        ylim([0 100]);
             subplot(1,2,2); fg3 = shadedErrorBar(f1,mean(psd2./psd1),std(psd2./psd1)); axis([1 50 0 1.5]); hline(1,'k');
-            set(fg3.mainLine, 'LineWidth', 2); set(gca, 'TickDir', 'out', 'FontSize',18);
+            set(fg3.mainLine, 'LineWidth', 1); set(gca, 'TickDir', 'out', 'FontSize',18); ylim([0.5 1.5]);
             xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+            f1_band = f1(f1>l_lim & f1<h_lim); f2_band = f2(f2>l_lim & f2<h_lim);
+            for i=1:nlfps, psd1_band(i,:) = mean(psd1(i,(f1>l_lim & f1<h_lim))); end
+            for i=1:nlfps, psd2_band(i,:) = mean(psd2(i,(f2>l_lim & f2<h_lim))); end
+            figure;subplot(1,2,1); hold on;
+            errorbar(1,mean(psd1_band),std(psd1_band)/sqrt(nlfps),'r','LineWidth',1);
+            errorbar(2,mean(psd2_band),std(psd2_band)/sqrt(nlfps),'g','LineWidth',1);
+            ymin = floor(min([min(psd2_band) min(psd2_band)]));
+            ymax=(ceil(max([max(psd2_band) max(psd2_band)])));
+            set(gca,'xlim', [0 3], 'xTick',[],'yLim',[round(mean(psd1_band)-10) round(mean(psd1_band)+10)], 'yTick',[round(mean(psd1_band)-10) round(mean(psd1_band)+10)],'TickDir', 'out', 'FontSize',18);
+            ylabel('Power spectral density (\muV^2/Hz)');
+            subplot(1,2,2); hold on; plot(psd1_band,psd2_band, '.k', 'MarkerSize',18); plot(0:ymax,0:ymax, '--k');
+            set(gca,'TickDir', 'out', 'FontSize',22, 'xTick', [0 ymax],'yTick', [0 ymax]);
+            xlabel('PSD unrewarded'); ylabel('PSD rewarded');
+            axis([ymin ymax ymin ymax]);
+            [h,p] = ttest(psd1_band,psd2_band)
             
         case 'PSD_accuracy_array'
             [xloc,yloc] = map_utaharray([],electrode);
@@ -238,14 +272,95 @@ if electrode_id ~= 0
             figure; hold on;
             f1 = lfps(1).stats.trialtype.reward(1).spectrum.freq;
             f2 = lfps(1).stats.trialtype.reward(2).spectrum.freq;
-            for i=1:nlfps % 48 % 48 for Schro
+            for i=1:nlfps % 48 % for Schroex
                 psd1 = lfps(i).stats.trialtype.reward(1).spectrum.psd;
                 psd2 = lfps(i).stats.trialtype.reward(2).spectrum.psd;
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                plot(f1,psd1,'b'); axis([2 50 0 250]); axis off; box off;
-                plot(f2,psd2,'r'); axis([2 50 0 250]); axis off; box off;
-                xlim([2 50]); ylim([0 75]);
+                plot(f1,psd1,'r'); axis([2 50 0 250]); axis off; box off;
+                plot(f2,psd2,'g'); axis([2 50 0 250]); axis off; box off;
+                xlim([2 50]); ylim([0 50]); vline(15);
             end
+            
+        case 'freq_speed_v_w'
+            [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+            [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+            lfps = lfps(reorderindx); nlfps = length(lfps);
+            v = lfps(1).stats.trialtype.all.continuous.v.thetafreq.tuning.stim.mu;
+            w = lfps(1).stats.trialtype.all.continuous.w.thetafreq.tuning.stim.mu;
+            if strcmp(electrode,'utah2x48'), nlfps = nlfps/2; end
+            for i=1:nlfps
+                theta_v(i,:) = lfps(i).stats.trialtype.all.continuous.v.thetafreq.tuning.rate.mu;
+                beta_v(i,:) = lfps(i).stats.trialtype.all.continuous.v.betafreq.tuning.rate.mu;
+                theta_w(i,:) = lfps(i).stats.trialtype.all.continuous.w.thetafreq.tuning.rate.mu;
+                beta_w(i,:) = lfps(i).stats.trialtype.all.continuous.w.betafreq.tuning.rate.mu;
+            end
+            % theta
+            figure; hold on;
+            subplot(1,2,1); hold on; plot(w,theta_w,'.k'); plot(w, mean(theta_w),'ob','MarkerFaceColor','b');
+            xlabel('Angular velocity (deg/s)'); ylabel('\theta - frequency (Hz)');
+            w2 = repmat(w,[nlfps,1]); w2 = w2(:); theta_w2 = theta_w(:); pos = (w2>0); neg = (w2<0);
+            [b,a,bint,aint] = regress_perp(w2(pos),theta_w2(pos));
+            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            [b,a,bint,aint] = regress_perp(w2(neg),theta_w2(neg));
+            x = linspace(-75,0,100); y = a + b*x; erry = abs([aint(2) + bint(1)*x ; aint(1) + bint(2)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            subplot(1,2,2); hold on; plot(v,theta_v,'.k'); plot(v, mean(theta_v),'ob','MarkerFaceColor','b');
+            xlabel('Linear velocity (cm/s)'); ylabel('\theta - frequency (Hz)');
+            v2 = repmat(v,[nlfps,1]); v2 = v2(:);
+            [b,a,bint,aint] = regress_perp(v2(:),theta_v(:));
+            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            % beta
+            figure; hold on;
+            subplot(1,2,1); hold on; plot(w,beta_w,'.k'); plot(w, mean(beta_w),'or','MarkerFaceColor','r');
+            xlabel('Angular velocity (deg/s)'); ylabel('\beta - frequency (Hz)');
+            w2 = repmat(w,[nlfps,1]); w2 = w2(:); beta_w2 = beta_w(:); pos = (w2>0); neg = (w2<0);
+            [b,a,bint,aint] = regress_perp(w2(pos),beta_w2(pos));
+            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            [b,a,bint,aint] = regress_perp(w2(neg),beta_w2(neg));
+            x = linspace(-75,0,100); y = a + b*x; erry = abs([aint(2) + bint(1)*x ; aint(1) + bint(2)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            subplot(1,2,2); hold on; plot(v,beta_v,'.k'); plot(v, mean(beta_v),'or','MarkerFaceColor','r');
+            xlabel('Linear velocity (cm/s)'); ylabel('\beta - frequency (Hz)');
+            v2 = repmat(v,[nlfps,1]); v2 = v2(:);
+            [b,a,bint,aint] = regress_perp(v2(:),beta_v(:));
+            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            
+        case 'freq_speed_eye'
+            [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+            [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+            lfps = lfps(reorderindx); nlfps = length(lfps);
+            h_eye = lfps(1).stats.trialtype.all.continuous.heyevel.thetafreq.tuning.stim.mu;
+            v_eye = lfps(1).stats.trialtype.all.continuous.veyevel.thetafreq.tuning.stim.mu;
+            if strcmp(electrode,'utah2x48'), nlfps = nlfps/2; end
+            for i=1:nlfps
+                theta_h(i,:) = lfps(i).stats.trialtype.all.continuous.heyevel.thetafreq.tuning.rate.mu;
+                beta_h(i,:) = lfps(i).stats.trialtype.all.continuous.heyevel.betafreq.tuning.rate.mu;
+                theta_v(i,:) = lfps(i).stats.trialtype.all.continuous.veyevel.thetafreq.tuning.rate.mu;
+                beta_v(i,:) = lfps(i).stats.trialtype.all.continuous.veyevel.betafreq.tuning.rate.mu;
+            end
+            %theta
+            figure; hold on;
+            subplot(1,2,1); hold on; plot(v_eye,theta_v,'.k'); plot(v_eye, nanmean(theta_v),'ob','MarkerFaceColor','b');
+            xlabel('Vertical eye velocity (deg/s)'); ylabel('\theta - frequency (Hz)');
+            v_eye2 = repmat(v_eye,[nlfps,1]); v_eye2 = v_eye2(:); theta_v2 = theta_v(:); pos = (v_eye2>0); neg = (v_eye2<0);
+            [b,a,bint,aint] = regress_perp(v_eye2(pos),theta_v2(pos));
+            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            subplot(1,2,2); hold on; plot(h_eye,theta_h,'.k'); plot(h_eye, mean(theta_h),'ob','MarkerFaceColor','b');
+            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\theta - frequency (Hz)');
+            h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
+            [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));   
+            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+             % beta
+            figure; hold on;
+            subplot(1,2,1); hold on; plot(v_eye,beta_v,'.k'); plot(v_eye, mean(beta_v),'ob','MarkerFaceColor','b');
+            xlabel('Vertical eye velocity (deg/s)'); ylabel('\beta - frequency (Hz)');
+            v_eye2 = repmat(v_eye,[nlfps,1]); v_eye2 = v_eye2(:); beta_v_eye2 = beta_v(:); pos = (v_eye2>0); neg = (v_eye2<0);
+            [b,a,bint,aint] = regress_perp(v_eye2(pos),beta_v2(pos));
+            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            subplot(1,2,2); hold on; plot(h_eye,beta_h,'.k'); plot(h_eye, mean(beta_h),'ob','MarkerFaceColor','b');
+            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\beta - frequency (Hz)');
+            h_eye2 = repmat(v,[nlfps,1]); h_eye2 = h_eye2(:);
+            [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));
+            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            
     end
 else
     nlfps = length(lfps);

@@ -101,6 +101,7 @@ prs.nbootstraps = 100; % number of bootstraps for estimating standard errors
 % define no. of bins for tuning curves by binning method
 prs.tuning.nbins1d_binning = 20; % bin edges for tuning curves by 'binning' method
 prs.tuning.nbins2d_binning = [20;20]; % define bin edges for 2-D tuning curves by 'binning' method
+prs.tuning.nbins4d_binning = [20;20;20;20]; % define bin edges for 2-D tuning curves by 'binning' method
 % define no. of nearest neighbors for tuning curves by k-nearest neighbors method
 prs.tuning.k_knn = @(x) round(sqrt(x)); % k=sqrt(N) where N is the total no. of observations
 prs.tuning.nbins1d_knn = 100; prs.tuning.nbins2d_knn = [100 ; 100];
@@ -210,11 +211,11 @@ prs.simulate_population = false; % simulate population activity by running the e
 
 %% LFP
 prs.event_potential = false;
-prs.compute_spectrum = true;
+prs.compute_spectrum = false;
 prs.analyse_theta = true;
 prs.analyse_beta = true;
 prs.compute_coherencyLFP = true;
-
+prs.extract_motion_states= false; % extract lfp for different states (v,w,eye_move, eye_fix)
 %% Spike-LFP
 prs.analyse_spikeLFPrelation = false;
 prs.analyse_spikeLFPrelation_allLFPs = false; % spike-LFP for LFPs from all electrodes

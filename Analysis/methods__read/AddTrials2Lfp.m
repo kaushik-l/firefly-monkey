@@ -1,7 +1,8 @@
 function [trials, stationary, mobile, eyesfixed, eyesfree, eyesfree_mobile, eyesfree_stationary, eyesfixed_mobile, eyesfixed_stationary] = AddTrials2Lfp(lfp,fs,trialevents,trials_behv,prs)
 
 ntrls = length(trialevents.t_end);
-trials(ntrls) = struct(); stationary(ntrls) = struct(); mobile(ntrls) = struct(); eyesfixed(ntrls) = struct(); eyesfree(ntrls) = struct();
+trials(ntrls) = struct(); stationary(ntrls) = struct(); mobile(ntrls) = struct(); eyesfixed(ntrls) = struct(); eyesfree(ntrls) = struct(); eyesfree_mobile(ntrls) = struct(); eyesfree_stationary(ntrls) = struct();
+eyesfixed_mobile(ntrls) = struct(); eyesfixed_stationary(ntrls) = struct();
 dt = 1/fs;
 nt = length(lfp);
 ts = dt*(1:nt);
@@ -59,36 +60,36 @@ for i=1:ntrls
 end
 
 %% trials (theta-band analytic form)
-% [b,a] = butter(prs.lfp_filtorder,[prs.lfp_theta(1) prs.lfp_theta(2)]/(fs/2));
-% lfp_theta = filtfilt(b,a,lfp);
-% lfp_theta_analytic = hilbert(lfp_theta);
-% for i=1:ntrls
-%     if ~isnan(trialevents.t_beg(i))
-%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
-%         t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
-%         t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
-%         lfp_raw = lfp_theta_analytic(ts > (t_beg + t1) & ts < (t_beg + t2)); t_raw = linspace(t1,t2,length(lfp_raw));
-%         trials(i).lfp_theta = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % theta-band LFP
-%     else
-%         trials(i).lfp_theta = nan(length(trials_behv.trials(i).continuous.ts),1);
-%     end
-% end
+[b,a] = butter(prs.lfp_filtorder,[prs.lfp_theta(1) prs.lfp_theta(2)]/(fs/2));
+lfp_theta = filtfilt(b,a,lfp);
+lfp_theta_analytic = hilbert(lfp_theta);
+for i=1:ntrls
+    if ~isnan(trialevents.t_beg(i))
+        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
+        t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
+        t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
+        lfp_raw = lfp_theta_analytic(ts > (t_beg + t1) & ts < (t_beg + t2)); t_raw = linspace(t1,t2,length(lfp_raw));
+        trials(i).lfp_theta = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % theta-band LFP
+    else
+        trials(i).lfp_theta = nan(length(trials_behv.trials(i).continuous.ts),1);
+    end
+end
 
 %% trials (beta-band analytic form)
-% [b,a] = butter(prs.lfp_filtorder,[prs.lfp_beta(1) prs.lfp_beta(2)]/(fs/2));
-% lfp_beta = filtfilt(b,a,lfp);
-% lfp_beta_analytic = hilbert(lfp_beta);
-% for i=1:ntrls
-%     if ~isnan(trialevents.t_beg(i))
-%         t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
-%         t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
-%         t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
-%         lfp_raw = lfp_beta_analytic(ts > (t_beg + t1) & ts < (t_beg + t2)); t_raw = linspace(t1,t2,length(lfp_raw));
-%         trials(i).lfp_beta = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % beta-band LFP
-%     else
-%         trials(i).lfp_beta = nan(length(trials_behv.trials(i).continuous.ts),1);
-%     end
-% end
+[b,a] = butter(prs.lfp_filtorder,[prs.lfp_beta(1) prs.lfp_beta(2)]/(fs/2));
+lfp_beta = filtfilt(b,a,lfp);
+lfp_beta_analytic = hilbert(lfp_beta);
+for i=1:ntrls
+    if ~isnan(trialevents.t_beg(i))
+        t_beg = trialevents.t_beg(i) + trials_behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
+        t1 = trials_behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
+        t2 = trials_behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
+        lfp_raw = lfp_beta_analytic(ts > (t_beg + t1) & ts < (t_beg + t2)); t_raw = linspace(t1,t2,length(lfp_raw));
+        trials(i).lfp_beta = interp1(t_raw,lfp_raw,trials_behv.trials(i).continuous.ts,'linear'); % beta-band LFP
+    else
+        trials(i).lfp_beta = nan(length(trials_behv.trials(i).continuous.ts),1);
+    end
+end
 
 %% fixation period (raw)
 % eyesfixed = struct(); count = 0;
@@ -164,8 +165,9 @@ end
 %     end
 % end
 %% Comparison periods
+if prs.extract_motion_states
 %% eye move + mobile
-indx = trials_behv.states; nfiles = numel(trialevents.t_start);
+indx = trials_behv.states; nfiles = numel(indx);
 indx_all = []; ts_eye = []; indx_resamp=[];
 for i = 1:nfiles
     indx_all = [indx_all ; indx(i).free_mobile_indx]; 
@@ -217,5 +219,10 @@ end
 %resample lfp to match indx sample and then extract lfp
 indx_resamp = interp1(ts_eye,indx_all,ts,'linear'); indx_resamp(isnan(indx_resamp))=0;
 nosaccades.lfp = lfp(logical(indx_resamp));
+
+else
+    
+
+end
 
 end
