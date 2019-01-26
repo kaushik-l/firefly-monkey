@@ -267,19 +267,19 @@ if analyse_theta
             stats.trialtype.(trialtypes{i})(j).continuous.vw.thetafreq = ...
                 ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
             %% horizontal eye velocity
-            heye = cellfun(@(x,y) abs(nanmean([x(:)' ; y(:)'])),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
-            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false);
+            heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
+            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false); heyevel_abs = cellfun(@(x) abs(x),heyevel,'UniformOutput',false);
             stats.trialtype.(trialtypes{i})(j).continuous.heyevel.thetafreq = ...
-                ComputeTuning(heyevel,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
+                ComputeTuning(heyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
             %% vertical velocity
-            veye = cellfun(@(x,y) abs(nanmean([x(:)' ; y(:)'])),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
-            veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);
+            veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
+            veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);  veyevel_abs = cellfun(@(x) abs(x),veyevel,'UniformOutput',false);
             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.thetafreq = ...
-                ComputeTuning(veyevel,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
+                ComputeTuning(veyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
             %% v_w_heye_veye
-            for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); end % take abs value for w
+            for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); continuous_temp(k).w_abs(continuous_temp(k).w_abs > 25)=NaN; end % take abs value for w and remove saccades.
             stats.trialtype.(trialtypes{i})(j).continuous.vwhv.thetafreq = ...
-                ComputeTuning4D({continuous_temp.v},{continuous_temp.w_abs},heyevel,veyevel,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);           
+                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);           
         end
     end
 end
@@ -312,19 +312,19 @@ if analyse_beta
             stats.trialtype.(trialtypes{i})(j).continuous.vw.betafreq = ...
                 ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
             %% horizontal eye velocity
-            heye = cellfun(@(x,y) abs(nanmean([x(:)' ; y(:)'])),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available) and take abs value
-            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false);
+            heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available) and take abs value
+            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false); heyevel_abs = cellfun(@(x) abs(x),heyevel,'UniformOutput',false);
             stats.trialtype.(trialtypes{i})(j).continuous.heyevel.betafreq = ...
-                ComputeTuning(heyevel,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
+                ComputeTuning(heyevel_abs,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.heye_vel);
             %% vertical velocity
-            veye = cellfun(@(x,y) abs(nanmean([x(:)' ; y(:)'])),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available) and take abs value
-            veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);
+            veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available) and take abs value
+            veyevel = cellfun(@(x) [0 ; diff(x)'/dt],veye,'UniformOutput',false);  veyevel_abs = cellfun(@(x) abs(x),veyevel,'UniformOutput',false);
             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.betafreq = ...
-                ComputeTuning(veyevel,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
+                ComputeTuning(veyevel_abs,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
             %% v_w_heye_veye
-            for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); end % take abs value for w
+              for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); continuous_temp(k).w_abs(continuous_temp(k).w_abs > 25)=NaN; end % take abs value for w and remove saccades.
             stats.trialtype.(trialtypes{i})(j).continuous.vwhv.betafreq = ...
-                ComputeTuning4D({continuous_temp.v},{continuous_temp.w_abs},heyevel,veyevel,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
+                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
         end
     end
 end

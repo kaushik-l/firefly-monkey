@@ -7,10 +7,6 @@ xt3 = ConcatenateTrials(x3,[],tspk,ts,timewindow); % heyevel
 [xt4,~,yt] = ConcatenateTrials(x4,[],tspk,ts,timewindow); % veyevel
 xt = [ones(length(xt1),1) xt1 xt2 xt3 xt4];
 
-%% remove saccades (vel above 25 deg/s)
-xt3(xt3<-25 | xt3>25)=NaN;
-xt4(xt3<-25 | xt3>25)=NaN;
-
 % concatenate
 xt = [xt1 xt2 xt3 xt4];
 
