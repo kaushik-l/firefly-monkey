@@ -340,9 +340,9 @@ if electrode_id ~= 0
             figure; hold on;
             subplot(1,2,1); hold on; plot(v_eye,theta_v,'.k'); plot(v_eye, nanmean(theta_v),'ob','MarkerFaceColor','b');
             xlabel('Vertical eye velocity (deg/s)'); ylabel('\theta - frequency (Hz)');
-            v_eye2 = repmat(v_eye,[nlfps,1]); v_eye2 = v_eye2(:); theta_v2 = theta_v(:); pos = (v_eye2>0); neg = (v_eye2<0);
-            [b,a,bint,aint] = regress_perp(v_eye2(pos),theta_v2(pos));
-            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            v_eye2 = repmat(v_eye,[nlfps,1]);
+            [b,a,bint,aint] = regress_perp(v_eye2(:),theta_v(:));
+            x = linspace(0,1800,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             subplot(1,2,2); hold on; plot(h_eye,theta_h,'.k'); plot(h_eye, mean(theta_h),'ob','MarkerFaceColor','b');
             xlabel('Horizontal eye velocity (cm/s)'); ylabel('\theta - frequency (Hz)');
             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
@@ -352,9 +352,9 @@ if electrode_id ~= 0
             figure; hold on;
             subplot(1,2,1); hold on; plot(v_eye,beta_v,'.k'); plot(v_eye, mean(beta_v),'ob','MarkerFaceColor','b');
             xlabel('Vertical eye velocity (deg/s)'); ylabel('\beta - frequency (Hz)');
-            v_eye2 = repmat(v_eye,[nlfps,1]); v_eye2 = v_eye2(:); beta_v_eye2 = beta_v(:); pos = (v_eye2>0); neg = (v_eye2<0);
-            [b,a,bint,aint] = regress_perp(v_eye2(pos),beta_v2(pos));
-            x = linspace(0,75,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            v_eye2 = repmat(v_eye,[nlfps,1]);
+            [b,a,bint,aint] = regress_perp(v_eye2(:),beta_v(:));
+            x = linspace(0,1800,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             subplot(1,2,2); hold on; plot(h_eye,beta_h,'.k'); plot(h_eye, mean(beta_h),'ob','MarkerFaceColor','b');
             xlabel('Horizontal eye velocity (cm/s)'); ylabel('\beta - frequency (Hz)');
             h_eye2 = repmat(v,[nlfps,1]); h_eye2 = h_eye2(:);
