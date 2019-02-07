@@ -305,9 +305,10 @@ if electrode_id ~= 0
             x = linspace(-75,0,100); y = a + b*x; erry = abs([aint(2) + bint(1)*x ; aint(1) + bint(2)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             subplot(1,2,2); hold on; plot(v,theta_v,'.k'); plot(v, mean(theta_v),'ob','MarkerFaceColor','b');
             xlabel('Linear velocity (cm/s)'); ylabel('\theta - frequency (Hz)');
-            v2 = repmat(v,[nlfps,1]); v2 = v2(:);
+            v2 = repmat(v,[nlfps,1]);theta_v = theta_v(v2>0); v2 = v2(v2>0);
             [b,a,bint,aint] = regress_perp(v2(:),theta_v(:));
             x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            set(gca, 'xlim', [0 200]); 
             % beta
             figure; hold on;
             subplot(1,2,1); hold on; plot(w,beta_w,'.k'); plot(w, mean(beta_w),'or','MarkerFaceColor','r');
@@ -319,9 +320,10 @@ if electrode_id ~= 0
             x = linspace(-75,0,100); y = a + b*x; erry = abs([aint(2) + bint(1)*x ; aint(1) + bint(2)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
             subplot(1,2,2); hold on; plot(v,beta_v,'.k'); plot(v, mean(beta_v),'or','MarkerFaceColor','r');
             xlabel('Linear velocity (cm/s)'); ylabel('\beta - frequency (Hz)');
-            v2 = repmat(v,[nlfps,1]); v2 = v2(:);
+            v2 = repmat(v,[nlfps,1]);beta_v = beta_v(v2>0); v2 = v2(v2>0);
             [b,a,bint,aint] = regress_perp(v2(:),beta_v(:));
             x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            set(gca, 'xlim', [0 200]); 
             
         case 'freq_speed_eye'
             [channel_id,electrode_id] = MapChannel2Electrode(electrode);
@@ -337,29 +339,75 @@ if electrode_id ~= 0
                 beta_v(i,:) = lfps(i).stats.trialtype.all.continuous.veyevel.betafreq.tuning.rate.mu;
             end
             %theta
-            figure; hold on;
+            figure; hold on; title('theta')
             subplot(1,2,1); hold on; plot(v_eye,theta_v,'.k'); plot(v_eye, nanmean(theta_v),'ob','MarkerFaceColor','b');
             xlabel('Vertical eye velocity (deg/s)'); ylabel('\theta - frequency (Hz)');
             v_eye2 = repmat(v_eye,[nlfps,1]);
             [b,a,bint,aint] = regress_perp(v_eye2(:),theta_v(:));
-            x = linspace(0,1800,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             subplot(1,2,2); hold on; plot(h_eye,theta_h,'.k'); plot(h_eye, mean(theta_h),'ob','MarkerFaceColor','b');
             xlabel('Horizontal eye velocity (cm/s)'); ylabel('\theta - frequency (Hz)');
             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
             [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));   
-            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            
              % beta
-            figure; hold on;
-            subplot(1,2,1); hold on; plot(v_eye,beta_v,'.k'); plot(v_eye, mean(beta_v),'ob','MarkerFaceColor','b');
+            figure; hold on; title('beta')
+            subplot(1,2,1); hold on; plot(v_eye,beta_v,'.k'); plot(v_eye, mean(beta_v),'or','MarkerFaceColor','r');
             xlabel('Vertical eye velocity (deg/s)'); ylabel('\beta - frequency (Hz)');
             v_eye2 = repmat(v_eye,[nlfps,1]);
             [b,a,bint,aint] = regress_perp(v_eye2(:),beta_v(:));
-            x = linspace(0,1800,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
-            subplot(1,2,2); hold on; plot(h_eye,beta_h,'.k'); plot(h_eye, mean(beta_h),'ob','MarkerFaceColor','b');
+            x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            subplot(1,2,2); hold on; plot(h_eye,beta_h,'.k'); plot(h_eye, mean(beta_h),'or','MarkerFaceColor','r');
             xlabel('Horizontal eye velocity (cm/s)'); ylabel('\beta - frequency (Hz)');
-            h_eye2 = repmat(v,[nlfps,1]); h_eye2 = h_eye2(:);
-            [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));
-            x = linspace(0,200,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
+            [b,a,bint,aint] = regress_perp(h_eye2(:),beta_h(:));   
+            x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            
+        case 'reg_coeff'
+            figure; hold on;  nlfps = length(lfps);
+            for i = 1:nlfps
+            theta_coeff(:,i) = lfps(i).stats.trialtype.all.continuous.vwhv.thetafreq.regr_coeff;
+            theta_CI{i} = lfps(i).stats.trialtype.all.continuous.vwhv.thetafreq.regr_CI; 
+            beta_coeff(:,i) = lfps(i).stats.trialtype.all.continuous.vwhv.betafreq.regr_coeff;
+            beta_CI{i} = lfps(i).stats.trialtype.all.continuous.vwhv.betafreq.regr_CI; 
+            end
+            % theta
+            coeff_mu_th = mean(theta_coeff,2); coeff_std = std(theta_coeff,[],2); str = {'v' 'w' 'h eye' 'v eye'};
+            plot(theta_coeff, 'o','MarkerSize',4);
+            errorbar(1, coeff_mu_th(1),coeff_std(1), 'MarkerSize',10,'Marker','.'); 
+            errorbar(2, coeff_mu_th(2),coeff_std(2), 'MarkerSize',10,'Marker','.');
+            errorbar(3, coeff_mu_th(3),coeff_std(3), 'MarkerSize',10,'Marker','.');
+            errorbar(4, coeff_mu_th(4),coeff_std(4), 'MarkerSize',10,'Marker','.');
+            set(gca, 'xlim', [0.5 4.5], 'ylim', [-0.0001 0.06],'xTickLabel',str,'TickDir', 'out', 'FontSize',22);
+            ylabel('regression coefficient'); title('theta')
+            % beta
+            figure; hold on; 
+            coeff_mu_be = mean(beta_coeff,2); coeff_std_be = std(beta_coeff,[],2); str = {'v' 'w' 'h eye' 'v eye'};
+            plot(beta_coeff, 'o','MarkerSize',4);
+            errorbar(1, coeff_mu_be(1),coeff_std_be(1), 'MarkerSize',10,'Marker','.'); 
+            errorbar(2, coeff_mu_be(2),coeff_std_be(2), 'MarkerSize',10,'Marker','.');
+            errorbar(3, coeff_mu_be(3),coeff_std_be(3), 'MarkerSize',10,'Marker','.');
+            errorbar(4, coeff_mu_be(4),coeff_std_be(4), 'MarkerSize',10,'Marker','.');
+            set(gca, 'xlim', [0.5 4.5], 'ylim', [-0.0001 0.1],'xTickLabel',str,'TickDir', 'out', 'FontSize',22);
+            ylabel('regression coefficient'); title('beta')
+            
+            
+        case 'reg_coeff_beta'
+            figure; hold on;  nlfps = length(lfps);
+            for i = 1:nlfps
+                beta_coeff(:,i) = lfps(i).stats.trialtype.all.continuous.vwhv.betafreq.regr_coeff;
+                beta_CI{i} = lfps(i).stats.trialtype.all.continuous.vwhv.betafreq.regr_CI;
+            end
+            coeff_mu = mean(theta_coeff,2); coeff_std = std(theta_coeff,[],2); str = {'v' 'w' 'h eye' 'v eye'};
+            plot(theta_coeff, 'o','MarkerSize',4);
+            errorbar(1, coeff_mu(1),coeff_std(1), 'MarkerSize',10,'Marker','.');
+            errorbar(2, coeff_mu(2),coeff_std(2), 'MarkerSize',10,'Marker','.');
+            errorbar(3, coeff_mu(3),coeff_std(3), 'MarkerSize',10,'Marker','.');
+            errorbar(4, coeff_mu(4),coeff_std(4), 'MarkerSize',10,'Marker','.');
+            set(gca, 'xlim', [0.5 4.5], 'ylim', [-0.0001 0.06],'xTickLabel',str,'TickDir', 'out', 'FontSize',22);
+            ylabel('regression coefficient')
+            
             
     end
 else
