@@ -287,9 +287,9 @@ if analyse_theta
             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.thetafreq = ...
                 ComputeTuning(veyevel_abs_nosacc,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
             %% v_w_heye_veye
-            for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); continuous_temp(k).w_abs(continuous_temp(k).w_abs > 25)=NaN; end % take abs value for w and remove saccades.
+            for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); end % take abs value for w
             stats.trialtype.(trialtypes{i})(j).continuous.vwhv.thetafreq = ...
-                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);           
+                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs_nosacc,veyevel_abs_nosacc,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);           
         end
     end
 end
@@ -342,9 +342,9 @@ if analyse_beta
             stats.trialtype.(trialtypes{i})(j).continuous.veyevel.betafreq = ...
                 ComputeTuning(veyevel_abs_nosacc,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.veye_vel);
             %% v_w_heye_veye
-              for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); continuous_temp(k).w_abs(continuous_temp(k).w_abs > 25)=NaN; end % take abs value for w and remove saccades.
+              for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); end % take abs value for w
             stats.trialtype.(trialtypes{i})(j).continuous.vwhv.betafreq = ...
-                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
+                MultiRegress({continuous_temp.v},{continuous_temp.w_abs},heyevel_abs_nosacc,veyevel_abs_nosacc,{continuous_temp.ts},{trials_beta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
         end
     end
 end

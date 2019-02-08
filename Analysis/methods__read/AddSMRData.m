@@ -78,6 +78,29 @@ ch.zle = ch.zle(1:MAX_LENGTH);
 ch.zre = ch.zre(1:MAX_LENGTH);
 ts = dt:dt:length(ch.(chnames{end}))*dt;
 
+%% replace the broken eye coil (if any) with NaNs
+if var(ch.zle) < 10 || var(ch.zle) > 5000
+    ch.zle(:) = nan;
+    ch.yle(:) = nan;
+end
+if var(ch.zre) < 10 || var(ch.zre) > 5000
+    ch.zre(:) = nan;
+    ch.yre(:) = nan;
+end
+
+%% remove eye blinks if using eye tracker and smooth
+X = [ch.zle ch.zre ch.yle ch.yre];
+X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
+ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
+sig = 10*prs.filtwidth; %filter width
+sz = 10*prs.filtsize; %filter size
+t2 = linspace(-sz/2, sz/2, sz);
+h = exp(-t2.^2/(2*sig^2));
+h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
+ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same'); 
+ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
+
+
 %% detect saccade times
 % take derivative of eye position = eye velocity
 if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil
@@ -105,6 +128,12 @@ min_isi = prs.min_intersaccade;
 t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
+%% interpolate nans
+nanx = isnan(ch.zle); t1 = 1:numel(ch.zle); ch.zle(nanx) = interp1(t1(~nanx), ch.zle(~nanx), t1(nanx), 'pchip');
+nanx = isnan(ch.zre); t1 = 1:numel(ch.zle); ch.zre(nanx) = interp1(t1(~nanx), ch.zre(~nanx), t1(nanx), 'pchip');
+nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch.yle(~nanx), t1(nanx), 'pchip');
+nanx = isnan(ch.yre); t1 = 1:numel(ch.yre); ch.yre(nanx) = interp1(t1(~nanx), ch.yre(~nanx), t1(nanx), 'pchip');
+
 %% detect periods of fixation
 de_smooth = conv(de,h,'same')/dt;
 fixateduration = prs.fixateduration; fixate_thresh = prctile(de_smooth,90); % set thresh to 90th prctile
@@ -128,16 +157,6 @@ end
 t.free_move = ts(freeindx);
 st.eye_move_indx = freeindx';
 st.ts_move = ts;
-
-%% replace the broken eye coil (if any) with NaNs
-if var(ch.zle) < 10 || var(ch.zle) > 1000
-    ch.zle(:) = nan;
-    ch.yle(:) = nan;
-end
-if var(ch.zre) < 10 || var(ch.zre) > 1000
-    ch.zre(:) = nan;
-    ch.yre(:) = nan;
-end
 
 %% refine t.beg to ensure it corresponds to target onset
 jitter = prs.jitter_marker;
