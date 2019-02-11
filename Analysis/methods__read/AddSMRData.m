@@ -100,7 +100,6 @@ h = h/sum(h); % normalise filter to ensure area under the graph of the data is n
 ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same'); 
 ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
 
-
 %% detect saccade times
 % take derivative of eye position = eye velocity
 if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil

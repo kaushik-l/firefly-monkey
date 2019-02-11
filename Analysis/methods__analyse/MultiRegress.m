@@ -1,9 +1,9 @@
 function tuningstats = MultiRegress(x1,x2,x3,x4,ts,tspk,timewindow,tuning_prs,tuning_method)
 
 %% concatenate data from different trials
-xt1 = ConcatenateTrials(x1,[],tspk,ts,timewindow); % v
-xt2 = ConcatenateTrials(x2,[],tspk,ts,timewindow); % w
-xt3 = ConcatenateTrials(x3,[],tspk,ts,timewindow); % heyevel
+xt1 = ConcatenateTrials(x1,[],tspk,ts,timewindow); %  v
+xt2 = ConcatenateTrials(x2,[],tspk,ts,timewindow); %  w
+xt3 = ConcatenateTrials(x3,[],tspk,ts,timewindow); %  heyevel
 [xt4,~,yt] = ConcatenateTrials(x4,[],tspk,ts,timewindow); % veyevel
 xt = [ones(length(xt1),1) xt1 xt2 xt3 xt4];
 

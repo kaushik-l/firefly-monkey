@@ -39,6 +39,8 @@ prs.saccadeduration = 0.05; % saccades last ~50ms
 % behavioural analysis
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
+prs.blink_thresh = 50; %deg
+prs.nanpadding = 5; % samples on either side
 prs.saccade_thresh = 200; % deg/s
 prs.saccade_duration = 0.15; %seconds
 prs.eyemove_thresh = 25; % deg/s
