@@ -5,9 +5,9 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv =  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur =  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; % ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\neural data\'];  % 
-prs.filepath_neuralnet = 'C:\Users\eao5\Documents\GitHub\spykesML\MLencoding\';
+prs.filepath_behv =  ['C:/Users/jkl9/Documents/Data/firefly-monkey/' monkeyInfo.folder '/behavioural data/']; % ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur =  ['C:/Users/jkl9/Documents/Data/firefly-monkey/' monkeyInfo.folder '/neural data/']; % ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\neural data\'];  % 
+prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
@@ -16,6 +16,7 @@ prs.comments = monkeyInfo.comments;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
+prs.fs_lfp = 500; % sampling rate of .ns1 file ----------> need to generalize to handle .plx
 prs.filtwidth = 2; % width in samples (10 samples @ fs_smr = 10x0.0012 = 12 ms)
 prs.filtsize = 2*prs.filtwidth; % size in samples
 prs.factor_downsample = 5; % select every nth sample
@@ -43,7 +44,7 @@ prs.blink_thresh = 50; %deg
 prs.nanpadding = 5; % samples on either side
 prs.saccade_thresh = 200; % deg/s
 prs.saccade_duration = 0.15; %seconds
-prs.eyemove_thresh = 25; % deg/s
+prs.eyemove_thresh = 15; % deg/s
 prs.eyemove_duration = 0.2; % eye movement needs to last at least N ms to be detected as eye movement
 prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
@@ -65,6 +66,7 @@ prs.lfp_freqmax = 75; % max frequency (Hz)
 prs.spectrum_tapers = [1 1]; % [time-bandwidth-product number-of-tapers]
 prs.spectrum_trialave = 1; % 1 = trial-average
 prs.spectrum_movingwin = [1.5 1.5]; % [window-size step-size] to compute frequency spectrum (s)
+prs.spectrum_minwinlength = 0.25;
 prs.min_stationary = 0.5; % mimimum duration of stationary period for LFP analysis (s)
 prs.min_mobile = 0.5; % mimimum duration of mobile period for LFP analysis (s)
 prs.lfp_theta = [6 12]; prs.lfp_theta_peak = 8.5;
@@ -125,7 +127,7 @@ prs.binrange.phi = [-90 ; 90]; %deg
 prs.binrange.eye_ver = [-25 ; 0]; %deg
 prs.binrange.eye_hor = [-40 ; 40]; %deg
 prs.binrange.veye_vel = [-15 ; 5]; %deg
-prs.binrange.heye_vel = [-30 ; 30]; %deg
+prs.binrange.heye_vel = [-15 ; 15]; %deg
 prs.binrange.phase = [-pi ; pi]; %rad
 prs.binrange.target_ON = [-0.24 ; 0.48];
 prs.binrange.target_OFF = [-0.36 ; 0.36];
@@ -213,11 +215,11 @@ prs.simulate_population = false; % simulate population activity by running the e
 
 %% LFP
 prs.event_potential = false;
-prs.compute_spectrum = false;
+prs.compute_spectrum = true;
 prs.analyse_theta = true;
 prs.analyse_beta = true;
 prs.compute_coherencyLFP = true;
-prs.extract_motion_states= false; % extract lfp for different states (v,w,eye_move, eye_fix)
+prs.extract_motion_states= true; % extract lfp for different states (v,w,eye_move, eye_fix)
 %% Spike-LFP
 prs.analyse_spikeLFPrelation = false;
 prs.analyse_spikeLFPrelation_allLFPs = false; % spike-LFP for LFPs from all electrodes

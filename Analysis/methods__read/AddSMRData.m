@@ -79,26 +79,26 @@ ch.zre = ch.zre(1:MAX_LENGTH);
 ts = dt:dt:length(ch.(chnames{end}))*dt;
 
 %% replace the broken eye coil (if any) with NaNs
-if var(ch.zle) < 10 || var(ch.zle) > 5000
+if var(ch.zle) < 10 || var(ch.zle) > 200
     ch.zle(:) = nan;
     ch.yle(:) = nan;
 end
-if var(ch.zre) < 10 || var(ch.zre) > 5000
+if var(ch.zre) < 10 || var(ch.zre) > 200
     ch.zre(:) = nan;
     ch.yre(:) = nan;
 end
 
 %% remove eye blinks if using eye tracker and smooth
-X = [ch.zle ch.zre ch.yle ch.yre];
-X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
-ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
-sig = 10*prs.filtwidth; %filter width
-sz = 10*prs.filtsize; %filter size
-t2 = linspace(-sz/2, sz/2, sz);
-h = exp(-t2.^2/(2*sig^2));
-h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
-ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same'); 
-ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
+% X = [ch.zle ch.zre ch.yle ch.yre];
+% X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
+% ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
+% sig = 10*prs.filtwidth; %filter width
+% sz = 10*prs.filtsize; %filter size
+% t2 = linspace(-sz/2, sz/2, sz);
+% h = exp(-t2.^2/(2*sig^2));
+% h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
+% ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same'); 
+% ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
 
 %% detect saccade times
 % take derivative of eye position = eye velocity
@@ -128,12 +128,12 @@ t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
 %% interpolate nans
-nanx = isnan(ch.zle); t1 = 1:numel(ch.zle); ch.zle(nanx) = interp1(t1(~nanx), ch.zle(~nanx), t1(nanx), 'pchip');
-nanx = isnan(ch.zre); t1 = 1:numel(ch.zle); ch.zre(nanx) = interp1(t1(~nanx), ch.zre(~nanx), t1(nanx), 'pchip');
-nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch.yle(~nanx), t1(nanx), 'pchip');
-nanx = isnan(ch.yre); t1 = 1:numel(ch.yre); ch.yre(nanx) = interp1(t1(~nanx), ch.yre(~nanx), t1(nanx), 'pchip');
+% nanx = isnan(ch.zle); t1 = 1:numel(ch.zle); ch.zle(nanx) = interp1(t1(~nanx), ch.zle(~nanx), t1(nanx), 'pchip');
+% nanx = isnan(ch.zre); t1 = 1:numel(ch.zle); ch.zre(nanx) = interp1(t1(~nanx), ch.zre(~nanx), t1(nanx), 'pchip');
+% nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch.yle(~nanx), t1(nanx), 'pchip');
+% nanx = isnan(ch.yre); t1 = 1:numel(ch.yre); ch.yre(nanx) = interp1(t1(~nanx), ch.yre(~nanx), t1(nanx), 'pchip');
 
-%% detect periods of fixation
+%% detect time points of fixation onsets
 de_smooth = conv(de,h,'same')/dt;
 fixateduration = prs.fixateduration; fixate_thresh = prctile(de_smooth,90); % set thresh to 90th prctile
 fixateduration_samples = round(fixateduration/dt);
@@ -144,17 +144,10 @@ end
 fixation_switch = diff(fixateindx);
 t.fix = ts(fixation_switch>0);
 
-%% detect periods of free eye movement (either saccades or smooth pursuit using a fixed threshold)
+%% detect periods of fixation
 eyemove_thresh = prs.eyemove_thresh;
-indx_eyemove = de_smooth > eyemove_thresh;
-eyemove_duration = prs.eyemove_duration;
-eyemove_duration_samples = round(eyemove_duration/dt);
-freeindx = false(1,numel(ts));
-for i=1:(numel(ts) - round(2*eyemove_duration/dt))
-    if mean(de_smooth(i:i+eyemove_duration_samples)) > eyemove_thresh, freeindx(i) = true; end
-end
-t.free_move = ts(freeindx);
-st.eye_move_indx = freeindx';
+eyemoveindx = (de_smooth > eyemove_thresh);
+eyemoving_indx = [eyemoveindx ; eyemoveindx(end)];
 st.ts_move = ts;
 
 %% refine t.beg to ensure it corresponds to target onset
@@ -223,16 +216,16 @@ for j=1:length(t.end)
     if (t.stop_w(j)<t.beg(j) || (t.stop_w(j)-t.move_w(j))<prs.mintrialduration), t.stop_w(j) = t.end(j); end
 end
 w_moveindx = double(w>w_thresh);
-st.monk_move_indx = v_moveindx | w_moveindx;
+monkmoving_indx = v_moveindx | w_moveindx;
 
 
 %% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
-
-st.free_mobile_indx = st.eye_move_indx & st.monk_move_indx;
-st.fixed_mobile_indx = ~st.eye_move_indx & st.monk_move_indx;
-st.free_stationary_indx = st.eye_move_indx & ~st.monk_move_indx;
-st.fixed_stationary_indx = ~st.eye_move_indx & ~st.monk_move_indx;
-st.nosacc_indx = ~st.eye_move_indx;
+free_indx = eyemoving_indx; st.free_sMarkers = RemoveShortEpochs(free_indx, prs.spectrum_minwinlength,dt);
+fixed_indx = ~eyemoving_indx; st.fixed_sMarkers = RemoveShortEpochs(fixed_indx, prs.spectrum_minwinlength,dt);
+free_mobile_indx = eyemoving_indx & monkmoving_indx; st.free_mobile_sMarkers = RemoveShortEpochs(free_mobile_indx, prs.spectrum_minwinlength,dt);
+fixed_mobile_indx = ~eyemoving_indx & monkmoving_indx; st.fixed_mobile_sMarkers = RemoveShortEpochs(fixed_mobile_indx, prs.spectrum_minwinlength,dt);
+free_stationary_indx = eyemoving_indx & ~monkmoving_indx; st.free_stationary_sMarkers = RemoveShortEpochs(free_stationary_indx, prs.spectrum_minwinlength,dt);
+fixed_stationary_indx = ~eyemoving_indx & ~monkmoving_indx; st.fixed_stationary_sMarkers= RemoveShortEpochs(fixed_stationary_indx, prs.spectrum_minwinlength,dt);
 
 %% extract trials and downsample for storage
 dt_original = dt;
