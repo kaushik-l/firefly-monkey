@@ -24,7 +24,7 @@ tuningstats.xcorr.lag = lags*temporal_binwidth;
 %% compute tuning curves
 if strcmp(tuning_method,'binning')
     nbins = tuning_prs.nbins1d_binning; % load predefined number of bins
-    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,temporal_binwidth,nbins,nbootstraps,tuning_binrange);
+    [tuningstats.tuning.stim,tuningstats.tuning.rate,tuningstats.tuning.pval] = NPregress_binning(xt,yt,temporal_binwidth,nbins,nbootstraps);
 elseif strcmp(tuning_method,'k-nearest')
     k = arrayfun(tuning_prs.k_knn,numel(xt)); % compute k from predefined anonymous function
     nbins = tuning_prs.nbins1d_binning; % load predefined number of bins

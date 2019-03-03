@@ -78,17 +78,17 @@ ch.zle = ch.zle(1:MAX_LENGTH);
 ch.zre = ch.zre(1:MAX_LENGTH);
 ts = dt:dt:length(ch.(chnames{end}))*dt;
 
-%% replace the broken eye coil (if any) with NaNs
-if var(ch.zle) < 10 || var(ch.zle) > 200
+%% replace the broken eye coil (if any) with NaNs   % Comment for eye coil
+if var(ch.zle) < 9 || var(ch.zle) > 200
     ch.zle(:) = nan;
     ch.yle(:) = nan;
 end
-if var(ch.zre) < 10 || var(ch.zre) > 200
+if var(ch.zre) < 9 || var(ch.zre) > 200
     ch.zre(:) = nan;
     ch.yre(:) = nan;
 end
 
-%% remove eye blinks if using eye tracker and smooth
+%% remove eye blinks if using eye tracker and smooth  %% Uncomment for eye tracker
 % X = [ch.zle ch.zre ch.yle ch.yre];
 % X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
 % ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
@@ -102,7 +102,7 @@ end
 
 %% detect saccade times
 % take derivative of eye position = eye velocity
-if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil
+if ~isnan(var(ch.zle)) % use the eye with a working eye coil
     dze = diff(ch.zle); %
     dye = diff(ch.yle);
 else
@@ -127,7 +127,7 @@ min_isi = prs.min_intersaccade;
 t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
-%% interpolate nans
+%% interpolate nans    %% Uncomment for eye tracker
 % nanx = isnan(ch.zle); t1 = 1:numel(ch.zle); ch.zle(nanx) = interp1(t1(~nanx), ch.zle(~nanx), t1(nanx), 'pchip');
 % nanx = isnan(ch.zre); t1 = 1:numel(ch.zle); ch.zre(nanx) = interp1(t1(~nanx), ch.zre(~nanx), t1(nanx), 'pchip');
 % nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch.yle(~nanx), t1(nanx), 'pchip');
@@ -219,7 +219,7 @@ w_moveindx = double(w>w_thresh);
 monkmoving_indx = v_moveindx | w_moveindx;
 
 
-%% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
+%% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)  with eye coil
 free_indx = eyemoving_indx; st.free_sMarkers = RemoveShortEpochs(free_indx, prs.spectrum_minwinlength,dt);
 fixed_indx = ~eyemoving_indx; st.fixed_sMarkers = RemoveShortEpochs(fixed_indx, prs.spectrum_minwinlength,dt);
 free_mobile_indx = eyemoving_indx & monkmoving_indx; st.free_mobile_sMarkers = RemoveShortEpochs(free_mobile_indx, prs.spectrum_minwinlength,dt);
