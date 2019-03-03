@@ -1,6 +1,9 @@
 function [chnl_indx,elec_indx] = MapChannel2Electrode(electrode)
 
 switch electrode
+    case 'linearprobe'
+        chnl_indx = 1:32;
+        elec_indx = 1:32;
     case 'utah96'
         chnl_indx = 1:96;
         elec_indx = [78 88 68 58 56 48 57 38 47 28 37 27 36 18 45 17 46 8 35 16 24 7 26 6 25 5 15 4 14 3 13 2 ...
