@@ -113,7 +113,7 @@ end
 if prs.extract_motion_states
     %% eye move
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles,  if ~isempty(states(i).free_sMarkers), sMarkers = [sMarkers ; states(i).free_sMarkers + trialevents.t_start(i)]; end, end
     if ~isempty(sMarkers),eyesfree(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -124,7 +124,8 @@ if prs.extract_motion_states
     
     %% eye fixed
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
+    if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(states(i).fixed_sMarkers), sMarkers = [sMarkers ; states(i).fixed_sMarkers + trialevents.t_start(i)];end, end
     if ~isempty(sMarkers), eyesfixed(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -135,7 +136,7 @@ if prs.extract_motion_states
         
     %% eye move + mobile
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(states(i).free_mobile_sMarkers), sMarkers = [sMarkers ; states(i).free_mobile_sMarkers + trialevents.t_start(i)]; end, end
     if ~isempty(sMarkers), eyesfree_mobile(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -146,7 +147,7 @@ if prs.extract_motion_states
     
     %% eye move + stationary
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(states(i).free_stationary_sMarkers), sMarkers = [sMarkers ; states(i).free_stationary_sMarkers + trialevents.t_start(i)];end, end
     if ~isempty(sMarkers),eyesfree_stationary(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -157,7 +158,7 @@ if prs.extract_motion_states
     
     %% eye fixed + mobile
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(states(i).fixed_mobile_sMarkers), sMarkers = [sMarkers ; states(i).fixed_mobile_sMarkers + trialevents.t_start(i)];end, end
     if ~isempty(sMarkers), eyesfixed_mobile(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -168,7 +169,7 @@ if prs.extract_motion_states
     
     %% eye fixed + stationary
     states = trials_behv.states; nfiles = numel(states);
-    sMarkers = [];
+    sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(states(i).fixed_stationary_sMarkers), sMarkers = [sMarkers ; states(i).fixed_stationary_sMarkers + trialevents.t_start(i)];end, end
     if ~isempty(sMarkers), eyesfixed_stationary(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
