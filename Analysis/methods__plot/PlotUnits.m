@@ -214,49 +214,38 @@ switch plot_type
         end
         
     case 'GAM'
-        nvars = 8; cmap = jet(nvars); cmap(5,2) = 0.25;
-        file_name_root='Fig_';
+        nvars = 9; cmap = jet(nvars); cmap(5,2) = 0.25;
         for i=1:nunits
             models = units(i).stats.trialtype.all.GAM.log;
             bestmodel = models.bestmodel;
             if ~isnan(bestmodel)
                 varindx = find(models.class{bestmodel});
                 %% tuning of this unit
-                figure(i); hold on; %set(gcf,'Position',[85 -276 700 1000]);
-                ymin = inf; ymax = -inf;
+                figure(i); hold on;
                 for j=varindx
-                    subplot(2,4,j); hold on;
+                    subplot(2,5,j); hold on;
                     plot(models.x{j},models.marginaltunings{bestmodel}{j},'Color',cmap(j,:));
-                    ymin = min(ymin,min(models.marginaltunings{bestmodel}{j}));
-                    ymax = max(ymax,max(models.marginaltunings{bestmodel}{j}));
-                end
-                % match y-axes of all subplots
-                for j=varindx
-                    subplot(2,4,j); set(gca,'Ylim',[ymin ymax]);
                     if j==6 || j==8
                         set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[models.x{j}(1) models.x{j}(end)],'XTicklabel',[0 0.6]);
-                    elseif j>4
+                    elseif j>4 && j<9
                         set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
                     end
                 end
                 %% tuning of all units
                 for k=1:nvars
-                    figure(50+k); hold on; %set(gcf,'Position',[85 -276 700 1000]);
-                    k_index = 50 + k;
+                    figure(50+k); hold on;
                     if any(varindx==k)
                         subplot(6,6,i); hold on;
                         plot(models.x{k},models.marginaltunings{bestmodel}{k},'Color',cmap(k,:));
                         if k==6 || k==8
                             set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[models.x{k}(1) models.x{k}(end)],'XTicklabel',[0 0.6]);
-                        elseif k>4
+                        elseif j>4 && j<9
                             set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
                         end
                     end
-                    file_name=[file_name_root num2str(k_index)];
-                    saveas(gcf, file_name, 'epsc')
+%                     saveas(gcf,['Fig_' num2str(50+k), 'epsc']);
                 end
-                file_name=[file_name_root num2str(i)];
-                saveas(gcf, file_name, 'epsc')
+%                 saveas(gcf,['Fig_' num2str(i), 'epsc']);
             end
         end
 end
