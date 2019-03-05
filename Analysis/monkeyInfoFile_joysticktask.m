@@ -1870,6 +1870,18 @@ monkeyInfo (end).folder = 'Quigley\U-probe\Jan 17 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
 monkeyInfo (end).electrode = 'V-probe';
 
+%% session 155
+monkeyInfo (end+1).monk_id = 44;
+monkeyInfo (end).session_id = 160;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Quigley\U-probe\Feb 12 2018';
+monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
+monkeyInfo (end).electrode = 'V-probe';
+
 %% Bruno
 
 %% session 1

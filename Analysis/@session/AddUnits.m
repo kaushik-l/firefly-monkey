@@ -7,7 +7,10 @@ function AddUnits(this,prs)
     if ~isempty(file_ead) % data recorded using Plexon
         prs.neur_filetype = 'plx';
         fprintf(['... reading ' file_ead.name '\n']);
-        t_events = GetEvents_plx(file_ead.name);
+        [events_plx,fs] = GetEvents_plx(file_ead.name);
+        % convert eventtimes from samples to seconds
+        events_plx.start = events_plx.start/fs;
+        events_plx.t_beg = events_plx.t_beg/fs; events_plx.t_end = events_plx.t_end/fs; events_plx.t_rew = events_plx.t_rew/fs;
         file_plx=dir('*_spk.plx');
         fprintf(['... reading ' file_plx.name '\n']);
         for j=1:prs.maxchannels
@@ -15,12 +18,12 @@ function AddUnits(this,prs)
             smua = GetUnits_plx(file_plx.name,prs.units,j); % smua = singleunits + multiunits
             %fetch multiunit
             this.units(end+1) = unit('multiunit',smua(1),prs.fs_spk);
-            this.units(end).AddTrials(smua(1).tspk,t_events,this.behaviours,prs);
+            this.units(end).AddTrials(smua(1).tspk,events_plx,this.behaviours,prs);
             %fetch units
             if length(smua)>1
                 for k=2:length(smua)
                     this.units(end+1) = unit('singleunit',smua(k),prs.fs_spk);
-                    this.units(end).AddTrials(smua(k).tspk,t_events,this.behaviours,prs);
+                    this.units(end).AddTrials(smua(k).tspk,events_plx,this.behaviours,prs);
                 end
             end
         end
