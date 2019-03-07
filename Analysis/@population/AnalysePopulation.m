@@ -1,6 +1,6 @@
 %% function to add sessions
 function AnalysePopulation(this,units,unittype,behaviours,lfps,prs)
-    if strcmp(unittype,'units')
+    if strcmp(unittype,'units') || strcmp(unittype,'singleunit') || strcmp(unittype,'multiunit')
         if prs.fitGAM_tuning
             this.(unittype).stats = AnalysePopulation(units,behaviours.trials,behaviours.stats,lfps,prs);
         else

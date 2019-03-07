@@ -13,7 +13,7 @@ function AddUnits(this,prs)
         events_plx.t_beg = events_plx.t_beg/fs; events_plx.t_end = events_plx.t_end/fs; events_plx.t_rew = events_plx.t_rew/fs;
         file_plx=dir('*_spk.plx');
         fprintf(['... reading ' file_plx.name '\n']);
-        for j=1:prs.maxchannels
+        for j=1:2%prs.maxchannels
             fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels) '\n']);
             smua = GetUnits_plx(file_plx.name,prs.units,j); % smua = singleunits + multiunits
             %fetch multiunit

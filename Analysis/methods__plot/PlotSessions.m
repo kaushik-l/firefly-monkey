@@ -6,8 +6,9 @@ units = struct.empty();
 nsessions = length(sessions);
 for i = 1:nsessions
     thisunits = sessions(i).units;
-    unitindx{i} = find(strcmp({thisunits.type},'singleunit'));
-    units = [units sessions(i).populations.units.stats.trialtype.all.models.log.units(unitindx{i})];
+%     unitindx{i} = find(strcmp({thisunits.type},'singleunit'));
+%     units = [units sessions(i).populations.(unit_type).stats.trialtype.all.models.log.units(unitindx{i})];
+    units = [units sessions(i).populations.(unit_type).stats.trialtype.all.models.log.units];
 end
 nunits = length(units);
 
@@ -27,8 +28,8 @@ switch plot_type
         figure; hold on;  set(gcf,'Position',[80 200 900 400]);
         errorbar(1:nvars, frac_tuned, sqrt(frac_tuned.*(1-frac_tuned)/nunits),'o','MarkerFace','b','CapSize',0);
         xlabel('Task variable'); ylabel('Fraction of tuned neurons');
-        set(gca, 'XTick', 1:8, 'XTickLabel', {'v', 'w', 'd', '\phi', 'move', 'targ', 'stop', 'reward'});
-        axis([0 9 0 1]); hline([0:0.2:1]);
+        set(gca, 'XTick', 1:9, 'XTickLabel', units(i).Uncoupledmodel.xname, 'TickLabelInterpreter','none');
+        axis([0 10 0 1]); hline([0:0.2:1]);
         %% tuning functions
         ncols = 8;
         nrows = ceil(max(frac_tuned)*nunits/ncols);
@@ -40,14 +41,18 @@ switch plot_type
                     count = count + 1;
                     stim = units(j).Uncoupledmodel.x{i};
                     rate = units(j).Uncoupledmodel.marginaltunings{units(j).Uncoupledmodel.bestmodel}{i};
+                    vartype = units(j).Uncoupledmodel.xtype{i};
                     subplot(nrows, ncols, count); hold on;
                     plot(stim, rate);
                     ylim = get(gca,'ylim'); ylim = [floor(ylim(1)) ceil(ylim(2))]; set(gca,'ylim',ylim);
                     xlim = get(gca,'xlim'); xlim = [floor(xlim(1)) ceil(xlim(2))]; set(gca,'xlim',xlim); 
                     set(gca,'YTick',ylim,'XTick',xlim,'Fontsize',10);
-                    if i>4, set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]); vline(0,'k'); end
+                    if strcmp(vartype,'event'), set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]); vline(0,'k'); end
                 end
             end
+%             if nunits>0, title(['Tuning to ' prs.varlookup(num2str(units(1).Uncoupledmodel.xname{i}))], 'Interpreter', 'none'); end
+            if nunits>0, s = suptitle(strrep(['Tuning to ' prs.varlookup(num2str(units(1).Uncoupledmodel.xname{i}))],'_','\_')); 
+                set(s,'FontSize',12,'FontWeight','Bold'); end
         end
         %% variance explained - coupled vs uncoupled
         count = 0;

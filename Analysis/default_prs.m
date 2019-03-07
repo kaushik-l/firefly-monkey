@@ -116,6 +116,7 @@ prs.tuning.use_binrange = true;
 prs.binrange.v = [0 ; 200]; %cm/s
 prs.binrange.w = [-90 ; 90]; %deg/s
 prs.binrange.r_targ = [0 ; 400]; %cm
+prs.binrange.theta_targ = [-60 ; 60]; %cm
 prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
 prs.binrange.eye_ver = [-25 ; 0]; %deg
@@ -148,6 +149,13 @@ prs.varlookup('target_OFF') = 't_targ';
 prs.varlookup('move') = 't_move';
 prs.varlookup('stop') = 't_stop';
 prs.varlookup('reward') = 't_rew';
+prs.varlookup('v') = 'lin vel';
+prs.varlookup('w') = 'ang vel';
+prs.varlookup('d') = 'dist moved';
+prs.varlookup('phi') = 'ang turned';
+prs.varlookup('r_targ') = 'targ dist';
+prs.varlookup('theta_targ') = 'targ ang';
+prs.varlookup('phase') = 'lfp phase';
 
 %% plotting parameters
 prs.binwidth_abs = prs.temporal_binwidth; % use same width as for the analysis
@@ -166,8 +174,8 @@ prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choos
 prs.tuning_continuous = {'v','w','eye_ver','eye_hor'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
-prs.GAM_varname = {'v','w','d','phi','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','1D','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_varname = {'v','w','r_targ','theta_targ','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','1Dcirc','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
 prs.GAM_nbins = {10,10,10,10,10,10,10,10,10}; % number of bins for each variable
 prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
@@ -193,7 +201,7 @@ prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = false; % evaluate significance of event-locked responses
+prs.evaluate_peaks = true; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors

@@ -296,14 +296,45 @@ switch lower(plot_type)
         end
         
     case 'gam'
-        set(gcf,'Position',[1200 800 1500 100]);
+        %% plot model-based tuning functions
         nvars = numel(unit.Uncoupledmodel.x);
-        for i=[1:4 7:nvars]
-            subplot(1,nvars,i); hold on;
-            plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{1}{i});
-            ylim([0 max(unit.Uncoupledmodel.marginaltunings{1}{i})]);
-        end   
-        
+        figure; hold on;
+        bestmodel = unit.Uncoupledmodel.bestmodel;
+        ymin = inf; ymax = -inf;
+        for i=1:nvars
+            subplot(2,ceil(nvars/2),i); hold on;
+            plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{end}{i},'k');
+            if ~isempty(unit.Uncoupledmodel.marginaltunings{bestmodel}{i})
+                plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{bestmodel}{i},'r');
+                ymin = min(ymin,min(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
+                ymax = max(ymax,max(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
+            end
+            xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))]; 
+            set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
+        end
+        % match y-scales
+        subplot(2,ceil(nvars/2),1); ylabel('(spk/s)');
+        for i=1:nvars
+            subplot(2,ceil(nvars/2),i);
+            ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
+            xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
+            if strcmp(unit.Uncoupledmodel.xtype{i},'event')
+                set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]); 
+                xlabel({'Time (s) rel. to'; prs.GAM_varname{i}}); vline(0,'k'); 
+            end
+        end
+        pnum = find(cellfun(@(x) ~isempty(x), unit.Uncoupledmodel.marginaltunings{bestmodel}),1);
+        subplot(2,ceil(nvars/2),pnum);
+        legend({'full model','best model'});
+        %% plot log-likelihood vlues of aaaaaalllll models
+        modelclass = cell2mat(unit.Uncoupledmodel.class);
+        nmodels = size(modelclass,1);
+        for i=1:nmodels, LLval(i) = nanmean(unit.Uncoupledmodel.testFit{i}(:,3)); end
+%         colorcode = jet(max(sum(modelclass,2)));
+        colorcode = [0.7 0.3 0.8 ; [0.7 0.3 0.8] + 0.2; [0 0.6 0]; [0 0.6 0] + 0.3; ...
+    [0.25 0.25 0.25]; [0.5 0.5 0.5]; [0.75 0.75 0.75]; [1 1 1]]; % hardcode for 8 vars (4 cont + 4 discrete)
+        stackedbarweb(LLval, modelclass, colorcode);
+%         figure; bar(LLval,'stacked'); axis([0 nmodels 0 max(LLval)]);
     case 'sfc'
         lfps = unit.stats.trialtype.all.continuous.lfps;
         nlfps = length(lfps);

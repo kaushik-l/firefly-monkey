@@ -225,21 +225,23 @@ switch plot_type
                 for j=varindx
                     subplot(2,5,j); hold on;
                     plot(models.x{j},models.marginaltunings{bestmodel}{j},'Color',cmap(j,:));
-                    if j==6 || j==8
-                        set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[models.x{j}(1) models.x{j}(end)],'XTicklabel',[0 0.6]);
-                    elseif j>4 && j<9
+                    s = title(strrep(['Tuning to ' prs.varlookup(num2str(models.xname{j}))],'_','\_'));
+                    set(s,'FontSize',10,'FontWeight','Bold');
+                    if strcmp(models.xtype{j},'event')
                         set(gca,'Xlim',[models.x{j}(1) models.x{j}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
                     end
                 end
                 %% tuning of all units
                 for k=1:nvars
                     figure(50+k); hold on;
+                    if i==nunits % wait until the last unit to create suptitle
+                        s = suptitle(strrep(['Tuning to ' prs.varlookup(num2str(models.xname{k}))],'_','\_'));
+                        set(s,'FontSize',12,'FontWeight','Bold');
+                    end
                     if any(varindx==k)
                         subplot(6,6,i); hold on;
                         plot(models.x{k},models.marginaltunings{bestmodel}{k},'Color',cmap(k,:));
-                        if k==6 || k==8
-                            set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[models.x{k}(1) models.x{k}(end)],'XTicklabel',[0 0.6]);
-                        elseif j>4 && j<9
+                        if strcmp(models.xtype{k},'event')
                             set(gca,'Xlim',[models.x{k}(1) models.x{k}(end)],'XTick',[-0.3 0 0.3]); vline(0,'k');
                         end
                     end

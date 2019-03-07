@@ -2,8 +2,8 @@ classdef population < handle
     %%
     properties
         units
-        singleunits
-        multiunits
+        singleunit
+        multiunit
         lfps
     end
     
@@ -12,9 +12,9 @@ classdef population < handle
         %% class constructor
         function this = population()
             this.units = [];
-            this.singleunits = [];
-            this.multiunits = [];
-            this.lfps = [];
+            this.singleunit = [];
+            this.multiunit = [];
+            this.lfps =  [];
         end
     end
 end
