@@ -456,37 +456,50 @@ switch plot_type
         axis([0 400 0 400]); plot(0:400,0:400,'--k');
         xlabel('gaze distance [monocular] (m)');
         ylabel('gaze distance [binocular] (m)');
-    case 'ptb_distance'
-        r_fly = behv.stats.pos_final.r_fly(~crazy);
-        r_monk = behv.stats.pos_final.r_monk(~crazy);
-        ptb_indx = [behv_all.ptb_delay] ~= 0;
-        ptb_lin = [behv_all.ptb_linear];
-        ptb_ang = [behv_all.ptb_angular];
-        % data without ptb
-        figure; hold on; 
-        plot(r_fly(~ptb_indx),r_monk(~ptb_indx),'.b');        
-        axis([0 400 0 400]);
-        plot(0:400,0:400,'--k','Linewidth',1);
-        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
-        xlabel('Target, r(m)');
-        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
-        ylabel('Response, r(m)');
-        % data with ptb
-        hold on;
-        plot(r_fly(ptb_indx),r_monk(ptb_indx),'.r');
-        axis([0 400 0 400]);
-        plot(0:400,0:400,'--k','Linewidth',1);
-        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
-        xlabel('Target, r(m)');
-        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
-        ylabel('Response, r(m)');
-    case 'ptb_angle'
-        theta_fly = behv.stats.pos_final.theta_fly(~crazy);
-        theta_monk = behv.stats.pos_final.theta_monk(~crazy);
-        ptb_indx = [behv_all.ptb_delay] ~= 0;
-        % data without ptb
+
+    case 'ptb'
+        %% load trial indices
+        noptb.trlindx = behv.stats.trialtype.ptb(1).trlindx;
+        ptb.trlindx = behv.stats.trialtype.ptb(2).trlindx;
+        
+        %% target angle vs response angle
+        noptb.r_targ = behv.stats.pos_final.r_targ(noptb.trlindx);
+        noptb.r_monk = behv.stats.pos_final.r_monk(noptb.trlindx);
+        ptb.r_targ = behv.stats.pos_final.r_targ(ptb.trlindx);
+        ptb.r_monk = behv.stats.pos_final.r_monk(ptb.trlindx);
+        
         figure; hold on;
-        plot(theta_fly(~ptb_indx),theta_monk(~ptb_indx),'.b');
+        set(gcf,'Position',[85 276 900 400]);
+        % data without ptb       
+        subplot(1,2,1); hold on;
+        plot(noptb.r_targ,noptb.r_monk,'.b');
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+        % data with ptb
+        subplot(1,2,2); hold on;
+        plot(ptb.r_targ,ptb.r_monk,'.r');
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+                
+        %% target angle vs response angle      
+        noptb.theta_targ = behv.stats.pos_final.theta_targ(noptb.trlindx);
+        noptb.theta_monk = behv.stats.pos_final.theta_monk(noptb.trlindx);
+        ptb.theta_targ = behv.stats.pos_final.theta_targ(ptb.trlindx);
+        ptb.theta_monk = behv.stats.pos_final.theta_monk(ptb.trlindx);
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+        % data without ptb
+        subplot(1,2,1); hold on;
+        plot(noptb.theta_targ,noptb.theta_monk,'.b');
         axis([-40 40 -40 40]);
         plot(-40:40,-40:40,'--k','Linewidth',1);
         set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
@@ -496,8 +509,8 @@ switch plot_type
         hline(0, 'k'); vline(0, 'k');
 %         removeaxes;
         % data with ptb
-        hold on;
-        plot(theta_fly(ptb_indx),theta_monk(ptb_indx),'.r');
+        subplot(1,2,2); hold on;
+        plot(ptb.theta_targ,ptb.theta_monk,'.r');
         axis([-40 40 -40 40]);
         plot(-40:40,-40:40,'--k','Linewidth',1);
         set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
@@ -506,4 +519,129 @@ switch plot_type
         ylabel('Response, \theta(deg)');
         hline(0, 'k'); vline(0, 'k');
 %         removeaxes;
+
+        %% distribution of errors across trials with and without ptb        
+        noptb.FX = behv.stats.trialtype.ptb(1).errdist.FX;
+        noptb.F = behv.stats.trialtype.ptb(1).errdist.F;
+        noptb.PX = behv.stats.trialtype.ptb(1).errdist.PX;
+        noptb.P = behv.stats.trialtype.ptb(1).errdist.P;
+        ptb.FX = behv.stats.trialtype.ptb(2).errdist.FX;
+        ptb.F = behv.stats.trialtype.ptb(2).errdist.F;
+        ptb.PX = behv.stats.trialtype.ptb(2).errdist.PX;
+        ptb.P = behv.stats.trialtype.ptb(2).errdist.P;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+
+        subplot(1,2,1); hold on;
+        % data without ptb
+        plot(noptb.FX,noptb.F,'b');
+        % data with ptb
+        subplot(1,2,1); hold on;
+        plot(ptb.FX,ptb.F,'r');
+        axis([0 200 0 1]);
+        set(gca, 'XTick', [0 100 200], 'XTickLabel', [0 100 200], 'Fontsize',14);
+        xlabel('Euclidean error (cm)');
+        set(gca, 'YTick', [0 0.5 1], 'YTickLabel', [0 0.5 1]);
+        ylabel('Cumulative probability');
+
+        subplot(1,2,2); hold on;
+        % data without ptb
+        plot(noptb.PX,noptb.P,'b');
+        % data with ptb
+        plot(ptb.PX,ptb.P,'r');
+        axis([0 200 0 0.5]);
+        set(gca, 'XTick', [0 100 200], 'XTickLabel', [0 100 200], 'Fontsize',14);
+        xlabel('Euclidean error (cm)');
+        set(gca, 'YTick', [0 0.5 1], 'YTickLabel', [0 0.5 1]);
+        ylabel('Probability');
+        
+        %% ROC curves for trals with and without ptb        
+        noptb.pcorrect_shuffled_mu = behv.stats.trialtype.ptb(1).accuracy.pcorrect_shuffled_mu;
+        noptb.pCorrect = behv.stats.trialtype.ptb(1).accuracy.pCorrect;
+        ptb.pcorrect_shuffled_mu = behv.stats.trialtype.ptb(2).accuracy.pcorrect_shuffled_mu;
+        ptb.pCorrect = behv.stats.trialtype.ptb(2).accuracy.pCorrect;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 450 400]);        
+        plot(noptb.pcorrect_shuffled_mu,noptb.pCorrect,'b');
+        plot(ptb.pcorrect_shuffled_mu,ptb.pCorrect,'r');
+        plot(0:1,0:1,'--k');
+        axis([0 1 0 1]);
+        xlabel('Shuffled accuracy'); ylabel('Actual accuracy');
+        lessticks('x'); lessticks('y');
+        
+        %% correlation between ptb magnitude and error magnitude
+        ptb.err_x = behv.stats.trialtype.ptb(2).errdist.x;
+        ptb.err_y = behv.stats.trialtype.ptb(2).errdist.y;
+        ptb.del_x = behv.stats.trialtype.ptb(2).ptbdist.x;
+        ptb.del_y = behv.stats.trialtype.ptb(2).ptbdist.y;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+        
+        subplot(1,2,1); hold on;
+        plot(ptb.del_x,ptb.err_x,'.r');
+        axis([-50 50 -200 200]); hline(0,'k'); vline(0,'k');
+        set(gca, 'XTick', [-50 0 50], 'XTickLabel', [-50 0 50], 'Fontsize',14);
+        xlabel('Horizontal displacement due to ptb (cm)');
+        set(gca, 'YTick', [-200 0 200], 'YTickLabel', [-200 0 200]);
+        ylabel('Horizontal error (cm)');
+        
+        subplot(1,2,2); hold on;
+        plot(ptb.del_y,ptb.err_y,'.r');
+        axis([-100 100 -200 200]); hline(0,'k'); vline(0,'k');
+        set(gca, 'XTick', [-100 0 100], 'XTickLabel', [-100 0 100], 'Fontsize',14);
+        xlabel('Vertical displacement due to ptb (cm)');
+        set(gca, 'YTick', [-200 0 200], 'YTickLabel', [-200 0 200]);
+        ylabel('Vertical error (cm)');
+        
+        %% ptb-triggered average velocity
+        ptb.linvel = behv.stats.trialtype.ptb(2).linvel;
+        ptb.angvel = behv.stats.trialtype.ptb(2).angvel;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+        
+        subplot(1,2,1); hold on;
+        shadedErrorBar(ptb.linvel.negptb.t,ptb.linvel.negptb.mu,ptb.linvel.negptb.sem,'lineprops','r');
+        shadedErrorBar(ptb.linvel.posptb.t,ptb.linvel.posptb.mu,ptb.linvel.posptb.sem,'lineprops','b');
+        axis([0 2 -200 200]); hline(0,'k');
+        set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
+        xlabel('Time (s)');
+        set(gca, 'YTick', [-200 0 200], 'YTickLabel', [-200 0 200]);
+        ylabel('Forward velocity (cm/s)');
+        
+        subplot(1,2,2); hold on;
+        shadedErrorBar(ptb.angvel.negptb.t,ptb.angvel.negptb.mu,ptb.angvel.negptb.sem,'lineprops','r');
+        shadedErrorBar(ptb.angvel.posptb.t,ptb.angvel.posptb.mu,ptb.angvel.posptb.sem,'lineprops','b');
+        axis([0 2 -100 100]); hline(0,'k');
+        set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
+        xlabel('Time (s)');
+        set(gca, 'YTick', [-100 0 100], 'YTickLabel', [-100 0 100]);
+        ylabel('Forward velocity (deg/s)');
+        
+        %% effect of ptb timing
+        ptb.timefromstart = behv.stats.trialtype.ptb(2).ptbtimefromstart;
+        ptb.timefromstop = behv.stats.trialtype.ptb(2).ptbtimefromstop;
+        ptb.err = sqrt(ptb.err_x.^2 + ptb.err_y.^2);
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+        
+        subplot(1,2,1); hold on;
+        plot(ptb.timefromstart,ptb.err,'.k');
+        axis([0 2 0 200]);
+        set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
+        xlabel('Timing of ptb onset rel. to start-of-movement (s)');
+        set(gca, 'YTick', [0 100 200], 'YTickLabel', [0 100 200]);
+        ylabel('Behavioural error (cm/s)'); set(gca,'YScale','log');
+        
+        subplot(1,2,2); hold on;
+        plot(ptb.timefromstop(ptb.timefromstop>1),ptb.err(ptb.timefromstop>1),'.k');
+        axis([1 2 0 200]);
+        set(gca, 'XTick', [1 2], 'XTickLabel', [1 2], 'Fontsize',14);
+        xlabel('Timing of ptb onset rel. to end-of-movement (s)');
+        set(gca, 'YTick', [0 100 200], 'YTickLabel', [0 100 200]);
+        ylabel('Behavioural error (cm/s)'); set(gca,'YScale','log');
 end

@@ -54,6 +54,8 @@ prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey pos
 prs.minpeakprominence.flypos = 1; % expected magnitude of change in fly position in consecutive trials (cm)
 prs.fixateduration = 0.75; % length of fixation epochs (s)
 prs.fixate_thresh = 4; % max eye velocity during fixation (deg/s)
+prs.ptb_sigma = 1/6; % width of the gaussian func for ptb (s)
+prs.ptb_duration = 1; % duration fo ptb (s)
 
 % lfp
 prs.lfp_filtorder = 4;

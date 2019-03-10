@@ -6,13 +6,16 @@ function [mu_xt, mu_yt, mu_x, mu_y, mu_theta, mu_thetat] = gen_traj(mu_w, mu_v, 
 % initial positions (x0/y0)
 % outputs: mu_xt, mu_yt, mu_x, mu_y 
 
+% if v<0, then sign of w needs to be inverted because of Jian.
+mu_w = mu_w.*sign(mu_v);
+
 % sampling rate
 dt = median(diff(ts)); % needs to match downsampling rate
 
 % select first dimension
 sz = length(mu_v);
 
-% initializeclo
+% initialize
 mu_xt = zeros(sz,1);
 mu_yt = zeros(sz,1);
 mu_thetat = zeros(sz,1);

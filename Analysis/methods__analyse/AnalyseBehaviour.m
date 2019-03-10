@@ -186,7 +186,7 @@ if prs.regress_eye
     end
 end
 
-%% linear regression and ROC analysis
+%% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
     for i=1:length(trialtypes)
@@ -203,10 +203,29 @@ if prs.regress_behv
                 [pos_regress2.beta_r, pos_regress2.alpha_r, pos_regress2.betaCI_r, pos_regress2.alphaCI_r, pos_regress2.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 1);
                 [pos_regress2.beta_theta, pos_regress2.alpha_theta, pos_regress2.betaCI_theta, pos_regress2.alphaCI_theta, pos_regress2.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 1);
                 stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = pos_regress2;
-                % ROC
+                % ROC curve
                 [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
                     [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,npermutations);
                 stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
+                % cdf and pdf of distance error
+                [errdist.F,errdist.FX,errdist.FLO,errdist.FUP] = ecdf(abs(rf_monk(trlindx) - r_fly(trlindx)));
+                [errdist.P,errdist.PX] = hist(abs(rf_monk(trlindx) - r_fly(trlindx)),25); errdist.P = errdist.P/sum(errdist.P);
+                stats.trialtype.(trialtypes{i})(j).errdist = errdist;
+                % do this for perturbation trials only
+                if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
+                    trialparams_temp = trialparams(trlindx);                    
+                    ptb_maxlinvel = [trialparams_temp.ptb_linear]; ptb_maxangvel = [trialparams_temp.ptb_angular]; 
+                    ptb_delay = [events(trlindx).t_ptb];
+                    [ptbdist.x, ptbdist.y] = ComputePtbDisplacement(ptb_maxlinvel,ptb_maxangvel,prs.ptb_sigma,prs.ptb_duration);
+                    errdist.x = xf_monk(trlindx) - x_fly(trlindx); errdist.y = yf_monk(trlindx) - y_fly(trlindx);
+                    stats.trialtype.(trialtypes{i})(j).ptbdist = ptbdist;
+                    stats.trialtype.(trialtypes{i})(j).errdist = errdist;
+                    stats.trialtype.(trialtypes{i})(j).ptbtimefromstart = ptb_delay;
+                    t_stop = [events.t_stop]; stats.trialtype.(trialtypes{i})(j).ptbtimefromstop = t_stop(trlindx) - ptb_delay;
+                    [ptb_linvel,ptb_angvel] = PtbTriggeredAverage({continuous(trlindx).v},{continuous(trlindx).w},{continuous(trlindx).ts},ptb_maxlinvel,ptb_maxangvel,ptb_delay);
+                    stats.trialtype.(trialtypes{i})(j).linvel = ptb_linvel;
+                    stats.trialtype.(trialtypes{i})(j).angvel = ptb_angvel;
+                end
             else
                 stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
                 stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;

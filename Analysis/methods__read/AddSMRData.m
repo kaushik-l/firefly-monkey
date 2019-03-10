@@ -147,9 +147,9 @@ t_beg_correction = t.beg - t_beg_original;
 
 
 %% detect start-of-movement and end-of-movement times for each trial
-v_thresh = prs.v_thresh;
+v_thresh = prs.v_thresh; w_thresh = prs.w_thresh;
 v_time2thresh = prs.v_time2thresh;
-v = ch.v;
+v = ch.v; w = ch.w;
 for j=1:length(t.end)
    % start-of-movement
    if j==1, t.move(j) = t.beg(j); % first trial is special because there is no pre-trial period
@@ -159,7 +159,7 @@ for j=1:length(t.end)
        else, t.move(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
    end
    % end-of-movement
-   indx = find(v(ts>t.move(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+   indx = find(abs(v(ts>t.move(j) & ts<t.end(j))) < v_thresh & abs(w(ts>t.move(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
    if ~isempty(indx), t.stop(j) = t.move(j) + indx*dt;
    else, t.stop(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
    % if monkey stopped prematurely, set movement end = trial end
