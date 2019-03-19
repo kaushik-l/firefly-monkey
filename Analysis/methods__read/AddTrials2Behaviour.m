@@ -7,8 +7,8 @@ flist_log=dir('*.log');
 for i=1:length(flist_log), fnum_log(i) = str2num(flist_log(i).name(end-6:end-4)); end
 flist_smr=dir('*.smr');
 for i=1:length(flist_smr), fnum_smr(i) = str2num(flist_smr(i).name(end-6:end-4)); end
-flist_mat=dir('*.mat');
-for i=1:length(flist_mat), fnum_mat(i) = str2num(flist_mat(i).name(end-6:end-4)); end
+% flist_mat=dir('*.mat');
+% for i=1:length(flist_mat), fnum_mat(i) = str2num(flist_mat(i).name(end-6:end-4)); end
 nfiles = length(flist_log);
 
 %% read files
