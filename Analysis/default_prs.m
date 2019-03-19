@@ -5,14 +5,15 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\behavioural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur = ['W:\Data\Monkey_discovery\' monkeyInfo.folder '\neural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  % 
+prs.filepath_behv = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  % 
 prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
 prs.electrode = monkeyInfo.electrode;
 prs.comments = monkeyInfo.comments;
+prs.eyechannels = monkeyInfo.eyechannels;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
@@ -42,7 +43,7 @@ prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningfu
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
 prs.blink_thresh = 50; %deg
 prs.nanpadding = 5; % samples on either side
-prs.saccade_thresh = 200; % deg/s
+prs.saccade_thresh = 100; % deg/s
 prs.saccade_duration = 0.15; %seconds
 prs.eyemove_thresh = 15; % deg/s
 prs.eyemove_duration = 0.2; % eye movement needs to last at least N ms to be detected as eye movement

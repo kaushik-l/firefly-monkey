@@ -78,32 +78,38 @@ ch.zle = ch.zle(1:MAX_LENGTH);
 ch.zre = ch.zre(1:MAX_LENGTH);
 ts = dt:dt:length(ch.(chnames{end}))*dt;
 
-%% replace the broken eye coil (if any) with NaNs   % Comment for eye coil
-% if var(ch.zle) < 9 || var(ch.zle) > 200
-%     ch.zle(:) = nan;
-%     ch.yle(:) = nan;
-% end
-% if var(ch.zre) < 9 || var(ch.zre) > 200
-%     ch.zre(:) = nan;
-%     ch.yre(:) = nan;
-% end
+%% replace the signal from the untracked eye (if any) with NaNs
+if prs.eyechannels(1) == 0
+    ch.zle(:) = nan;
+    ch.yle(:) = nan;
+end
+if prs.eyechannels(2) == 0
+    ch.zre(:) = nan;
+    ch.yre(:) = nan;
+end
+if all(prs.eyechannels == 0), warning('No eye signal for this dataset'); end
 
-%% remove eye blinks if using eye tracker and smooth  %% Uncomment for eye tracker
-X = [ch.zle ch.zre ch.yle ch.yre];
-X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
-ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
-sig = 10*prs.filtwidth; %filter width
-sz = 10*prs.filtsize; %filter size
-t2 = linspace(-sz/2, sz/2, sz);
-h = exp(-t2.^2/(2*sig^2));
-h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
-ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same'); 
-ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
+%% if using eye tracker, remove eye blinks and smooth
+if any(prs.eyechannels == 2)
+    X = [ch.zle ch.zre ch.yle ch.yre];
+    X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
+    ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
+    sig = 10*prs.filtwidth; %filter width
+    sz = 10*prs.filtsize; %filter size
+    t2 = linspace(-sz/2, sz/2, sz);
+    h = exp(-t2.^2/(2*sig^2));
+    h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
+    ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same');
+    ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
+end
 
 %% detect saccade times
 % take derivative of eye position = eye velocity
-if ~isnan(var(ch.zle)) % use the eye with a working eye coil
-    dze = diff(ch.zle); %
+if all(prs.eyechannels ~= 0)
+    dze = diff(0.5*(ch.zle + ch.zre));
+    dye = diff(0.5*(ch.yle + ch.yre));
+elseif prs.eyechannels(1) ~= 0
+    dze = diff(ch.zle);
     dye = diff(ch.yle);
 else
     dze = diff(ch.zre);
@@ -114,13 +120,13 @@ end
 v_eye_vel = dze/dt; 
 h_eye_vel = dye/dt;
 de = sqrt(dze.^2 + dye.^2); % speed of eye movement
+de_smooth = conv(de,h,'same')/dt;
 
 % apply threshold on eye speed
 saccade_thresh = prs.saccade_thresh;
-thresh = saccade_thresh/prs.fs_smr; % threshold in units of deg/sample
-indx_thresh = de>thresh;
+indx_thresh = de_smooth>saccade_thresh;
 dindx_thresh = diff(indx_thresh);
-t_saccade = find(dindx_thresh>0)/prs.fs_smr;
+t_saccade = find(dindx_thresh>0)*dt;
 
 % remove duplicates by applying a saccade refractory period
 min_isi = prs.min_intersaccade;
@@ -134,7 +140,6 @@ nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch
 nanx = isnan(ch.yre); t1 = 1:numel(ch.yre); ch.yre(nanx) = interp1(t1(~nanx), ch.yre(~nanx), t1(nanx), 'pchip');
 
 %% detect time points of fixation onsets
-de_smooth = conv(de,h,'same')/dt;
 fixateduration = prs.fixateduration; fixate_thresh = prctile(de_smooth,90); % set thresh to 90th prctile
 fixateduration_samples = round(fixateduration/dt);
 fixateindx = false(1,numel(ts) - round(2*fixateduration/dt));
