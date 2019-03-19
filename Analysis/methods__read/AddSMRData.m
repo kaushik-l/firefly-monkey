@@ -78,31 +78,70 @@ ch.zle = ch.zle(1:MAX_LENGTH);
 ch.zre = ch.zre(1:MAX_LENGTH);
 ts = dt:dt:length(ch.(chnames{end}))*dt;
 
+%% replace the signal from the untracked eye (if any) with NaNs
+if prs.eyechannels(1) == 0
+    ch.zle(:) = nan;
+    ch.yle(:) = nan;
+end
+if prs.eyechannels(2) == 0
+    ch.zre(:) = nan;
+    ch.yre(:) = nan;
+end
+if all(prs.eyechannels == 0), warning('No eye signal for this dataset'); end
+
+%% if using eye tracker, remove eye blinks and smooth
+if any(prs.eyechannels == 2)
+    X = [ch.zle ch.zre ch.yle ch.yre];
+    X = ReplaceWithNans(X, prs.blink_thresh, prs.nanpadding);
+    ch.zle = X(:,1); ch.zre = X(:,2); ch.yle = X(:,3); ch.yre = X(:,4);
+    sig = 10*prs.filtwidth; %filter width
+    sz = 10*prs.filtsize; %filter size
+    t2 = linspace(-sz/2, sz/2, sz);
+    h = exp(-t2.^2/(2*sig^2));
+    h = h/sum(h); % normalise filter to ensure area under the graph of the data is not altered
+    ch.zle = conv(ch.zle,h,'same'); ch.zre = conv(ch.zre,h,'same');
+    ch.yle = conv(ch.yle,h,'same'); ch.yre = conv(ch.yre,h,'same');
+end
+
 %% detect saccade times
 % take derivative of eye position = eye velocity
-if (var(ch.zle) > var(ch.zre)) % use the eye with a working eye coil
+if all(prs.eyechannels ~= 0)
+    dze = diff(0.5*(ch.zle + ch.zre));
+    dye = diff(0.5*(ch.yle + ch.yre));
+elseif prs.eyechannels(1) ~= 0
     dze = diff(ch.zle);
     dye = diff(ch.yle);
 else
     dze = diff(ch.zre);
     dye = diff(ch.yre);
 end
+
+%%
+v_eye_vel = dze/dt; 
+h_eye_vel = dye/dt;
 de = sqrt(dze.^2 + dye.^2); % speed of eye movement
+de_smooth = conv(de,h,'same')/dt;
 
 % apply threshold on eye speed
 saccade_thresh = prs.saccade_thresh;
-thresh = saccade_thresh/prs.fs_smr; % threshold in units of deg/sample
-indx_thresh = de>thresh;
+indx_thresh = de_smooth>saccade_thresh;
 dindx_thresh = diff(indx_thresh);
-t_saccade = find(dindx_thresh>0)/prs.fs_smr;
+t_saccade = find(dindx_thresh>0)*dt;
 
 % remove duplicates by applying a saccade refractory period
 min_isi = prs.min_intersaccade;
 t_saccade(diff(t_saccade)<min_isi) = [];
 t.saccade = t_saccade;
 
-%% detect periods of fixation
-de_smooth = conv(de,h,'same')/dt;
+%% interpolate nans
+if any(prs.eyechannels == 2) % conditional statement not necessary perhaps
+    nanx = isnan(ch.zle); t1 = 1:numel(ch.zle); ch.zle(nanx) = interp1(t1(~nanx), ch.zle(~nanx), t1(nanx), 'pchip');
+    nanx = isnan(ch.zre); t1 = 1:numel(ch.zle); ch.zre(nanx) = interp1(t1(~nanx), ch.zre(~nanx), t1(nanx), 'pchip');
+    nanx = isnan(ch.yle); t1 = 1:numel(ch.yle); ch.yle(nanx) = interp1(t1(~nanx), ch.yle(~nanx), t1(nanx), 'pchip');
+    nanx = isnan(ch.yre); t1 = 1:numel(ch.yre); ch.yre(nanx) = interp1(t1(~nanx), ch.yre(~nanx), t1(nanx), 'pchip');
+end
+
+%% detect time points of fixation onsets
 fixateduration = prs.fixateduration; fixate_thresh = prctile(de_smooth,90); % set thresh to 90th prctile
 fixateduration_samples = round(fixateduration/dt);
 fixateindx = false(1,numel(ts) - round(2*fixateduration/dt));
@@ -111,16 +150,6 @@ for i=1:(numel(ts) - round(2*fixateduration/dt))
 end
 fixation_switch = diff(fixateindx);
 t.fix = ts(fixation_switch>0);
-
-%% replace the broken eye coil (if any) with NaNs
-if var(ch.zle) < 10 || var(ch.zle) > 1000
-    ch.zle(:) = nan;
-    ch.yle(:) = nan;
-end
-if var(ch.zre) < 10 || var(ch.zre) > 1000
-    ch.zre(:) = nan;
-    ch.yre(:) = nan;
-end
 
 %% refine t.beg to ensure it corresponds to target onset
 jitter = prs.jitter_marker;

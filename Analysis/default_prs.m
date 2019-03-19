@@ -13,6 +13,7 @@ prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
 prs.electrode = monkeyInfo.electrode;
 prs.comments = monkeyInfo.comments;
+prs.eyechannels = monkeyInfo.eyechannels;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
@@ -198,7 +199,7 @@ prs.readout_varname = {'dv','dw'};
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = false; % regress response against target position
+prs.regress_behv = true; % regress response against target position
 prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
