@@ -8,7 +8,7 @@ nt = length(lfp);
 ts = dt*(1:nt);
 
 %% filter LFP
-[b,a] = butter(2,[prs.lfp_freqmin 75]/(fs/2));
+[b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin 75]/(fs/2));
 lfp = filtfilt(b,a,lfp);
 
 %% trials (raw)

@@ -1,12 +1,9 @@
 %% add lfps
 function AddLfps(this,prs)
     cd(prs.filepath_neur);
-    file_ead=dir('*_ead.plx');
-    file_lfp=dir('*_lfp.plx');
-    file_nev=dir('*.nev');
-    file_ns1=dir('*.ns1');
-    file_ns6=dir('*.ns6');
-    if ~isempty(file_lfp) && ~isempty(file_ead)  % lfp + ead
+    file_ead=dir('*_ead.plx'); file_nev=dir('*.nev'); % possible event files
+    file_lfp=dir('*_lfp.plx'); file_ns1=dir('*.ns1'); file_ns6=dir('*.ns6'); % possible lfp files
+    if ~isempty(file_lfp) && ~isempty(file_ead)  % read (lfp + ead) if using Plexon
         % read events
         fprintf(['... reading events from ' file_ead.name '\n']);
         [events_plx, fs] = GetEvents_plx(file_ead.name);
@@ -36,8 +33,8 @@ function AddLfps(this,prs)
                 ' , SMR file - ' num2str(length(this.behaviours.trials)) '\n']);
             fprintf('Debug and try again! \n');
         end
-    elseif (~isempty(file_ns1) || ~isempty(file_ns6)) && ~isempty(file_nev) % ns1/ns6 + nev
-        if ~isempty(file_ns1), file_lfp = file_ns1; else, file_lfp = file_ns6; end
+    elseif (~isempty(file_ns1) || ~isempty(file_ns6)) && ~isempty(file_nev) % read (ns1/ns6 + nev) if using Cereplex
+        if ~isempty(file_ns1), file_lfp = file_ns1; else, file_lfp = file_ns6; prs.lfp_filtorder = 2; end % higher-order filter fails with ns6
         fprintf(['... reading events from ' file_nev.name '\n']);
         [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK
         if length(this.behaviours.trials)~=length(events_nev.t_end)
