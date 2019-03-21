@@ -159,6 +159,20 @@ switch plot_type
         plot(pCorrect_shuffled_mu,pCorrect,'k');
         xlabel('Shuffled accuracy'); ylabel('Actual accuracy');
         lessticks('x'); lessticks('y');
+    case 'trajectories_movie'
+        x_targ = behv.stats.pos_rel.x_targ(~crazy); x_targ = cellfun(@(x) x(find(~isnan(x),1):end), x_targ, 'UniformOutput', false);
+        y_targ = behv.stats.pos_rel.y_targ(~crazy); y_targ = cellfun(@(x) x(find(~isnan(x),1):end), y_targ, 'UniformOutput', false);
+        Nt_max = max(cellfun(@(x) length(x),x_targ));
+        x_targ = cell2matbyforce(x_targ,Nt_max,'last'); x_targ = x_targ(1:end-50,:);
+        y_targ = cell2matbyforce(y_targ,Nt_max,'last'); y_targ = y_targ(1:end-50,:);
+        Nt = size(x_targ,1);
+        count = 0;
+        for k = 1:10:Nt
+            count = count + 1;
+            plot(x_targ(k,:), y_targ(k,:),'.k'); axis([-400 400 -400 400]); set(gca,'Color','k'); hline(0,'r'); vline(0,'r'); axis off;
+            F(count) = getframe;
+        end
+        z=1;
     case 'saccade'
         trials = behv.trials(~crazy);        
         for i=1:length(trials)

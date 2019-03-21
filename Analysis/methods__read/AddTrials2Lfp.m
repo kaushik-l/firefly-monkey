@@ -3,13 +3,16 @@ function [trials, stationary, mobile, eyesfixed, eyesfree, eyesfree_mobile, eyes
 ntrls = length(trialevents.t_end);
 trials(ntrls) = struct(); 
 stationary(ntrls) = struct(); mobile(ntrls) = struct();
-dt = 1/fs;
-nt = length(lfp);
-ts = dt*(1:nt);
 
 %% filter LFP
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin 75]/(fs/2));
 lfp = filtfilt(b,a,lfp);
+if fs > prs.fs_lfp, N = round(fs/prs.fs_lfp); lfp = downsample(lfp,N); end
+
+%%
+dt = 1/prs.fs_lfp;
+nt = length(lfp);
+ts = dt*(1:nt);
 
 %% trials (raw)
 trials(ntrls) = struct();

@@ -195,7 +195,7 @@ prs.readout_varname = {'dv','dw'};
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = false; % regress response against target position
+prs.regress_behv = true; % regress response against target position
 prs.regress_eye = false; % regress eye position against target position
 prs.eye_distr = false; % plot eye vel distribution for all trials in a session.
 
