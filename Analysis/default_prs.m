@@ -76,6 +76,7 @@ prs.sta_window = [-1 1]; % time-window of STA
 prs.duration_nanpad = 1; % nans to pad to end of trial before concatenating (s)
 prs.phase_slidingwindow = 0.05:0.05:2; % time-lags for computing time-varying spike phase (s)
 prs.num_phasebins = 25; % divide phase into these many bins
+prs.eventtriggeredepochlength = 2; % number of seconds around event
 
 % time window for psth of event aligned responses
 prs.temporal_binwidth = 0.02; % time binwidth for neural data analysis (s)
@@ -169,7 +170,7 @@ prs.bootstrap_trl = 50; % number of trials to bootstrap
 % *specify methods and variables for analyses (fewer => faster obvisously)*
 %% traditional methods
 prs.hand_features = {'Finger1','Finger2','Finger3','Finger4','Wrist-down','Wrist-up','Hand-down','Hand-up'};
-prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
+prs.tuning_events = {'move','target','stop','reward','fixate','saccade'}; % discrete events - choose from elements of event_vars (above)
 prs.tuning_continuous = {'v','w','eye_ver','eye_hor'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
@@ -195,7 +196,7 @@ prs.readout_varname = {'dv','dw'};
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = true; % regress response against target position
+prs.regress_behv = false; % regress response against target position
 prs.regress_eye = false; % regress eye position against target position
 prs.eye_distr = false; % plot eye vel distribution for all trials in a session.
 
@@ -215,12 +216,17 @@ prs.regress_popreadout = false; % regress population activity against individual
 prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% LFP
-prs.event_potential = false;
+prs.event_potential = true;
+
 prs.compute_spectrum = true;
+prs.analyse_eventtriggeredlfp = true;
+prs.analyse_trialperiods = true;
+prs.analyse_lfpepochs = true; % extract and analyse lfp for epochs (mobile,stationary,eyes_moving,eyes_fixed etc.)
+
 prs.analyse_theta = true;
 prs.analyse_beta = true;
 prs.compute_coherencyLFP = true;
-prs.extract_motion_states= true; % extract lfp for different states (v,w,eye_move, eye_fix)
+
 %% Spike-LFP
 prs.analyse_spikeLFPrelation = false;
 prs.analyse_spikeLFPrelation_allLFPs = false; % spike-LFP for LFPs from all electrodes

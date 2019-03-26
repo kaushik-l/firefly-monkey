@@ -1,4 +1,4 @@
-function [shiftedtrials_lfp, shiftedtrials_ts] = ShiftLfps(trials,continuous,eventtimes)
+function [shiftedtrials_lfp, shiftedtrials_ts] = ShiftLfps(trials,continuous,eventtimes,fieldname)
 % shifts spike trains by eventtimes - used to align spike trains to events
 
 %% check if there as as many event times as there are trials
@@ -18,8 +18,8 @@ shiftedtrials(ntrls) = struct();
 for i=1:length(trials)
     indx = find(ts > continuous(i).ts(1),1)-1;
     shiftlen = round(eventtimes(i)/dt);
-    shiftedtrials(i).lfp = nan(4*nt,1);
-    if ~isnan(shiftlen), shiftedtrials(i).lfp(indx-shiftlen : indx+length(trials(i).lfp)-1 - shiftlen) = trials(i).lfp; end
+    shiftedtrials(i).(fieldname) = nan(4*nt,1);
+    if ~isnan(shiftlen), shiftedtrials(i).(fieldname)(indx-shiftlen : indx+length(trials(i).(fieldname))-1 - shiftlen) = trials(i).(fieldname); end
 end
-shiftedtrials_lfp = cell2mat({shiftedtrials.lfp});
+shiftedtrials_lfp = cell2mat({shiftedtrials.(fieldname)});
 shiftedtrials_ts = ts;

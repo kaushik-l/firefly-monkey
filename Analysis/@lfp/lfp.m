@@ -4,14 +4,7 @@ classdef lfp < handle
         channel_id
         electrode_id
         trials
-        stationary
-        mobile
-        eyesfixed
-        eyesfree
-        eyesfree_mobile
-        eyesfree_stationary
-        eyesfixed_mobile
-        eyesfixed_stationary
+        epochs
         stats
     end
     %%

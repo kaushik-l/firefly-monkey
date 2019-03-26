@@ -191,26 +191,33 @@ if prs.regress_behv
     trialtypes = fields(stats.trialtype);
     for i=1:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
-            trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
-            if sum(trlindx) > mintrialsforstats
-                fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
-                % regression without intercept
-                [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
-                [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
-                stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
-                % regression with intercept
-                [pos_regress2.beta_r, pos_regress2.alpha_r, pos_regress2.betaCI_r, pos_regress2.alphaCI_r, pos_regress2.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 1);
-                [pos_regress2.beta_theta, pos_regress2.alpha_theta, pos_regress2.betaCI_theta, pos_regress2.alphaCI_theta, pos_regress2.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 1);
-                stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = pos_regress2;
-                % ROC
-                [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
-                    [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,npermutations);
-                stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).pos_regress = stats.trialtype.all.pos_regress;
+                stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = stats.trialtype.all.pos_regress_intercept;
+                stats.trialtype.(trialtypes{i})(j).accuracy = stats.trialtype.all.accuracy;
             else
-                stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
-                stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;
-                stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+                trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+                if sum(trlindx) > mintrialsforstats
+                    fprintf(['.........regression & ROC analysis :: trialtype: ' stats.trialtype.(trialtypes{i})(j).val '\n']);
+                    % regression without intercept
+                    [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
+                    [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
+                    stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
+                    % regression with intercept
+                    [pos_regress2.beta_r, pos_regress2.alpha_r, pos_regress2.betaCI_r, pos_regress2.alphaCI_r, pos_regress2.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 1);
+                    [pos_regress2.beta_theta, pos_regress2.alpha_theta, pos_regress2.betaCI_theta, pos_regress2.alphaCI_theta, pos_regress2.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 1);
+                    stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = pos_regress2;
+                    % ROC
+                    [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
+                        [rf_monk(trlindx)' (pi/180)*thetaf_monk(trlindx)'],maxrewardwin,npermutations);
+                    stats.trialtype.(trialtypes{i})(j).accuracy = accuracy;
+                else
+                    stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
+                    stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;
+                    stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+                end
             end
         end
     end

@@ -1,4 +1,4 @@
-function [trl,st] = AddSMRData(data,prs)
+function [trl,epochs] = AddSMRData(data,prs)
 
 %% check channel headers
 nch = length(data);
@@ -117,8 +117,7 @@ else
 end
 
 %%
-v_eye_vel = dze/dt; 
-h_eye_vel = dye/dt;
+v_eye_vel = dze/dt; h_eye_vel = dye/dt;
 de = sqrt(dze.^2 + dye.^2); % speed of eye movement
 de_smooth = conv(de,h,'same')/dt;
 
@@ -155,7 +154,7 @@ t.fix = ts(fixation_switch>0);
 eyemove_thresh = prs.eyemove_thresh;
 eyemoveindx = (de_smooth > eyemove_thresh);
 eyemoving_indx = [eyemoveindx ; eyemoveindx(end)];
-st.ts_move = ts;
+epochs.ts = ts;
 
 %% refine t.beg to ensure it corresponds to target onset
 jitter = prs.jitter_marker;
@@ -181,67 +180,50 @@ end
 t_beg_correction = t.beg - t_beg_original;
 
 
-%% detect start-of-movement and end-of-movement times for each trial for v  
-v_thresh = prs.v_thresh;
-v_time2thresh = prs.v_time2thresh;
-v = ch.v;
+%% detect start-of-movement and end-of-movement times for each trial using v and w  
+v_thresh = prs.v_thresh; w_thresh = prs.w_thresh;
+v = ch.v; w = ch.w;
 for j=1:length(t.end)
     % start-of-movement
-    if j==1, t.move_v(j) = t.beg(j); % first trial is special because there is no pre-trial period
+    if j==1, t.move(j) = t.beg(j);% first trial is special because there is no pre-trial period
     else
-        indx = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
-        if ~isempty(indx), t.move_v(j) = t.end(j-1) + indx*dt;
-        else, t.move_v(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
+        indx_v = find(v(ts>t.end(j-1) & ts<t.end(j)) > v_thresh,1); % first upward threshold-crossing
+        indx_w = find(abs(w(ts>t.end(j-1) & ts<t.end(j))) > w_thresh,1); % first upward threshold-crossing
+        if ~isempty(indx_v) && ~isempty(indx_w), t.move(j) = t.end(j-1) + min(indx_v,indx_w)*dt;
+        elseif ~isempty(indx_v), t.move(j) = t.end(j-1) + indx_v*dt;
+        elseif ~isempty(indx_w), t.move(j) = t.end(j-1) + indx_w*dt;
+        else, t.move(j) = t.beg(j);  % if monkey never moved, set movement onset = target onset
+        end
     end
     % end-of-movement
-    indx = find(v(ts>t.move_v(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
-    if ~isempty(indx), t.stop_v(j) = t.move_v(j) + indx*dt;
-    else, t.stop_v(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
+    indx_v = find(v(ts>t.move(j) & ts<t.end(j)) < v_thresh,1); % first downward threshold-crossing
+    indx_w = find(abs(w(ts>t.move(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
+    if ~isempty(indx_v) && ~isempty(indx_w), t.stop(j) = t.move(j) + max(indx_v,indx_w)*dt;
+    elseif ~isempty(indx_v), t.stop(j) = t.move(j) + indx_v*dt;
+    elseif ~isempty(indx_w), t.stop(j) = t.move(j) + indx_w*dt;
+    else, t.stop(j) = t.end(j);  % if monkey never stopped, set movement end = trial end
+    end
     % if monkey stopped prematurely, set movement end = trial end
-    if (t.stop_v(j)<t.beg(j) || (t.stop_v(j)-t.move_v(j))<prs.mintrialduration), t.stop_v(j) = t.end(j); end
+    if (t.stop(j)<t.beg(j) || (t.stop(j)-t.move(j))<prs.mintrialduration), t.stop(j) = t.end(j); end
 end
 
 % get periods of movement for the whole experiment.
-v_moveindx = double(v>v_thresh);
+monkmoving_indx = (v>v_thresh) | (abs(w)>w_thresh);
 
-%% detect start-of-movement and end-of-movement times for each trial for w   
-w_thresh = prs.w_thresh;
-w = ch.w;
-for j=1:length(t.end)
-    % start-of-movement
-    if j==1, t.move_w(j) = t.beg(j); % first trial is special because there is no pre-trial period
-    else
-        indx = find(abs(w(ts>t.end(j-1) & ts<t.end(j))) > w_thresh,1); % first upward threshold-crossing
-        if ~isempty(indx), t.move_w(j) = t.end(j-1) + indx*dt;
-        else, t.move_w(j) = t.beg(j); end % if monkey never moved, set movement onset = target onset
-    end
-    % end-of-movement
-    indx = find(abs(w(ts>t.move_w(j) & ts<t.end(j))) < w_thresh,1); % first downward threshold-crossing
-    if ~isempty(indx), t.stop_w(j) = t.move_w(j) + indx*dt;
-    else, t.stop_w(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
-    % if monkey stopped prematurely, set movement end = trial end
-    if (t.stop_w(j)<t.beg(j) || (t.stop_w(j)-t.move_w(j))<prs.mintrialduration), t.stop_w(j) = t.end(j); end
-end
-w_moveindx = double(w>w_thresh);
-monkmoving_indx = v_moveindx | w_moveindx;
-
-
-%% Extract combinations (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)  with eye coil
-free_indx = eyemoving_indx; st.free_sMarkers = RemoveShortEpochs(free_indx, prs.spectrum_minwinlength,dt);
-fixed_indx = ~eyemoving_indx; st.fixed_sMarkers = RemoveShortEpochs(fixed_indx, prs.spectrum_minwinlength,dt);
-free_mobile_indx = eyemoving_indx & monkmoving_indx; st.free_mobile_sMarkers = RemoveShortEpochs(free_mobile_indx, prs.spectrum_minwinlength,dt);
-fixed_mobile_indx = ~eyemoving_indx & monkmoving_indx; st.fixed_mobile_sMarkers = RemoveShortEpochs(fixed_mobile_indx, prs.spectrum_minwinlength,dt);
-free_stationary_indx = eyemoving_indx & ~monkmoving_indx; st.free_stationary_sMarkers = RemoveShortEpochs(free_stationary_indx, prs.spectrum_minwinlength,dt);
-fixed_stationary_indx = ~eyemoving_indx & ~monkmoving_indx; st.fixed_stationary_sMarkers= RemoveShortEpochs(fixed_stationary_indx, prs.spectrum_minwinlength,dt);
+%% Identify epochs (eye+ mobile, eye- mobile, eye+ stationary, eye- stationary)
+epochs.free = RemoveShortEpochs(eyemoving_indx, prs.spectrum_minwinlength,dt);
+epochs.fixed = RemoveShortEpochs(~eyemoving_indx, prs.spectrum_minwinlength,dt);
+epochs.free_mobile = RemoveShortEpochs(eyemoving_indx & monkmoving_indx, prs.spectrum_minwinlength,dt);
+epochs.fixed_mobile = RemoveShortEpochs(~eyemoving_indx & monkmoving_indx, prs.spectrum_minwinlength,dt);
+epochs.free_stationary = RemoveShortEpochs(eyemoving_indx & ~monkmoving_indx, prs.spectrum_minwinlength,dt);
+epochs.fixed_stationary= RemoveShortEpochs(~eyemoving_indx & ~monkmoving_indx, prs.spectrum_minwinlength,dt);
 
 %% extract trials and downsample for storage
 dt_original = dt;
 dt = dt*prs.factor_downsample;
 for j=1:length(t.end)
-    % get first movement (either v or w) and use that index to determine onset
-    t.move(j) = min([t.move_v(j) t.move_w(j)]);
     % define pretrial period
-    pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first  %%% Eric
+    pretrial = max(t.beg(j) - t.move(j),0) + prs.pretrial; % extract everything from "movement onset - pretrial" or "target onset - pretrial" - whichever is first
     posttrial = prs.posttrial; % extract everything until "t_end + posttrial"
     for i=1:length(chnames)
         if ~any(strcmp(chnames{i},'mrk'))
@@ -256,8 +238,8 @@ for j=1:length(t.end)
     trl(j).continuous.firefly = trl(j).continuous.ts>=0 & trl(j).continuous.ts<(0+prs.fly_ONduration);
     trl(j).events.t_beg = t.beg(j);
     trl(j).events.t_end = t.end(j);
-    trl(j).events.t_move = t.move(j);   %%% Eric
-    trl(j).events.t_stop = max([t.stop_v(j) t.stop_w(j)]);   %%% Eric
+    trl(j).events.t_move = t.move(j);
+    trl(j).events.t_stop = t.stop(j);
     % saccade time
     trl(j).events.t_sac = t.saccade(t.saccade>(t.beg(j)-pretrial) & t.saccade<t.end(j));
     % fixation start times
@@ -291,14 +273,20 @@ for i=1:length(trl)
     trl(i).events.t_beg = trl(i).events.t_beg - exp_beg;
     trl(i).events.t_rew = trl(i).events.t_rew - exp_beg - trl(i).events.t_beg; % who cares about absolute time?!
     trl(i).events.t_end = trl(i).events.t_end - exp_beg - trl(i).events.t_beg;
-    trl(i).events.t_sac = trl(i).events.t_sac - exp_beg - trl(i).events.t_beg;
-    trl(i).events.t_fix = trl(i).events.t_fix - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_sac = trl(i).events.t_sac(:) - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_fix = trl(i).events.t_fix(:) - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_targ = 0;
     trl(i).events.t_beg_correction = t_beg_correction(i);
 end
+epochs.free = epochs.free - exp_beg;
+epochs.fixed = epochs.fixed - exp_beg;
+epochs.free_mobile = epochs.free_mobile - exp_beg;
+epochs.fixed_mobile = epochs.fixed_mobile - exp_beg;
+epochs.free_stationary = epochs.free_stationary - exp_beg;
+epochs.fixed_stationary = epochs.fixed_stationary - exp_beg;
 
 %% downsample continuous data
 for i=1:length(chnames)

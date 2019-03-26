@@ -1,7 +1,7 @@
-function [trials,states] = AddTrials2Behaviour(prs)
+function [trials,epochs] = AddTrials2Behaviour(prs)
 
 trials = []; % initialise
-states = [];
+epochs = [];
 
 %% list all files to read
 flist_log=dir('*.log'); 
@@ -23,9 +23,9 @@ for i=1:nfiles
     trials_smr = [];
     for j = indx_smr
         data_smr = ImportSMR(flist_smr(j).name);
-        [trl_smr, st] = AddSMRData(data_smr,prs);
+        [trl_smr, ep] = AddSMRData(data_smr,prs);
         trials_smr = [trials_smr trl_smr];
-        states = [states st]; 
+        epochs = [epochs ep]; 
     end
     % merge contents of .log and .smr files
     ntrls_log = length(trials_log); ntrls_smr = length(trials_smr);

@@ -3,7 +3,7 @@ classdef behaviour < handle
     properties
         comments
         trials
-        states
+        epochs
         stats
     end    
     %%

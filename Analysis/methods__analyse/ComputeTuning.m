@@ -17,7 +17,8 @@ else % any other data
     temporal_binwidth = 1;
 end
 lags = round(corr_lag/temporal_binwidth);
-[c,lags]=xcorr(zscore(xt_pad),zscore(yt_pad),lags,'coeff'); % normalise E[z(x)*z(y)] by sqrt(R_xx(0)*R_yy(0))
+nanindx = (isnan(xt_pad) | isnan(yt_pad)); xt_pad = xt_pad(~nanindx); yt_pad = yt_pad(~nanindx);
+[c,lags]=xcorr(zscore(abs(xt_pad)),zscore(abs(yt_pad)),lags,'coeff'); % normalise E[z(x)*z(y)] by sqrt(R_xx(0)*R_yy(0))
 tuningstats.xcorr.val = c;
 tuningstats.xcorr.lag = lags*temporal_binwidth;
 
