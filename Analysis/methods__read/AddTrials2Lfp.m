@@ -1,7 +1,7 @@
 function [trials_lfp, epochs_lfp] = AddTrials2Lfp(lfp,fs,trialevents,behv,prs)
 
 ntrls = length(trialevents.t_end);
-trials_lfp(ntrls) = struct(); 
+trials_lfp(ntrls) = struct();
 
 %% filter LFP
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin 75]/(fs/2));
@@ -20,7 +20,7 @@ for i=1:ntrls
         t_beg = trialevents.t_beg(i) + behv.trials(i).events.t_beg_correction; % correction aligns t_beg with target onset
         t1 = behv.trials(i).continuous.ts(1); % read lfp from first behavioural sample of trial i
         t2 = behv.trials(i).continuous.ts(end); % till last behavioural sample of trial i
-        lfp_raw = lfp(ts > (t_beg + t1) & ts < (t_beg + t2)); 
+        lfp_raw = lfp(ts > (t_beg + t1) & ts < (t_beg + t2));
         t_raw = linspace(t1,t2,length(lfp_raw));
         trials_lfp(i).lfp = interp1(t_raw,lfp_raw,behv.trials(i).continuous.ts,'linear'); % resample to match behavioural recording
     else
@@ -43,7 +43,6 @@ for i=1:ntrls
         trials_lfp(i).lfp_theta = nan(length(behv.trials(i).continuous.ts),1);
     end
 end
-
 
 %% trials (beta-band analytic form)
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_beta(1) prs.lfp_beta(2)]/(fs/2));
@@ -96,6 +95,25 @@ if prs.analyse_lfpepochs
         end
     end
     
+    %% check number of file start events
+    epochs_behv = behv.epochs; nfiles = numel(epochs_behv);
+    if nfiles ~= numel(trialevents.t_start)
+        if nfiles - numel(trialevents.t_start) == 1
+            firstavailabletrial = find(trialevents.t_beg>0,1);
+            t_beg = behv.trials(firstavailabletrial).events.t_beg;
+            trialevents.t_start = [trialevents.t_beg(firstavailabletrial) trialevents.t_start];
+            epochs_behv(1).free = epochs_behv(1).free - t_beg; epochs_behv(1).free(epochs_behv(1).free(:,1)<0,:) = [];
+            epochs_behv(1).fixed = epochs_behv(1).fixed - t_beg; epochs_behv(1).fixed(epochs_behv(1).fixed(:,1)<0,:) = [];
+            epochs_behv(1).free_mobile = epochs_behv(1).free_mobile - t_beg; epochs_behv(1).free_mobile(epochs_behv(1).free_mobile(:,1)<0,:) = [];
+            epochs_behv(1).fixed_mobile = epochs_behv(1).fixed_mobile - t_beg; epochs_behv(1).fixed_mobile(epochs_behv(1).fixed_mobile(:,1)<0,:) = [];
+            epochs_behv(1).free_stationary = epochs_behv(1).free_stationary - t_beg; epochs_behv(1).free_stationary(epochs_behv(1).free_stationary(:,1)<0,:) = [];
+            epochs_behv(1).fixed_stationary = epochs_behv(1).fixed_stationary - t_beg; epochs_behv(1).fixed_stationary(epochs_behv(1).fixed_stationary(:,1)<0,:) = [];
+            fprintf('**************added a trialevent to the neural data file*****************\n');
+        else
+            error('number of start events in nev file differs from the number of smr files');
+        end
+    end
+    
     %% eye move
     epochs_behv = behv.epochs; nfiles = numel(epochs_behv);
     sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
@@ -110,7 +128,6 @@ if prs.analyse_lfpepochs
     %% eye fixed
     epochs_behv = behv.epochs; nfiles = numel(epochs_behv);
     sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
-    if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
     for i = 1:nfiles, if ~isempty(epochs_behv(i).fixed), sMarkers = [sMarkers ; epochs_behv(i).fixed + trialevents.t_start(i)];end, end
     if ~isempty(sMarkers), epochs_lfp.eyesfixed(size(sMarkers,1)) = struct();
         % extract lfp between sMarkers
@@ -118,7 +135,7 @@ if prs.analyse_lfpepochs
     else
         epochs_lfp.eyesfixed.lfp = [];
     end
-        
+    
     %% eye move + mobile
     epochs_behv = behv.epochs; nfiles = numel(epochs_behv);
     sMarkers = []; if nfiles ~= numel(trialevents.t_start), nfiles = numel(trialevents.t_start); end
