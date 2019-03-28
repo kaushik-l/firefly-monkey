@@ -57,6 +57,8 @@ prs.fixateduration = 0.75; % length of fixation epochs (s)
 prs.fixate_thresh = 4; % max eye velocity during fixation (deg/s)
 prs.ptb_sigma = 1/6; % width of the gaussian func for ptb (s)
 prs.ptb_duration = 1; % duration fo ptb (s)
+prs.blink_thresh = 50; % threshold to remove eye blinks
+prs.nanpadding = 5; % 
 
 % lfp
 prs.lfp_filtorder = 4;
@@ -200,7 +202,7 @@ prs.readout_varname = {'dv','dw'};
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = true; % regress response against target position
-prs.regress_eye = false; % regress eye position against target position
+prs.regress_eye = true; % regress eye position against target position
 
 %% spikes
 % traditional methods

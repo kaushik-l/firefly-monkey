@@ -42,6 +42,7 @@ t.end = t.events(markers ==3);
 t.reward = t.events(markers ==4);
 t.beg = t.beg(1:length(t.end));
 t.ptb = t.events(markers==5 | markers==8);
+t.microstim = t.events(markers==32);
 
 %% define filter
 sig = prs.filtwidth; %filter width
@@ -238,6 +239,14 @@ for j=1:length(t.end)
         trl(j).logical.ptb = false;
         trl(j).events.t_ptb = nan;
     end
+    % microstimulation time
+    if any(t.microstim>t.beg(j) & t.microstim<t.end(j))
+        trl(j).logical.microstim = true;
+        trl(j).events.t_microstim = t.microstim(t.microstim>t.beg(j) & t.microstim<t.end(j));
+    else
+        trl(j).logical.microstim = false;
+        trl(j).events.t_microstim = nan;
+    end
 end
 
 %% timestamps referenced relative to exp_beg
@@ -253,6 +262,7 @@ for i=1:length(trl)
     trl(i).events.t_move = trl(i).events.t_move - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_stop = trl(i).events.t_stop - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_ptb = trl(i).events.t_ptb - exp_beg - trl(i).events.t_beg;
+    trl(i).events.t_microstim = trl(i).events.t_microstim - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_targ = 0;
     trl(i).events.t_beg_correction = t_beg_correction(i);
 end

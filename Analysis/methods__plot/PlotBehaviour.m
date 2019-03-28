@@ -647,4 +647,46 @@ switch plot_type
         xlabel('Timing of ptb onset rel. to end-of-movement (s)');
         set(gca, 'YTick', [0 100 200], 'YTickLabel', [0 100 200]);
         ylabel('Behavioural error (cm/s)'); set(gca,'YScale','log');
+    case 'microstim'
+        figure; hold on;
+        
+        subplot(2,2,1); hold on;
+        trlindx = stats.trialtype.microstim(1).trlindx; plot(r_fly(trlindx), rf_monk(trlindx),'.b');
+        trlindx = stats.trialtype.microstim(2).trlindx; plot(r_fly(trlindx), rf_monk(trlindx),'.r');
+        plot(0:500,0:500,'--k'); axis([0 500 0 500]);
+        xlabel('Target distance (cm)'); ylabel('Response distance (cm)');
+        legend('no stim','stim','Fontsize',16);
+        
+        subplot(2,2,2); hold on;
+        trlindx = stats.trialtype.microstim(1).trlindx; plot(theta_fly(trlindx), thetaf_monk(trlindx),'.b');
+        trlindx = stats.trialtype.microstim(2).trlindx; plot(theta_fly(trlindx), thetaf_monk(trlindx),'.r');
+        plot(-40:40,-40:40,'--k'); hline(0,'-k'); vline(0,'-k'); axis([-40 40 -40 40]);
+        xlabel('Target angle (cm)'); ylabel('Response angle (cm)');
+        
+        subplot(2,2,3); hold on;
+        plot(stats.trialtype.microstim(1).accuracy.pcorrect_shuffled_mu,stats.trialtype.microstim(1).accuracy.pCorrect,'b','linewidth',2);
+        plot(stats.trialtype.microstim(2).accuracy.pcorrect_shuffled_mu,stats.trialtype.microstim(2).accuracy.pCorrect,'r','linewidth',2);
+        plot(0:1,0:1,'--k');
+        xlabel('Probability correct (Shuffled)'); ylabel('Probability correct (True)');
+        
+        subplot(2,2,4); hold on;
+        indx25 = find(stats.trialtype.microstim(1).errdist.F > 0.25,1);
+        indx50 = find(stats.trialtype.microstim(1).errdist.F > 0.5,1);
+        indx75 = find(stats.trialtype.microstim(1).errdist.F > 0.75,1);
+        plot(1, stats.trialtype.microstim(1).errdist.FX(indx50),'ob','MarkerFaceColor','b');
+        h = errorbar(1, stats.trialtype.microstim(1).errdist.FX(indx50),...
+            stats.trialtype.microstim(1).errdist.FX(indx50)-stats.trialtype.microstim(1).errdist.FX(indx25),...
+            stats.trialtype.microstim(1).errdist.FX(indx75)-stats.trialtype.microstim(1).errdist.FX(indx50));
+        h.CapSize = 0;
+        indx25 = find(stats.trialtype.microstim(2).errdist.F > 0.25,1);
+        indx50 = find(stats.trialtype.microstim(2).errdist.F > 0.5,1);
+        indx75 = find(stats.trialtype.microstim(2).errdist.F > 0.75,1);
+        plot(2, stats.trialtype.microstim(2).errdist.FX(indx50),'or','MarkerFaceColor','r');
+        h = errorbar(2, stats.trialtype.microstim(2).errdist.FX(indx50),...
+            stats.trialtype.microstim(2).errdist.FX(indx50)-stats.trialtype.microstim(2).errdist.FX(indx25),...
+            stats.trialtype.microstim(2).errdist.FX(indx75)-stats.trialtype.microstim(2).errdist.FX(indx50));
+        h.CapSize = 0;
+        axis([0 3 0 60]);
+        set(gca,'XTick',1:2,'XTickLabel',{'no stim','stim'});
+        xlabel('Trial group'); ylabel('Final distance from target (cm)');
 end

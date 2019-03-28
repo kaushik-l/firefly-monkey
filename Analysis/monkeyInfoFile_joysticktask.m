@@ -5627,3 +5627,16 @@ monkeyInfo (end).folder = 'Schro\Utah Array\Apr 24 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
 monkeyInfo (end).electrode = 'utah2x48';
 monkeyInfo (end).eyechannels = [2 2];
+
+%% session 99
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 99;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\Stimulation\Mar 25 2019';
+monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
+monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).eyechannels = [2 2];
