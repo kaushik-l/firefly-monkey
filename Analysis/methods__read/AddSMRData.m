@@ -232,7 +232,7 @@ for j=1:length(t.end)
         trl(j).events.t_rew = nan;
     end
     % ptb time
-    if any(t.ptb>t.beg(j) & t.ptb<t.end(j))
+    if any(t.ptb>t.beg(j) & t.ptb<t.end(j)) && ~(numel(t.microstim) == numel(t.ptb)) % cannot perturb and stimulate simultaneously
         trl(j).logical.ptb = true;
         trl(j).events.t_ptb = t.ptb(t.ptb>t.beg(j) & t.ptb<t.end(j));
     else

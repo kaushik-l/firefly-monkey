@@ -186,16 +186,27 @@ if prs.regress_eye
     yfp_rel = {continuous.yfp_rel};
     zle = {continuous.zle}; yle = {continuous.yle};
     zre = {continuous.zre}; yre = {continuous.yre};
-    t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts};
+    t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts}; t_microstim = [events.t_microstim];
     trialtypes = fields(stats.trialtype);
-    for i=5%:length(trialtypes)
+    for i=1:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
-            trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
-            stats.trialtype.(trialtypes{i})(j).eye_fixation = ...
-                AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),ts(trlindx),prs);
-            stats.trialtype.(trialtypes{i})(j).eye_movement = ...
-                AnalyseEyemovement(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).eye_fixation = stats.trialtype.all.eye_fixation;
+                stats.trialtype.(trialtypes{i})(j).eye_movement = stats.trialtype.all.eye_movement;
+            else
+                trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+                stats.trialtype.(trialtypes{i})(j).eye_fixation = ...
+                    AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),ts(trlindx),prs);
+                stats.trialtype.(trialtypes{i})(j).eye_movement = ...
+                    AnalyseEyemovement(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+                %do this for microstimulation trials only
+                if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with microstimulation')
+                    [stats.trialtype.(trialtypes{i})(j).stimtriggered.ts,stats.trialtype.(trialtypes{i})(j).stimtriggered.eye_movement] = ...
+                        AnalyseEyemovementMicrostim(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),t_microstim(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+                end
+            end
         end
     end
 end
@@ -203,7 +214,7 @@ end
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=5%1:length(trialtypes)
+    for i=1:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -232,27 +243,30 @@ if prs.regress_behv
                     [errdist.P,errdist.PX] = hist(abs(rf_monk(trlindx) - r_fly(trlindx)),25); errdist.P = errdist.P/sum(errdist.P);
                     stats.trialtype.(trialtypes{i})(j).errdist = errdist;
                     %do this for perturbation trials only
-%                     if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
-%                         trialparams_temp = trialparams(trlindx);
-%                         ptb_maxlinvel = [trialparams_temp.ptb_linear]; ptb_maxangvel = [trialparams_temp.ptb_angular];
-%                         ptb_delay = [events(trlindx).t_ptb];
-%                         [ptbdist.x, ptbdist.y] = ComputePtbDisplacement(ptb_maxlinvel,ptb_maxangvel,prs.ptb_sigma,prs.ptb_duration);
-%                         errdist.x = xf_monk(trlindx) - x_fly(trlindx); errdist.y = yf_monk(trlindx) - y_fly(trlindx);
-%                         stats.trialtype.(trialtypes{i})(j).ptbdist = ptbdist;
-%                         stats.trialtype.(trialtypes{i})(j).errdist = errdist;
-%                         stats.trialtype.(trialtypes{i})(j).ptbtimefromstart = ptb_delay;
-%                         t_stop = [events.t_stop]; stats.trialtype.(trialtypes{i})(j).ptbtimefromstop = t_stop(trlindx) - ptb_delay;
-%                         [ptb_linvel,ptb_angvel] = PtbTriggeredAverage({continuous(trlindx).v},{continuous(trlindx).w},{continuous(trlindx).ts},ptb_maxlinvel,ptb_maxangvel,ptb_delay);
-%                         stats.trialtype.(trialtypes{i})(j).linvel = ptb_linvel;
-%                         stats.trialtype.(trialtypes{i})(j).angvel = ptb_angvel;
-%                     end
+                    if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
+                        trialparams_temp = trialparams(trlindx);
+                        ptb_maxlinvel = [trialparams_temp.ptb_linear]; ptb_maxangvel = [trialparams_temp.ptb_angular];
+                        ptb_delay = [events(trlindx).t_ptb];
+                        [ptbdist.x, ptbdist.y] = ComputePtbDisplacement(ptb_maxlinvel,ptb_maxangvel,prs.ptb_sigma,prs.ptb_duration);
+                        errdist.x = xf_monk(trlindx) - x_fly(trlindx); errdist.y = yf_monk(trlindx) - y_fly(trlindx);
+                        stats.trialtype.(trialtypes{i})(j).ptbdist = ptbdist;
+                        stats.trialtype.(trialtypes{i})(j).errdist = errdist;
+                        stats.trialtype.(trialtypes{i})(j).ptbtimefromstart = ptb_delay;
+                        t_stop = [events.t_stop]; stats.trialtype.(trialtypes{i})(j).ptbtimefromstop = t_stop(trlindx) - ptb_delay;
+                        [ptb_linvel,ptb_angvel] = PtbTriggeredAverage({continuous(trlindx).v},{continuous(trlindx).w},{continuous(trlindx).ts},ptb_maxlinvel,ptb_maxangvel,ptb_delay);
+                        stats.trialtype.(trialtypes{i})(j).linvel = ptb_linvel;
+                        stats.trialtype.(trialtypes{i})(j).angvel = ptb_angvel;
+                    end
+                    %do this for microstimulation trials only
                     if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with microstimulation')
                         microstim_delay = [events(trlindx).t_microstim];
                         errdist.x = xf_monk(trlindx) - x_fly(trlindx); errdist.y = yf_monk(trlindx) - y_fly(trlindx);
                         stats.trialtype.(trialtypes{i})(j).errdist = errdist;
                         stats.trialtype.(trialtypes{i})(j).microstimtimefromstart = microstim_delay;
                         t_stop = [events.t_stop]; stats.trialtype.(trialtypes{i})(j).microstimtimefromstop = t_stop(trlindx) - microstim_delay;
-%                         [ptb_linvel,ptb_angvel] = PtbTriggeredAverage({continuous(trlindx).v},{continuous(trlindx).w},{continuous(trlindx).ts},ptb_maxlinvel,ptb_maxangvel,ptb_delay);
+                        [microstim_linvel,microstim_angvel] = MicrostimTriggeredAverage({continuous(trlindx).v},{continuous(trlindx).w},{continuous(trlindx).ts},microstim_delay);
+                        stats.trialtype.(trialtypes{i})(j).linvel = microstim_linvel;
+                        stats.trialtype.(trialtypes{i})(j).angvel = microstim_angvel;
                     end
                 else
                     stats.trialtype.(trialtypes{i})(j).pos_regress = nan;

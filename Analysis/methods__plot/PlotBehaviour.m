@@ -622,7 +622,7 @@ switch plot_type
         set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
         xlabel('Time (s)');
         set(gca, 'YTick', [-100 0 100], 'YTickLabel', [-100 0 100]);
-        ylabel('Forward velocity (deg/s)');
+        ylabel('Angular velocity (deg/s)');
         
         %% effect of ptb timing
         ptb.timefromstart = behv.stats.trialtype.ptb(2).ptbtimefromstart;
@@ -648,45 +648,201 @@ switch plot_type
         set(gca, 'YTick', [0 100 200], 'YTickLabel', [0 100 200]);
         ylabel('Behavioural error (cm/s)'); set(gca,'YScale','log');
     case 'microstim'
+        %% load trial indices
+        nostim.trlindx = behv.stats.trialtype.microstim(1).trlindx;
+        stim.trlindx = behv.stats.trialtype.microstim(2).trlindx;
+        
+        %% target angle vs response angle
+        nostim.r_targ = behv.stats.pos_final.r_targ(nostim.trlindx);
+        nostim.r_monk = behv.stats.pos_final.r_monk(nostim.trlindx);
+        stim.r_targ = behv.stats.pos_final.r_targ(stim.trlindx);
+        stim.r_monk = behv.stats.pos_final.r_monk(stim.trlindx);
+        
         figure; hold on;
-        
+        set(gcf,'Position',[85 276 900 900]);
+        % data without ptb
         subplot(2,2,1); hold on;
-        trlindx = stats.trialtype.microstim(1).trlindx; plot(r_fly(trlindx), rf_monk(trlindx),'.b');
-        trlindx = stats.trialtype.microstim(2).trlindx; plot(r_fly(trlindx), rf_monk(trlindx),'.r');
-        plot(0:500,0:500,'--k'); axis([0 500 0 500]);
-        xlabel('Target distance (cm)'); ylabel('Response distance (cm)');
-        legend('no stim','stim','Fontsize',16);
-        
+        plot(nostim.r_targ,nostim.r_monk,'.b');
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+        % data with ptb
         subplot(2,2,2); hold on;
-        trlindx = stats.trialtype.microstim(1).trlindx; plot(theta_fly(trlindx), thetaf_monk(trlindx),'.b');
-        trlindx = stats.trialtype.microstim(2).trlindx; plot(theta_fly(trlindx), thetaf_monk(trlindx),'.r');
-        plot(-40:40,-40:40,'--k'); hline(0,'-k'); vline(0,'-k'); axis([-40 40 -40 40]);
-        xlabel('Target angle (cm)'); ylabel('Response angle (cm)');
+        plot(stim.r_targ,stim.r_monk,'.r');
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+        
+        %% target angle vs response angle
+        nostim.theta_targ = behv.stats.pos_final.theta_targ(nostim.trlindx);
+        nostim.theta_monk = behv.stats.pos_final.theta_monk(nostim.trlindx);
+        stim.theta_targ = behv.stats.pos_final.theta_targ(stim.trlindx);
+        stim.theta_monk = behv.stats.pos_final.theta_monk(stim.trlindx);
+        
+        % data without ptb
+        subplot(2,2,3); hold on;
+        plot(nostim.theta_targ,nostim.theta_monk,'.b');
+        axis([-40 40 -40 40]);
+        plot(-40:40,-40:40,'--k','Linewidth',1);
+        set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
+        xlabel('Target, \theta(deg)');
+        set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);
+        ylabel('Response, \theta(deg)');
+        hline(0, 'k'); vline(0, 'k');
+        %         removeaxes;
+        % data with ptb
+        subplot(2,2,4); hold on;
+        plot(stim.theta_targ,stim.theta_monk,'.r');
+        axis([-40 40 -40 40]);
+        plot(-40:40,-40:40,'--k','Linewidth',1);
+        set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
+        xlabel('Target, \theta(deg)');
+        set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);
+        ylabel('Response, \theta(deg)');
+        hline(0, 'k'); vline(0, 'k');
+        %         removeaxes;
+
+        %% distribution of errors across trials with and without ptb        
+        nostim.FX = behv.stats.trialtype.microstim(1).errdist.FX;
+        nostim.F = behv.stats.trialtype.microstim(1).errdist.F;
+        nostim.PX = behv.stats.trialtype.microstim(1).errdist.PX;
+        nostim.P = behv.stats.trialtype.microstim(1).errdist.P;
+        stim.FX = behv.stats.trialtype.microstim(2).errdist.FX;
+        stim.F = behv.stats.trialtype.microstim(2).errdist.F;
+        stim.PX = behv.stats.trialtype.microstim(2).errdist.PX;
+        stim.P = behv.stats.trialtype.microstim(2).errdist.P;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 900]);
+
+        subplot(2,2,1); hold on;
+        % data without ptb
+        plot(nostim.FX,nostim.F,'b');
+        % data with ptb
+        plot(stim.FX,stim.F,'r');
+        axis([0 200 0 1]);
+        set(gca, 'XTick', [0 100 200], 'XTickLabel', [0 100 200], 'Fontsize',14);
+        xlabel('Euclidean error (cm)');
+        set(gca, 'YTick', [0 0.5 1], 'YTickLabel', [0 0.5 1]);
+        ylabel('Cumulative probability');
+
+        subplot(2,2,2); hold on;
+        % data without ptb
+        plot(nostim.PX,nostim.P,'b');
+        % data with ptb
+        plot(stim.PX,stim.P,'r');
+        axis([0 200 0 0.5]);
+        set(gca, 'XTick', [0 100 200], 'XTickLabel', [0 100 200], 'Fontsize',14);
+        xlabel('Euclidean error (cm)');
+        set(gca, 'YTick', [0 0.5 1], 'YTickLabel', [0 0.5 1]);
+        ylabel('Probability');
+        
+        %% ROC curves for trals with and without ptb        
+        nostim.pcorrect_shuffled_mu = behv.stats.trialtype.microstim(1).accuracy.pcorrect_shuffled_mu;
+        nostim.pCorrect = behv.stats.trialtype.microstim(1).accuracy.pCorrect;
+        stim.pcorrect_shuffled_mu = behv.stats.trialtype.microstim(2).accuracy.pcorrect_shuffled_mu;
+        stim.pCorrect = behv.stats.trialtype.microstim(2).accuracy.pCorrect;
         
         subplot(2,2,3); hold on;
-        plot(stats.trialtype.microstim(1).accuracy.pcorrect_shuffled_mu,stats.trialtype.microstim(1).accuracy.pCorrect,'b','linewidth',2);
-        plot(stats.trialtype.microstim(2).accuracy.pcorrect_shuffled_mu,stats.trialtype.microstim(2).accuracy.pCorrect,'r','linewidth',2);
+        plot(nostim.pcorrect_shuffled_mu,nostim.pCorrect,'b');
+        plot(stim.pcorrect_shuffled_mu,stim.pCorrect,'r');
         plot(0:1,0:1,'--k');
-        xlabel('Probability correct (Shuffled)'); ylabel('Probability correct (True)');
+        axis([0 1 0 1]);
+        xlabel('Shuffled accuracy'); ylabel('Actual accuracy');
+        lessticks('x'); lessticks('y');                
         
+        %% median +/- ISI accuracy
         subplot(2,2,4); hold on;
-        indx25 = find(stats.trialtype.microstim(1).errdist.F > 0.25,1);
-        indx50 = find(stats.trialtype.microstim(1).errdist.F > 0.5,1);
-        indx75 = find(stats.trialtype.microstim(1).errdist.F > 0.75,1);
-        plot(1, stats.trialtype.microstim(1).errdist.FX(indx50),'ob','MarkerFaceColor','b');
-        h = errorbar(1, stats.trialtype.microstim(1).errdist.FX(indx50),...
-            stats.trialtype.microstim(1).errdist.FX(indx50)-stats.trialtype.microstim(1).errdist.FX(indx25),...
-            stats.trialtype.microstim(1).errdist.FX(indx75)-stats.trialtype.microstim(1).errdist.FX(indx50));
+        indx25 = find(nostim.F > 0.25,1);
+        indx50 = find(nostim.F > 0.5,1);
+        indx75 = find(nostim.F > 0.75,1);
+        plot(1, nostim.FX(indx50),'ob','MarkerFaceColor','b');
+        h = errorbar(1, nostim.FX(indx50),...
+            nostim.FX(indx50)-nostim.FX(indx25),...
+            nostim.FX(indx75)-nostim.FX(indx50));
         h.CapSize = 0;
-        indx25 = find(stats.trialtype.microstim(2).errdist.F > 0.25,1);
-        indx50 = find(stats.trialtype.microstim(2).errdist.F > 0.5,1);
-        indx75 = find(stats.trialtype.microstim(2).errdist.F > 0.75,1);
-        plot(2, stats.trialtype.microstim(2).errdist.FX(indx50),'or','MarkerFaceColor','r');
-        h = errorbar(2, stats.trialtype.microstim(2).errdist.FX(indx50),...
-            stats.trialtype.microstim(2).errdist.FX(indx50)-stats.trialtype.microstim(2).errdist.FX(indx25),...
-            stats.trialtype.microstim(2).errdist.FX(indx75)-stats.trialtype.microstim(2).errdist.FX(indx50));
+        indx25 = find(stim.F > 0.25,1);
+        indx50 = find(stim.F > 0.5,1);
+        indx75 = find(stim.F > 0.75,1);
+        plot(2, stim.FX(indx50),'or','MarkerFaceColor','r');
+        h = errorbar(2, stim.FX(indx50),...
+            stim.FX(indx50)-stim.FX(indx25),...
+            stim.FX(indx75)-stim.FX(indx50));
         h.CapSize = 0;
         axis([0 3 0 60]);
         set(gca,'XTick',1:2,'XTickLabel',{'no stim','stim'});
         xlabel('Trial group'); ylabel('Final distance from target (cm)');
+        
+        %% stim-triggered average velocity
+        stim.linvel = behv.stats.trialtype.microstim(2).linvel;
+        stim.angvel = behv.stats.trialtype.microstim(2).angvel;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 400]);
+        
+        subplot(1,2,1); hold on;
+        shadedErrorBar(stim.linvel.microstim.t,stim.linvel.microstim.mu,stim.linvel.microstim.sem,'lineprops','r');
+        axis([0 2 -200 200]); hline(0,'k');
+        set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
+        xlabel('Time (s)');
+        set(gca, 'YTick', [-200 0 200], 'YTickLabel', [-200 0 200]);
+        ylabel('Forward velocity (cm/s)');
+        
+        subplot(1,2,2); hold on;
+        shadedErrorBar(stim.angvel.microstim.t,stim.angvel.microstim.mu,stim.angvel.microstim.sem,'lineprops','r');
+        axis([0 2 -100 100]); hline(0,'k');
+        set(gca, 'XTick', [0 1 2], 'XTickLabel', [0 1 2], 'Fontsize',14);
+        xlabel('Time (s)');
+        set(gca, 'YTick', [-100 0 100], 'YTickLabel', [-100 0 100]);
+        ylabel('Angular velocity (deg/s)');
+        
+        %% stim-triggered eye movements
+        nostim.eye_movement = behv.stats.trialtype.microstim(1).eye_movement;
+        stim.eye_movement = behv.stats.trialtype.microstim(2).eye_movement;
+        stim.stimtriggered = behv.stats.trialtype.microstim(2).stimtriggered;
+        
+        figure; hold on;
+        set(gcf,'Position',[85 276 900 900]);
+        
+        subplot(2,2,1); hold on;
+        dt = 0.006; nt_beg = 300; nt_end = 200; nt_break = 100; %length(nostim.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.startaligned);
+        shadedErrorBar(dt:dt:dt*nt_beg,nostim.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.startaligned(1:nt_beg),...
+            nostim.eye_movement.eyepos.pred_vs_true.cos_similarity.sem.startaligned(1:nt_beg),'lineprops','b');
+        shadedErrorBar(dt*nt_beg + dt*nt_break + (dt:dt:dt*nt_end),flip(nostim.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.stopaligned(1:nt_end)),...
+            nostim.eye_movement.eyepos.pred_vs_true.cos_similarity.sem.stopaligned(1:nt_end),'lineprops','b');
+        shadedErrorBar(dt:dt:dt*nt_beg,stim.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.startaligned(1:nt_beg),...
+            stim.eye_movement.eyepos.pred_vs_true.cos_similarity.sem.startaligned(1:nt_beg),'lineprops','r');
+        shadedErrorBar(dt*nt_beg + dt*nt_break + (dt:dt:dt*nt_end),flip(stim.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.stopaligned(1:nt_end)),...
+            stim.eye_movement.eyepos.pred_vs_true.cos_similarity.sem.stopaligned(1:nt_end),'lineprops','r');
+        axis([0 dt*(nt_beg + nt_break + nt_end) 0 1]);
+        
+        subplot(2,2,2); hold on;        
+        shadedErrorBar(stim.stimtriggered.ts,stim.stimtriggered.eye_movement.eyepos.pred_vs_true.cos_similarity.mu.stimaligned,...
+            stim.stimtriggered.eye_movement.eyepos.pred_vs_true.cos_similarity.sem.stimaligned,'lineprops','r');
+        axis([stim.stimtriggered.ts(1) stim.stimtriggered.ts(end) 0 1]); vline(0,'k');
+        
+        subplot(2,2,3); hold on;
+        ntrls = length(stim.eye_movement.eyepos.true.ver_mean.val);
+        for i=1:ntrls
+            nt = length(stim.stimtriggered.eye_movement.eyepos.true.ver_mean.val{i});
+            plot(linspace(-0.5,1,nt),stim.stimtriggered.eye_movement.eyepos.true.ver_mean.val{i} - ...
+                stim.stimtriggered.eye_movement.eyepos.true.ver_mean.val{i}(round(1*nt/3)),'k');
+        end
+        axis([0 1 -10 10]);
+        
+        subplot(2,2,4); hold on;
+        ntrls = length(stim.stimtriggered.eye_movement.eyepos.true.hor_mean.val);
+        for i=1:ntrls
+            nt = length(stim.stimtriggered.eye_movement.eyepos.true.hor_mean.val{i});
+            plot(linspace(-0.5,1,nt),stim.stimtriggered.eye_movement.eyepos.true.hor_mean.val{i} - ...
+                stim.stimtriggered.eye_movement.eyepos.true.hor_mean.val{i}(round(1*nt/3)),'k');
+        end
+        axis([0 1 -20 20]);
+        
 end
