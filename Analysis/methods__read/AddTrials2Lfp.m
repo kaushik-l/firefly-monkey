@@ -109,6 +109,8 @@ if prs.analyse_lfpepochs
             epochs_behv(1).free_stationary = epochs_behv(1).free_stationary - t_beg; epochs_behv(1).free_stationary(epochs_behv(1).free_stationary(:,1)<0,:) = [];
             epochs_behv(1).fixed_stationary = epochs_behv(1).fixed_stationary - t_beg; epochs_behv(1).fixed_stationary(epochs_behv(1).fixed_stationary(:,1)<0,:) = [];
             fprintf('**************added a trialevent to the neural data file*****************\n');
+        elseif nfiles - numel(trialevents.t_start) < 0
+            trialevents.t_start = RemoveStrayEvents(trialevents.t_start,cellfun(@(x) x(end),{behv.epochs.ts}));
         else
             error('number of start events in nev file differs from the number of smr files');
         end
