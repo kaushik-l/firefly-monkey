@@ -1,4 +1,4 @@
-function eye_fixation = AnalyseEyefixation(x_fly,y_fly,zle,yle,zre,yre,t_sac,ts,prs)
+function eye_fixation = AnalyseEyefixation(x_fly,y_fly,zle,yle,zre,yre,t_sac,t_stop,ts,prs)
 
 %% prs
 delta = prs.interoculardist/2;
@@ -47,7 +47,24 @@ end
 rt = sqrt(xt.^2 + yt.^2);
 thetat = atan2d(xt,yt);
 
-%% regression
+
+%% saccade timecourse
+% start aligned
+nx = -0.5:0.1:2.1;
+[ny,nx] =  hist(cell2mat(t_sac'),nx);
+ny = ny/0.1/ntrls;
+eye_fixation.saccade.startaligned.rate = ny(2:end-1);
+eye_fixation.saccade.startaligned.t = nx(2:end-1);
+
+%stop aligned
+t_sac_stop = cellfun(@(x,y) x - y, t_sac, num2cell(t_stop),'UniformOutput',false);
+nx = -1.1:0.1:0.5;
+[ny,nx] =  hist(cell2mat(t_sac_stop'),nx);
+ny = ny/0.1/ntrls;
+eye_fixation.saccade.stopaligned.rate = ny(2:end-1);
+eye_fixation.saccade.stopaligned.t = nx(2:end-1);
+
+%% save true and predicted eye positions
 eye_fixation.flypos.r = rt;
 eye_fixation.flypos.theta = thetat;
 eye_fixation.eyepos.pred.ver_mean.val = ver_mean_pred;
@@ -58,37 +75,21 @@ eye_fixation.eyepos.true.ver_mean.val = ver_mean;
 eye_fixation.eyepos.true.hor_mean.val = hor_mean;
 eye_fixation.eyepos.true.ver_diff.val = ver_diff;
 eye_fixation.eyepos.true.hor_diff.val = hor_diff;
-% correlation between fly distance & predicted eye position
-[eye_fixation.eyepos.pred.ver_mean.rho.r,eye_fixation.eyepos.pred.ver_mean.pval.r] = corr(rt(:),ver_mean_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.hor_mean.rho.r,eye_fixation.eyepos.pred.hor_mean.pval.r] = corr(rt(:),hor_mean_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.ver_diff.rho.r,eye_fixation.eyepos.pred.ver_diff.pval.r] = corr(rt(:),ver_diff_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.hor_diff.rho.r,eye_fixation.eyepos.pred.hor_diff.pval.r] = corr(rt(:),hor_diff_pred(:),'Type','Spearman','rows','complete');
-% correlation between fly angle & predicted eye position
-[eye_fixation.eyepos.pred.ver_mean.rho.theta,eye_fixation.eyepos.pred.ver_mean.pval.theta] = corr(thetat(:),ver_mean_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.hor_mean.rho.theta,eye_fixation.eyepos.pred.hor_mean.pval.theta] = corr(thetat(:),hor_mean_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.ver_diff.rho.theta,eye_fixation.eyepos.pred.ver_diff.pval.theta] = corr(thetat(:),ver_diff_pred(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.pred.hor_diff.rho.theta,eye_fixation.eyepos.pred.hor_diff.pval.theta] = corr(thetat(:),hor_diff_pred(:),'Type','Spearman','rows','complete');
-% correlation between fly distance & true eye position
-[eye_fixation.eyepos.true.ver_mean.rho.r,eye_fixation.eyepos.true.ver_mean.pval.r] = corr(rt(:),ver_mean(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.hor_mean.rho.r,eye_fixation.eyepos.true.hor_mean.pval.r] = corr(rt(:),hor_mean(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.ver_diff.rho.r,eye_fixation.eyepos.true.ver_diff.pval.r] = corr(rt(:),ver_diff(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.hor_diff.rho.r,eye_fixation.eyepos.true.hor_diff.pval.r] = corr(rt(:),hor_diff(:),'Type','Spearman','rows','complete');
-% correlation between fly angle & true eye position
-[eye_fixation.eyepos.true.ver_mean.rho.theta,eye_fixation.eyepos.true.ver_mean.pval.theta] = corr(thetat(:),ver_mean(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.hor_mean.rho.theta,eye_fixation.eyepos.true.hor_mean.pval.theta] = corr(thetat(:),hor_mean(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.ver_diff.rho.theta,eye_fixation.eyepos.true.ver_diff.pval.theta] = corr(thetat(:),ver_diff(:),'Type','Spearman','rows','complete');
-[eye_fixation.eyepos.true.hor_diff.rho.theta,eye_fixation.eyepos.true.hor_diff.pval.theta] = corr(thetat(:),hor_diff(:),'Type','Spearman','rows','complete');
 
-% correlation between predicted and true eye positions
+%% component-wise correlation between predicted and true eye positions
 [eye_fixation.eyepos.pred_vs_true.ver_mean.rho,eye_fixation.eyepos.pred_vs_true.ver_mean.pval] = corr(ver_mean_pred(:),ver_mean(:),'rows','complete');
 [eye_fixation.eyepos.pred_vs_true.hor_mean.rho,eye_fixation.eyepos.pred_vs_true.hor_mean.pval] = corr(hor_mean_pred(:),hor_mean(:),'rows','complete');
 [eye_fixation.eyepos.pred_vs_true.ver_diff.rho,eye_fixation.eyepos.pred_vs_true.ver_diff.pval] = corr(ver_diff_pred(:),ver_diff(:),'rows','complete');
 [eye_fixation.eyepos.pred_vs_true.hor_diff.rho,eye_fixation.eyepos.pred_vs_true.hor_diff.pval] = corr(hor_diff_pred(:),hor_diff(:),'rows','complete');
 
-% cosine similarity
+%%  heteroscedastic variance of eye positions
+[eye_fixation.eyepos.true.hor_mean.mu,eye_fixation.eyepos.true.hor_mean.sig] = ComputeBinnedVariance(hor_mean_pred,hor_mean,linspace(-40,40,11),1);
+[eye_fixation.eyepos.true.ver_mean.mu,eye_fixation.eyepos.true.ver_mean.sig] = ComputeBinnedVariance(ver_mean_pred,ver_mean,flip(-logspace(log10(2),log10(15),11)),0);
+
+%% cosine similarity
 cos_similarity = nan(1,prs.bootstrap_trl);
-pred = [ver_mean_pred ; hor_mean_pred ; hor_diff_pred];
-true = [ver_mean ; hor_mean ; hor_diff];
+pred = [ver_mean_pred ; hor_mean_pred];
+true = [ver_mean ; hor_mean];
 for i=1:prs.nbootstraps
     randtrls = randsample(ntrls,ntrls,1);
     cos_similarity(i) = CosSimilarity(pred(:,randtrls),true(:,randtrls));
@@ -96,10 +97,10 @@ end
 eye_fixation.eyepos.pred_vs_true.cos_similarity.mu = mean(cos_similarity);
 eye_fixation.eyepos.pred_vs_true.cos_similarity.sem = std(cos_similarity);
 
-% centered cosine similarity
+%% centered cosine similarity
 cntr_cos_similarity = nan(1,prs.bootstrap_trl);
-pred = [ver_mean_pred ; hor_mean_pred ; hor_diff_pred]; pred = (pred - repmat(nanmean(pred,2),[1 ntrls]))./repmat(nanstd(pred,[],2),[1 ntrls]);
-true = [ver_mean ; hor_mean ; hor_diff]; true = (true - repmat(nanmean(true,2),[1 ntrls]))./repmat(nanstd(true,[],2),[1 ntrls]);
+pred = [ver_mean_pred ; hor_mean_pred]; pred = (pred - repmat(nanmean(pred,2),[1 ntrls]))./repmat(nanstd(pred,[],2),[1 ntrls]);
+true = [ver_mean ; hor_mean]; true = (true - repmat(nanmean(true,2),[1 ntrls]))./repmat(nanstd(true,[],2),[1 ntrls]);
 for i=1:prs.nbootstraps
     randtrls = randsample(ntrls,ntrls,1);
     cntr_cos_similarity(i) = CosSimilarity(pred(:,randtrls),true(:,randtrls));

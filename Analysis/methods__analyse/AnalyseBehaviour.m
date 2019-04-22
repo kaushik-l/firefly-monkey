@@ -49,7 +49,8 @@ for i=1:ntrls
 end
 
 %% trial-by-trial error
-trlerrors = cellfun(@min,{continuous.r_fly_rel});
+% trlerrors = cellfun(@min,{continuous.r_fly_rel});
+trlerrors = cellfun(@(x,y,z) x(find(y>z,1)), {continuous.r_fly_rel}, {continuous.ts}, {events.t_stop});
 
 %% position - polar
 rf_monk = sqrt((xf_monk - x0_monk).^2 + (yf_monk - y0_monk).^2);
@@ -180,41 +181,10 @@ if prs.split_trials
     end
 end
 
-%% analyse eye movements
-if prs.regress_eye
-    xfp_rel = {continuous.xfp_rel};
-    yfp_rel = {continuous.yfp_rel};
-    zle = {continuous.zle}; yle = {continuous.yle};
-    zre = {continuous.zre}; yre = {continuous.yre};
-    t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts}; t_microstim = [events.t_microstim];
-    trialtypes = fields(stats.trialtype);
-    for i=1:length(trialtypes)
-        nconds = length(stats.trialtype.(trialtypes{i}));
-        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
-        for j=1:nconds
-            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
-                stats.trialtype.(trialtypes{i})(j).eye_fixation = stats.trialtype.all.eye_fixation;
-                stats.trialtype.(trialtypes{i})(j).eye_movement = stats.trialtype.all.eye_movement;
-            else
-                trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
-                stats.trialtype.(trialtypes{i})(j).eye_fixation = ...
-                    AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),ts(trlindx),prs);
-                stats.trialtype.(trialtypes{i})(j).eye_movement = ...
-                    AnalyseEyemovement(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
-                %do this for microstimulation trials only
-                if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with microstimulation')
-                    [stats.trialtype.(trialtypes{i})(j).stimtriggered.ts,stats.trialtype.(trialtypes{i})(j).stimtriggered.eye_movement] = ...
-                        AnalyseEyemovementMicrostim(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),t_microstim(trlindx),ts(trlindx),trlerrors(trlindx),prs);
-                end
-            end
-        end
-    end
-end
-
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=1:length(trialtypes)
+    for i=[1 3 7]%:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -242,6 +212,15 @@ if prs.regress_behv
                     [errdist.F,errdist.FX,errdist.FLO,errdist.FUP] = ecdf(abs(rf_monk(trlindx) - r_fly(trlindx)));
                     [errdist.P,errdist.PX] = hist(abs(rf_monk(trlindx) - r_fly(trlindx)),25); errdist.P = errdist.P/sum(errdist.P);
                     stats.trialtype.(trialtypes{i})(j).errdist = errdist;
+                    % euclidean errors
+                    stats.trialtype.(trialtypes{i})(j).trlerrors = trlerrors(trlindx);
+                    % spatial map of response variance
+                    targ.r = r_fly(trlindx); targ.theta = theta_fly(trlindx); % for later use
+                    resp.r = rf_monk(trlindx); resp.theta = thetaf_monk(trlindx);
+                    stats.trialtype.(trialtypes{i})(j).spatialerr = ComputeSpatialError(targ,resp);
+                    % spatial map of response errors
+                    resp.r = resp.r/regress(resp.r(:),targ.r(:)); resp.theta = resp.theta/regress(resp.theta(:),targ.theta(:));
+                    stats.trialtype.(trialtypes{i})(j).spatialstd = ComputeSpatialError(targ,resp);
                     %do this for perturbation trials only
                     if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
                         trialparams_temp = trialparams(trlindx);
@@ -272,6 +251,41 @@ if prs.regress_behv
                     stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
                     stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;
                     stats.trialtype.(trialtypes{i})(j).accuracy = nan;
+                end
+            end
+        end
+    end
+end
+
+%% analyse eye movements
+if prs.regress_eye
+    xfp_rel = {continuous.xfp_rel};
+    yfp_rel = {continuous.yfp_rel};
+    xmp = {continuous.xmp};
+    ymp = {continuous.ymp};
+    zle = {continuous.zle}; yle = {continuous.yle};
+    zre = {continuous.zre}; yre = {continuous.yre};
+    t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts}; t_microstim = [events.t_microstim];
+    trialtypes = fields(stats.trialtype);
+    for i=[1 3 7]%:length(trialtypes)
+        nconds = length(stats.trialtype.(trialtypes{i}));
+        if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+        for j=1:nconds
+            if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
+                stats.trialtype.(trialtypes{i})(j).eye_fixation = stats.trialtype.all.eye_fixation;
+                stats.trialtype.(trialtypes{i})(j).eye_movement = stats.trialtype.all.eye_movement;
+            else
+                trlindx = stats.trialtype.(trialtypes{i})(j).trlindx;
+                spatialerr = stats.trialtype.(trialtypes{i})(j).spatialerr;
+                spatialstd = stats.trialtype.(trialtypes{i})(j).spatialstd;
+                stats.trialtype.(trialtypes{i})(j).eye_fixation = ...
+                    AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),prs);
+                stats.trialtype.(trialtypes{i})(j).eye_movement = ...
+                    AnalyseEyemovement(stats.trialtype.(trialtypes{i})(j).eye_fixation,xfp_rel(trlindx),yfp_rel(trlindx),xmp(trlindx),ymp(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),spatialstd,prs);
+                %do this for microstimulation trials only
+                if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with microstimulation')
+                    [stats.trialtype.(trialtypes{i})(j).stimtriggered.ts,stats.trialtype.(trialtypes{i})(j).stimtriggered.eye_movement] = ...
+                        AnalyseEyemovementMicrostim(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),t_microstim(trlindx),ts(trlindx),trlerrors(trlindx),prs);
                 end
             end
         end
