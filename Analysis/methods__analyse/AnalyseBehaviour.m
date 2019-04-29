@@ -184,7 +184,7 @@ end
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=[1 3 7]%:length(trialtypes)
+    for i=[1 7]%:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -267,7 +267,7 @@ if prs.regress_eye
     zre = {continuous.zre}; yre = {continuous.yre};
     t_sac = {events.t_sac}; t_stop = [events.t_stop]; ts = {continuous.ts}; t_microstim = [events.t_microstim];
     trialtypes = fields(stats.trialtype);
-    for i=[1 3 7]%:length(trialtypes)
+    for i=[1 7]%:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -286,6 +286,11 @@ if prs.regress_eye
                 if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with microstimulation')
                     [stats.trialtype.(trialtypes{i})(j).stimtriggered.ts,stats.trialtype.(trialtypes{i})(j).stimtriggered.eye_movement] = ...
                         AnalyseEyemovementMicrostim(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),t_microstim(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+                end
+                %do this for microstimulation trials only
+                if strcmp(stats.trialtype.(trialtypes{i})(j).val,'replay behaviour')
+                    stats.trialtype.(trialtypes{i})(j).eye_movement_OFR = ...
+                        AnalyseEyemovement_OFRmodel(stats.trialtype.(trialtypes{i})(j-1).eye_fixation,xfp_rel(trlindx),yfp_rel(trlindx),xmp(trlindx),ymp(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),spatialstd,prs);
                 end
             end
         end

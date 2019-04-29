@@ -119,3 +119,53 @@ figure; plot(hor_pred,hor_obs,'.b'); axis([-50 50 -50 50]); hline(0,'k'); vline(
 xlabel('Prediction without noise'); ylabel('Prediction with noise');
 figure; plot(ver_pred,ver_obs,'.r'); axis([-10 1 -10 5]); hline(0,'k'); vline(0,'k'); box off; set(gca,'XAxisLocation','top','YAxisLocation','right');
 xlabel('Prediction without noise'); ylabel('Prediction with noise');
+
+%% compare simulated and theoretical variances
+dx = 20; dy = 20; varx = 400; vary = 400;
+x = dx-10:dx:dx*20-10; nx = length(x);
+y = -20*dy+10:dy:20*dy-10; y(abs(y)<20) = []; ny = length(y);
+nsamples = 10000;
+for i=1:nx
+    fprintf(['... i = ' num2str(i) '\n']);
+    for j=1:ny
+        % theoretical variance in eye position
+        dEyeVer__dx_sqrd = ((z^2)*(x(i)^2))/(((x(i)^2 + y(j)^2 + z^2)^2)*(x(i)^2 + y(j)^2));
+        dEyeVer__dy_sqrd = ((z^2)*(y(j)^2))/(((x(i)^2 + y(j)^2 + z^2)^2)*(x(i)^2 + y(j)^2));        
+        dEyeHor__dx_sqrd = ((y(j)^2 + z^2))/(((x(i)^2 + y(j)^2 + z^2)^2));
+        dEyeHor__dy_sqrd = ((y(j)^2)*(x(i)^2))/(((x(i)^2 + y(j)^2 + z^2).^2)*(y(j)^2 + z^2));
+        var_eyever.theory(i,j) = (dEyeVer__dx_sqrd*varx + dEyeVer__dy_sqrd*vary);
+        var_eyehor.theory(i,j) = (dEyeHor__dx_sqrd*varx + dEyeHor__dy_sqrd*vary);
+        % simulated variance in eye position
+        xsim = normrnd(x(i),sqrt(varx),[1 nsamples]);
+        ysim = normrnd(y(j),sqrt(vary),[1 nsamples]);
+        zsim = repmat(z,[1 nsamples]);
+        EyeVer = atan2(zsim , sqrt(ysim.^2 + xsim.^2));
+        EyeHor = atan2(xsim, sqrt(ysim.^2 + zsim.^2));
+        var_eyever.simulate(i,j) = var(EyeVer);
+        var_eyehor.simulate(i,j) = var(EyeHor);
+    end
+end
+
+% plot horizontal variance
+cmap = gray(size(var_eyehor.simulate,1));
+figure; hold on; 
+subplot(2,4,1); hold on; yyaxis right; imagesc(y,x,log10(sqrt(var_eyehor.simulate))); axis([-400 400 0 400]); colormap(hot);
+subplot(2,4,2); hold on; set(gca, 'ColorOrder', cmap); plot(x,sqrt(var_eyehor.simulate(:,1:20))); set(gca,'YScale','Log'); ylim([1e-2 5e-1]);
+subplot(2,4,3); hold on; set(gca, 'ColorOrder', cmap); plot(y,sqrt(var_eyehor.simulate)'); set(gca,'YScale','Log'); ylim([1e-2 5e-1]);
+subplot(2,4,4); hold on; for i=1:20, plot(sqrt(var_eyehor.theory(i,:)),sqrt(var_eyehor.simulate(i,:)),'.k'); end 
+xmax = get(gca,'xlim'); xmax = max(xmax); plot(0:0.01:xmax,0:0.01:xmax,'r'); set(gca,'XScale','Log','YScale','Log');
+subplot(2,4,5); hold on; yyaxis right; imagesc(y,x,log10(sqrt(var_eyehor.theory))); axis([-400 400 0 400]); colormap(hot);
+subplot(2,4,6); hold on; set(gca, 'ColorOrder', cmap); plot(x,sqrt(var_eyehor.theory(:,1:20)),'--'); set(gca,'YScale','Log'); ylim([1e-2 5e-1]);
+subplot(2,4,7); hold on; set(gca, 'ColorOrder', cmap); plot(y,sqrt(var_eyehor.theory)','--'); set(gca,'YScale','Log'); ylim([1e-2 5e-1]);
+
+% plot vertical variance
+cmap = gray(size(var_eyever.simulate,1));
+figure; hold on; 
+subplot(2,4,1); hold on; yyaxis right; imagesc(y,x,log10(sqrt(var_eyever.simulate))); axis([-400 400 0 400]); colormap(hot);
+subplot(2,4,2); hold on; set(gca, 'ColorOrder', cmap); plot(x,sqrt(var_eyever.simulate(:,1:20))); set(gca,'YScale','Log'); ylim([2e-4 5e-1]);
+subplot(2,4,3); hold on; set(gca, 'ColorOrder', cmap); plot(y,sqrt(var_eyever.simulate)'); set(gca,'YScale','Log'); ylim([2e-4 5e-1]);
+subplot(2,4,4); hold on; for i=1:20, plot(sqrt(var_eyever.theory(i,:)),sqrt(var_eyever.simulate(i,:)),'.k'); end 
+xmax = get(gca,'xlim'); xmax = max(xmax); plot(0:1e-4:xmax,0:1e-4:xmax,'r'); set(gca,'XScale','Log','YScale','Log');
+subplot(2,4,5); hold on; yyaxis right; imagesc(y,x,log10(sqrt(var_eyever.theory))); axis([-400 400 0 400]); colormap(hot);
+subplot(2,4,6); hold on; set(gca, 'ColorOrder', cmap); plot(x,sqrt(var_eyever.theory(:,1:20)),'--'); set(gca,'YScale','Log'); ylim([2e-4 5e-1]);
+subplot(2,4,7); hold on; set(gca, 'ColorOrder', cmap); plot(y,sqrt(var_eyever.theory)','--'); set(gca,'YScale','Log'); ylim([2e-4 5e-1]);
