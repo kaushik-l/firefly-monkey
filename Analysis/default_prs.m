@@ -5,8 +5,8 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\behavioural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\'];
-prs.filepath_neur = ['C:\Users\jkl9\Documents\Data\firefly-monkey\' monkeyInfo.folder '\neural data\']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  % 
+prs.filepath_behv = ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\'];
+prs.filepath_neur = ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; % ['W:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  % 
 prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels = max(monkeyInfo.channels);
 prs.coord = monkeyInfo.coord;

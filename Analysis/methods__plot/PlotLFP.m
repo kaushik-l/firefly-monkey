@@ -30,7 +30,24 @@ if electrode_id ~= 0
             for i=1:nlfps
                 psd = lfps(i).stats.trialtype.all.spectrum.psd;
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                plot(f,psd); axis([2 50 0 75]); axis off; box off;
+                plot(f,psd, 'c'); axis([2 50 0 75]); axis off; box off;
+                %vline(15, '--k');
+            end
+        case 'PSDarray_norm'
+            nlfps = 96;
+            [xloc,yloc] = map_utaharray([],electrode);
+            [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+            [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+            lfps = lfps(reorderindx);
+            for i=1:nlfps
+                psd_norm(i,:) = lfps(i).stats.trialtype.all.spectrum.psd;
+            end 
+            max_psd = max(max(psd_norm,[],2));
+            f = lfps(1).stats.trialtype.all.spectrum.freq;
+            for i=1:nlfps
+                psd = lfps(i).stats.trialtype.all.spectrum.psd/max_psd;
+                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                plot(f,psd); axis([2 50 0 0.6]); axis off; box off;
             end
         case 'PSD_movement'
             figure; hold on;
