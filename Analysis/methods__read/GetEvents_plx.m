@@ -1,7 +1,7 @@
-function t_events = GetEvents_plx(fname)
+function [t_events, fs] = GetEvents_plx(fname)
 % get begin, reward, and end times from plx file
 
-[~, ts, sv] = plx_event_ts(fname, 257); count=0;
+[~, ts, sv, fs] = plx_event_ts(fname, 257); count=0;
 t_events.start = ts(sv==1);
 ts(sv==1) = []; sv(sv==1) = [];
 ts(sv==8) = []; sv(sv==8) = [];
