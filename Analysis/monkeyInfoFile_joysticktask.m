@@ -14,10 +14,9 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;              % Analyse all units? (sorted units=0; all units=1)
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 08 2016';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, fixed DCI, fixed ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'}; %choose from linearprobe24, linearprobe16, linearprobe24, utah96, utah2x48
+monkeyInfo (end).area = {'PPC'}; %choose from PPC, VIP, MST, PFC
 monkeyInfo (end).eyechannels = [1 1];
-monkeyInfo (end).nev = 0;
-monkeyInfo (end).plx = 1;
 
 %% session 2
 monkeyInfo (end+1).monk_id = 44;
@@ -31,8 +30,6 @@ monkeyInfo (end).folder = 'Quigley\V-probe\Nov 09 2016';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, fixed DCI, fixed ITI'};
 monkeyInfo (end).electrode = 'linearprobe24';
 monkeyInfo (end).eyechannels = [1 1];
-monkeyInfo (end).nev = 0;
-monkeyInfo (end).plx = 1;
 
 %% session 3
 monkeyInfo (end+1).monk_id = 44;
@@ -44,10 +41,9 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\V-probe\Nov 10 2016';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, fixed DCI, fixed ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [1 1];
-monkeyInfo (end).nev = 0;
-monkeyInfo (end).plx = 1;
 
 %% session 4
 monkeyInfo (end+1).monk_id = 44;

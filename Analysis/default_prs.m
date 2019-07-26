@@ -5,14 +5,14 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\']; % ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % 
-prs.filepath_neur =  ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  %  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; %
+prs.filepath_behv = ['C:\Users\eao5\Documents\temp_data\' monkeyInfo.folder '\behavioural data\']; % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\']; % ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % 
+prs.filepath_neur = ['C:\Users\eao5\Documents\temp_data\' monkeyInfo.folder '\neural data\'];  % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  %  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; %
 prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels_plx = max(monkeyInfo.channels_plx);
 prs.maxchannels_nev = max(monkeyInfo.channels_nev);
 prs.coord = monkeyInfo.coord;
 prs.units = monkeyInfo.units;
-prs.electrode = monkeyInfo.electrode;
+prs.electrode_type = monkeyInfo.electrode_type;
 prs.comments = monkeyInfo.comments;
 prs.eyechannels = monkeyInfo.eyechannels;
 prs.nev = monkeyInfo.nev;

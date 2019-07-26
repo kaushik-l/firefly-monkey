@@ -6,9 +6,7 @@ classdef session < handle
         coord
         behaviours = behaviour.empty();                                     % trial
         units = unit.empty();                                               % single/multiunit
-        lfps = lfp.empty();% lfp
-        lfps_plx = lfp.empty();% lfp U-Probes
-        lfps_nev = lfp.empty(); % lfp utah array
+        lfps = lfp.empty();                                                 % lfp
         populations = population.empty();                                   % population
     end
     %%
