@@ -2630,8 +2630,8 @@ monkeyInfo (end).channels_nev = 96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Dec 20 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [1 0];
 
 
@@ -2647,8 +2647,8 @@ monkeyInfo (end).channels_nev = 96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Dec 21 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2663,8 +2663,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Dec 22 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2679,8 +2679,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Dec 26 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2695,8 +2695,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Dec 27 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2711,8 +2711,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 08 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2727,8 +2727,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 09 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2744,8 +2744,8 @@ monkeyInfo (end).channels_nev = 1:96;        % Channel #? (all channels=0)
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 15 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2760,8 +2760,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 16 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2776,8 +2776,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 23 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2792,8 +2792,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 24 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2808,8 +2808,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 24 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2824,8 +2824,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Jan 29 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2840,8 +2840,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 05 2018'; 
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2856,8 +2856,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Utah array\Feb 06 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2872,8 +2872,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 08 2018'; 
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2888,8 +2888,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 09 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2904,8 +2904,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 12 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2920,8 +2920,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 14 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2936,8 +2936,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 19 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2952,8 +2952,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 20 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2968,8 +2968,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 21 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -2984,8 +2984,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 22 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, VIP'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'VIP'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3000,8 +3000,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 23 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, VIP'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'VIP'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3016,8 +3016,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 26 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, VIP'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'VIP'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3032,8 +3032,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 27 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, VIP'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'VIP'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3144,8 +3144,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 21 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3160,8 +3160,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 22 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3176,8 +3176,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 23 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3192,8 +3192,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 26 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3208,8 +3208,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 27 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3224,8 +3224,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 28 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3240,8 +3240,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 29 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3256,8 +3256,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Mar 30 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3272,8 +3272,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 03 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3288,8 +3288,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 04 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3304,8 +3304,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 05 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3320,8 +3320,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 06 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3336,8 +3336,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 11 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3352,8 +3352,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 12 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3368,8 +3368,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 13 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3384,8 +3384,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 16 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3400,8 +3400,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 17 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3416,8 +3416,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 18 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3432,8 +3432,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 23 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3448,8 +3448,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 24 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3464,8 +3464,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 25 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3480,8 +3480,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 26 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3496,8 +3496,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 27 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -3512,8 +3512,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Apr 30 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MTSd'};
-monkeyInfo (end).electrode_type = {'utah96'};
-monkeyInfo (end).area = {'PPC'};
+monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -4674,7 +4674,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 07 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4689,7 +4690,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 08 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4704,7 +4706,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 09 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4719,7 +4722,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 10 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4734,7 +4738,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 13 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4749,7 +4754,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 14 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4764,7 +4770,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 15 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4779,7 +4786,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 16 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4794,7 +4802,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 17 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4809,7 +4818,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 20 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4824,7 +4834,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 21 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4839,7 +4850,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 22 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4854,7 +4866,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 27 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4869,7 +4882,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 28 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4884,7 +4898,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 29 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4899,7 +4914,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Nov 30 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4914,7 +4930,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 04 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4929,7 +4946,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 05 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4944,7 +4962,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 06 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4959,7 +4978,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 07 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4974,7 +4994,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 08 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -4989,7 +5010,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 18 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -5004,7 +5026,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 19 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -5019,7 +5042,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 20 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -5034,7 +5058,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 21 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -5049,7 +5074,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Dec 22 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, gain manipulation, behavioral data only'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 1];
 
 
@@ -5064,7 +5090,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 19 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5079,7 +5106,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 20 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5094,7 +5122,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 21 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5109,7 +5138,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 22 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5124,7 +5154,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 26 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5139,7 +5170,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 27 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5154,7 +5186,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Feb 28 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5169,7 +5202,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 01 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5184,7 +5218,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 05 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5199,7 +5234,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 06 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5214,7 +5250,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 07 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5229,7 +5266,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 08 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5244,7 +5282,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 09 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5259,7 +5298,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 12 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5274,7 +5314,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 13 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5289,7 +5330,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 14 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5304,7 +5346,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 15 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5319,7 +5362,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 16 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5334,7 +5378,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 21 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5349,7 +5394,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 22 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5364,7 +5410,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 23 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5379,7 +5426,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 26 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5394,7 +5442,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 27 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5409,7 +5458,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 28 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5424,7 +5474,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 29 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5439,7 +5490,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Mar 30 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5454,7 +5506,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Apr 2 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5469,7 +5522,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Apr 03 2018';
 monkeyInfo (end).comments = {'replay, two densities, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5484,7 +5538,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Apr 04 2018';
 monkeyInfo (end).comments = {'replay, two densities, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5499,7 +5554,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\Apr 05 2018';
 monkeyInfo (end).comments = {'replay, two densities, no landmarks, no ptb, random DCI, random ITI, multifireflies'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5517,7 +5573,8 @@ monkeyInfo (end).channels = 1:24;        % Channel #? (all channels=0)
 monkeyInfo (end).units = 0;              % Analyse all units? (sorted units=0; all units=1)
 monkeyInfo (end).folder = 'Schro\U-probe\Oct 26 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [1 0];
 
 
@@ -5532,7 +5589,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Oct 31 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [1 0];
 
 
@@ -5547,7 +5605,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 1 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 0];
 
 
@@ -5562,7 +5621,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 2 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 0];
 
 
@@ -5577,7 +5637,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 7 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 0];
 
 
@@ -5592,7 +5653,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 8 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [0 0];
 
 
@@ -5607,7 +5669,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 29 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5622,7 +5685,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Nov 30 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5637,7 +5701,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 1 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5652,7 +5717,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 4 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5667,7 +5733,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 5 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5682,7 +5749,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 7 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5697,7 +5765,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 11 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5712,7 +5781,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 12 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5727,7 +5797,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 13 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5742,7 +5813,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 14 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5757,7 +5829,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 15 2017';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5772,7 +5845,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 18 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5787,7 +5861,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 19 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5802,7 +5877,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 26 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5817,7 +5893,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 27 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5832,7 +5909,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 28 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5847,7 +5925,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Dec 29 2017';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5862,7 +5941,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Jan 2 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5877,7 +5957,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Jan 5 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5892,7 +5973,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Jan 8 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5907,7 +5989,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Jan 9 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5922,7 +6005,8 @@ monkeyInfo (end).channels = 1:24;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\U-probe\Jan 10 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).electrode_type = {'linearprobe24'};
+monkeyInfo (end).area = {'PPC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5937,7 +6021,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Jan 22 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5952,7 +6037,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 5 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5967,7 +6053,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 6 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5982,7 +6069,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 7 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -5997,7 +6085,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 8 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6012,7 +6101,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 9 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6027,7 +6117,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 12 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6042,7 +6133,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 13 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6057,7 +6149,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 14 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6072,7 +6165,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 15 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6087,7 +6181,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 16 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6102,7 +6197,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 19 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6117,7 +6213,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 20 2018';
 monkeyInfo (end).comments = {'gain manipulation, fixed density, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6132,7 +6229,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 21 2018';
 monkeyInfo (end).comments = {'gain manipulation, fixed density, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6147,7 +6245,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 26 2018';
 monkeyInfo (end).comments = {'gain manipulation, fixed density, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6162,7 +6261,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 27 2018';
 monkeyInfo (end).comments = {'gain manipulation, fixed density, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6177,7 +6277,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Feb 28 2018';
 monkeyInfo (end).comments = {'two densities, stimulus replay, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6192,7 +6293,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 1 2018';
 monkeyInfo (end).comments = {'two densities, stimulus replay, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6207,7 +6309,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 2 2018';
 monkeyInfo (end).comments = {'two densities, stimulus replay, no landmarks, no perturbations, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6222,7 +6325,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 5 2018';
 monkeyInfo (end).comments = {'perturbations, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6237,7 +6341,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 6 2018';
 monkeyInfo (end).comments = {'perturbations, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6252,7 +6357,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 7 2018';
 monkeyInfo (end).comments = {'perturbations, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6267,7 +6373,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 8 2018';
 monkeyInfo (end).comments = {'perturbations, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6282,7 +6389,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 9 2018';
 monkeyInfo (end).comments = {'fixed ground, no ptb, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6297,7 +6405,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 12 2018';
 monkeyInfo (end).comments = {'fixed ground, no ptb, fixed density, no landmarks, random DCI, random ITI'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6312,7 +6421,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 13 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6327,7 +6437,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 14 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6342,7 +6453,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 15 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6357,7 +6469,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 16 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6372,7 +6485,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 21 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6387,7 +6501,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 22 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6402,7 +6517,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 23 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6417,7 +6533,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 26 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6432,7 +6549,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 27 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6447,7 +6565,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 28 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6462,7 +6581,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 29 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6477,7 +6597,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Mar 30 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6492,7 +6613,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 02 2018'; %Question: Same date as last session
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6507,7 +6629,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 03 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6522,7 +6645,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 04 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6537,7 +6661,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 05 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6552,7 +6677,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 06 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6567,7 +6693,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 09 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6582,7 +6709,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 10 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6597,7 +6725,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 11 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6612,7 +6741,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 12 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6627,7 +6757,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 13 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6642,7 +6773,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 16 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6657,7 +6789,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 17 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6672,7 +6805,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 18 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6687,7 +6821,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 19 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6703,7 +6838,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 20 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6718,7 +6854,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 23 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6733,7 +6870,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Utah Array\Apr 24 2018';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6748,7 +6886,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 25 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48', 'linearprobe24'};
+monkeyInfo (end).area = {'PPC', 'PFC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6763,7 +6902,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 27 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6778,7 +6918,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 28 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6793,7 +6934,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 29 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6808,7 +6950,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 02 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6823,7 +6966,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 03 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6838,7 +6982,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 04 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6853,7 +6998,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 09 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6868,7 +7014,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 10 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6883,7 +7030,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 11 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6898,7 +7046,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 12 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6913,7 +7062,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 13 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6928,7 +7078,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 14 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6943,7 +7094,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 16 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6958,7 +7110,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 17 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6973,7 +7126,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 20 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6988,7 +7142,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 21 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7003,7 +7158,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 25 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7018,7 +7174,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 26 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7033,7 +7190,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 27 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7048,7 +7206,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 28 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7063,7 +7222,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 31 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7078,7 +7238,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 03 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7093,7 +7254,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 04 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7108,7 +7270,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 06 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7123,7 +7286,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 07 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7138,7 +7302,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 08 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7153,7 +7318,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 09 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7168,7 +7334,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 10 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7183,7 +7350,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 30 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7198,7 +7366,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 31 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7213,7 +7382,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 01 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7228,7 +7398,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 04 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7243,7 +7414,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 05 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7258,7 +7430,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 06 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7273,7 +7446,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 07 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7288,7 +7462,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 10 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7303,7 +7478,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 11 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7318,7 +7494,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 12 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7333,7 +7510,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 13 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7348,7 +7526,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 14 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7363,7 +7542,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 17 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7378,7 +7558,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 18 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7393,7 +7574,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 19 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7408,7 +7590,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 20 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7423,7 +7606,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 21 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7438,7 +7622,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 24 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7453,7 +7638,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 25 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7468,7 +7654,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 26 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7483,7 +7670,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 27 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7498,7 +7686,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 28 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7513,7 +7702,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Oct 03 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7528,7 +7718,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Oct 04 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -7543,7 +7734,8 @@ monkeyInfo (end).channels = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Oct 05 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode = 'utah2x48';
+monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
 
