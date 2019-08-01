@@ -1,4 +1,4 @@
-           %(* ::Package:: *)
+%(* ::Package:: *)
 
 monkeyInfo = [];
 
@@ -6,7 +6,7 @@ monkeyInfo = [];
 
 %% session 1
 monkeyInfo (end+1).monk_id = 44;         % Monkey #
-monkeyInfo (end).session_id         % Session #
+monkeyInfo (end).session_id = 1;        % Session #
 monkeyInfo (end).coord.row = -3;         % Row (grid)
 monkeyInfo (end).coord.column = 14;      % Column (grid)
 monkeyInfo (end).coord.depth = 3158;     % Depth below gray matter (in microns)
@@ -3603,7 +3603,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 %% session 1
 monkeyInfo (end+1).monk_id = 51;         % Monkey #
-monkeyInfo (end).session_id         % Session #
+monkeyInfo (end).session_id = 1;        % Session #
 monkeyInfo (end).coord.row = -6;         % Row (grid)
 monkeyInfo (end).coord.column = 18;      % Column (grid)
 monkeyInfo (end).coord.depth = 3004;     % Depth below gray matter (in microns)
@@ -5243,7 +5243,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 103
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 103;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1 ; 
 monkeyInfo (end).coord.column = 25;
 monkeyInfo (end).coord.depth = 3231;
 monkeyInfo (end).channels = 1:24;
@@ -5275,7 +5275,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 105
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 105;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1 ;
 monkeyInfo (end).coord.column = 27;
 monkeyInfo (end).coord.depth = 2610;
 monkeyInfo (end).channels = 1:24;
@@ -5323,7 +5323,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 108
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 108;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1; 
 monkeyInfo (end).coord.column = 28;
 monkeyInfo (end).coord.depth = 3037;
 monkeyInfo (end).channels = 1:24;
@@ -5355,7 +5355,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 110
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 110;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1; 
 monkeyInfo (end).coord.column = 24;
 monkeyInfo (end).coord.depth = 3929;
 monkeyInfo (end).channels = 1:24;
@@ -5371,7 +5371,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 111
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 111;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1; 
 monkeyInfo (end).coord.column = 26;
 monkeyInfo (end).coord.depth = 3154;
 monkeyInfo (end).channels = 1:24;
@@ -5483,7 +5483,7 @@ monkeyInfo (end).eyechannels = [2 2];
 %% session 118
 monkeyInfo (end+1).monk_id = 51;
 monkeyInfo (end).session_id = 118;
-monkeyInfo (end).coord.row
+monkeyInfo (end).coord.row = 1; 
 monkeyInfo (end).coord.column = 29;
 monkeyInfo (end).coord.depth = 4194;
 monkeyInfo (end).channels = 1:24;
@@ -5565,7 +5565,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 %% session 1
 monkeyInfo (end+1).monk_id = 53;         % Monkey # 
-monkeyInfo (end).session_id         % Session #
+monkeyInfo (end).session_id = 1;         % Session #
 monkeyInfo (end).coord.row = 18;         % Row (grid)
 monkeyInfo (end).coord.column = 18;      % Column (grid)
 monkeyInfo (end).coord.depth = 2935;     % Depth below gray matter (in microns)

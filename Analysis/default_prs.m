@@ -15,8 +15,7 @@ prs.units = monkeyInfo.units;
 prs.electrode_type = monkeyInfo.electrode_type;
 prs.comments = monkeyInfo.comments;
 prs.eyechannels = monkeyInfo.eyechannels;
-prs.nev = monkeyInfo.nev;
-prs.plx = monkeyInfo.plx;
+prs.area = monkeyInfo.area;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
