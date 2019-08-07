@@ -15,7 +15,7 @@ prs.units = monkeyInfo.units;
 prs.electrode_type = monkeyInfo.electrode_type;
 prs.comments = monkeyInfo.comments;
 prs.eyechannels = monkeyInfo.eyechannels;
-prs.area = monkeyInfo.area;
+prs.brain_area = monkeyInfo.area;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
@@ -221,12 +221,12 @@ prs.simulate_population = false; % simulate population activity by running the e
 prs.event_potential = true;
 
 prs.compute_spectrum = true;
-prs.analyse_eventtriggeredlfp = true;
+prs.analyse_eventtriggeredlfp = false; % get beta and theta fixation and saccadic events
 prs.analyse_trialperiods = true;
-prs.analyse_lfpepochs = true; % extract and analyse lfp for epochs (mobile,stationary,eyes_moving,eyes_fixed etc.)
+prs.analyse_lfpepochs = false; % extract and analyse lfp for epochs (mobile,stationary,eyes_moving,eyes_fixed etc.)
 
-prs.analyse_theta = true;
-prs.analyse_beta = true;
+prs.analyse_theta = false;
+prs.analyse_beta = false;
 prs.compute_coherencyLFP = true;
 
 %% Spike-LFP
