@@ -2,7 +2,7 @@ function PlotLFP(lfps,pop_lfps,electrode_id,plot_type,prs)
 
 theta_peak = prs.lfp_theta_peak;
 beta_peak = prs.lfp_beta_peak;
-electrode = prs.electrode;
+electrode = prs.electrode_type;
 
 if electrode_id ~= 0
     lfp = lfps([lfps.electrode_id]==electrode_id);
@@ -41,7 +41,7 @@ if electrode_id ~= 0
             lfps = lfps(reorderindx);
             for i=1:nlfps
                 psd_norm(i,:) = lfps(i).stats.trialtype.all.spectrum.psd;
-            end 
+            end
             max_psd = max(max(psd_norm,[],2));
             f = lfps(1).stats.trialtype.all.spectrum.freq;
             for i=1:nlfps
@@ -136,11 +136,11 @@ if electrode_id ~= 0
             for i=1:nlfps % 48 for Schro
                 psd1 = lfps(i).stats.trialtype.eyesfree.spectrum.psd;
                 psd2 = lfps(i).stats.trialtype.eyesfixed.spectrum.psd;
-            
-            subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-            plot(f,psd1,'r'); axis([2 50 0 150]); axis off; box off;
-            plot(f,psd2,'k'); axis([2 50 0 150]); axis off; box off;
-            xlim([2 50]); ylim([0 250]); vline(15);
+                
+                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                plot(f,psd1,'r'); axis([2 50 0 150]); axis off; box off;
+                plot(f,psd2,'k'); axis([2 50 0 150]); axis off; box off;
+                xlim([2 50]); ylim([0 250]); vline(15);
             end
         case 'PSD_eye_move_all'  % main plot
             freq = lfps(1).stats.trialtype.eyesfree_mobile.spectrum.freq;
@@ -393,28 +393,28 @@ if electrode_id ~= 0
             %theta
             figure; hold on; title('theta')
             subplot(1,2,1); hold on; plot(v_eye,theta_v,'.k'); plot(v_eye, nanmean(theta_v),'ob','MarkerFaceColor','b');
-            xlabel('Vertical eye velocity (deg/s)'); ylabel('\theta - frequency (Hz)'); vline(0, '-k'); 
+            xlabel('Vertical eye velocity (deg/s)'); ylabel('\theta - frequency (Hz)'); vline(0, '-k');
             v_eye2 = repmat(v_eye,[nlfps,1]);
-%             [b,a,bint,aint] = regress_perp(v_eye2(:),theta_v(:));
-%             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            %             [b,a,bint,aint] = regress_perp(v_eye2(:),theta_v(:));
+            %             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             subplot(1,2,2); hold on; plot(h_eye,theta_h,'.k'); plot(h_eye, mean(theta_h),'ob','MarkerFaceColor','b');
-            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\theta - frequency (Hz)'); vline(0, '-k');  
-%             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
-%             [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));
-%             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
+            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\theta - frequency (Hz)'); vline(0, '-k');
+            %             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
+            %             [b,a,bint,aint] = regress_perp(h_eye2(:),theta_h(:));
+            %             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','b');
             
             % beta
             figure; hold on; title('beta')
             subplot(1,2,1); hold on; plot(v_eye,beta_v,'.k'); plot(v_eye, mean(beta_v),'or','MarkerFaceColor','r');
-            xlabel('Vertical eye velocity (deg/s)'); ylabel('\beta - frequency (Hz)'); vline(0, '-k'); 
+            xlabel('Vertical eye velocity (deg/s)'); ylabel('\beta - frequency (Hz)'); vline(0, '-k');
             v_eye2 = repmat(v_eye,[nlfps,1]);
-%             [b,a,bint,aint] = regress_perp(v_eye2(:),beta_v(:));
-%             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            %             [b,a,bint,aint] = regress_perp(v_eye2(:),beta_v(:));
+            %             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
             subplot(1,2,2); hold on; plot(h_eye,beta_h,'.k'); plot(h_eye, mean(beta_h),'or','MarkerFaceColor','r');
-            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\beta - frequency (Hz)'); vline(0, '-k'); 
-%             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
-%             [b,a,bint,aint] = regress_perp(h_eye2(:),beta_h(:));
-%             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
+            xlabel('Horizontal eye velocity (cm/s)'); ylabel('\beta - frequency (Hz)'); vline(0, '-k');
+            %             h_eye2 = repmat(h_eye,[nlfps,1]); h_eye2 = h_eye2(:);
+            %             [b,a,bint,aint] = regress_perp(h_eye2(:),beta_h(:));
+            %             x = linspace(0,30,100); y = a + b*x; erry = abs([aint(2) + bint(2)*x ; aint(1) + bint(1)*x] - y); shadedErrorBar(x,y,erry,'lineprops','r');
             
         case 'reg_coeff'
             figure('Position',[680 690 356 408]); hold on; nlfps = length(lfps);
@@ -647,6 +647,7 @@ else
         case 'coherence_dist'
             C = pop_lfps.stats.crosslfp.coher;
             f = pop_lfps.stats.crosslfp.freq;
+            if length(electrode)>1 end
             switch electrode
                 case 'utah96'
                     [xloc,yloc] = map_utaharray([],electrode); [~,electrode_id] = MapChannel2Electrode(electrode);
@@ -707,6 +708,9 @@ else
                     axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
                     %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
                     set(gca,'Fontsize',10);
+                    
+                case 'linearprobe24'
+                    
             end
         case 'phase_dist'
             phi = pop_lfps.stats.crosslfp.phase;
@@ -823,6 +827,91 @@ else
                     end
                     figure; surf(spatial_dists',linspace(0,0.5,101)',ecdf_phasediff_beta'); colormap(goodcolormap('bwr',100)); set(gca,'YDir','reverse')
                     hold on; plot(spatial_dists,median_phasediff_beta,'sk'); axis([0 9.5 0 0.31]); % 0.2325 rad @ 18.5 Hz => 2ms
+            end
+            
+        case 'sim_coherence_dist'
+            C = pop_lfps.stats.crosslfp.coher;
+            f = pop_lfps.stats.crosslfp.freq;
+            for i=1:length(electrode)
+                switch electrode{i}
+                    case 'utah96'
+                        [xloc,yloc] = map_utaharray([],electrode{1}); [~,electrode_id] = MapChannel2Electrode(electrode{i});
+                        spatial_coher = []; spatial_dist = [];
+                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
+                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
+                        for i=1:96
+                            for j=1:i-1
+                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
+                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
+                            end
+                        end
+                        spatial_distances = unique(spatial_dist);
+                        spatial_coher_mu = cell2mat(arrayfun(@(x) mean(spatial_coher(spatial_dist==x,:)), spatial_distances, 'UniformOutput', false)');
+                        spatial_coher_sem = cell2mat(arrayfun(@(x) std(spatial_coher(spatial_dist==x,:))/sqrt(sum(spatial_dist==x)), spatial_distances, 'UniformOutput', false)');
+                        %%
+                        figure; hold on; subplot(1,2,1); hold on;
+                        cmap = gray(numel(spatial_distances));
+                        for i=1:numel(spatial_distances), plot(f,spatial_coher_mu(i,:),'Color',cmap(i,:)); end
+                        axis([2 80 0.65 1]); xlabel('Frequency (Hz)'); ylabel('Magnitude of coherence between LFPs'); set(gca,'Fontsize',10);
+                        [~,theta] = min(abs(f - theta_peak)); [~,beta] = min(abs(f - beta_peak)); spatial_multiplier = prs.electrodespacing;
+                        %
+                        subplot(1,2,2); hold on; %errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,theta),spatial_coher_sem(:,theta),'ok','MarkerFaceColor','r','Capsize',0);
+                        hold on; errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,beta),spatial_coher_sem(:,beta),'dk','Capsize',0);
+                        spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
+                        plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
+                        axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
+                        %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
+                        set(gca,'Fontsize',10);
+                    case 'utah2x48'
+                        [xloc,yloc] = map_utaharray([],electrode{i}); [~,electrode_id] = MapChannel2Electrode(electrode{i});
+                        spatial_coher = []; spatial_dist = []; spatial_loc = [];
+                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
+                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
+                        for i=1:nlfps
+                            for j=1:i-1
+                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
+                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
+                                spatial_loc(end+1,:) = (chan2elec(i,j) <= 48); % true = 1:48, false = 49:96
+                            end
+                        end
+                        set1 = prod(spatial_loc,2);
+                        spatial_dist1 = spatial_dist; spatial_dist1(set1 == 0) = 20;
+                        spatial_distances = unique(spatial_dist1);
+                        spatial_coher_mu = cell2mat(arrayfun(@(x,y) mean(spatial_coher(spatial_dist1==x,:)), spatial_distances, 'UniformOutput', false)');
+                        spatial_coher_sem = cell2mat(arrayfun(@(x,y) std(spatial_coher(spatial_dist1==x,:))/sqrt(sum(spatial_dist1==x)), spatial_distances, 'UniformOutput', false)');
+                        %%
+                        figure; hold on; subplot(1,2,1); hold on;
+                        cmap = gray(numel(spatial_distances));
+                        for i=1:numel(spatial_distances), plot(f,spatial_coher_mu(i,:),'Color',cmap(i,:)); end
+                        axis([2 80 0.65 1]); xlabel('Frequency (Hz)'); ylabel('Magnitude of coherence between LFPs'); set(gca,'Fontsize',10);
+                        [~,theta] = min(abs(f - theta_peak)); [~,beta] = min(abs(f - beta_peak)); spatial_multiplier = prs.electrodespacing;
+                        %
+                        subplot(1,2,2); hold on; %errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,theta),spatial_coher_sem(:,theta),'ok','MarkerFaceColor','r','Capsize',0);
+                        hold on; errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,beta),spatial_coher_sem(:,beta),'sk','Capsize',0);
+                        spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
+                        plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
+                        axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
+                        %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
+                        set(gca,'Fontsize',10);
+                        
+                    case 'linearprobe24'
+                        [xloc,yloc] = map_linearprobe([],electrode); [~,electrode_id] = MapChannel2Electrode(electrode);
+                        spatial_coher = []; spatial_dist = [];
+                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
+                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
+                        for i=1:nlfps
+                            for j=1:i-1
+                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
+                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
+                            end
+                        end
+                        spatial_distances = unique(spatial_dist);
+                        spatial_coher_mu = cell2mat(arrayfun(@(x) mean(spatial_coher(spatial_dist==x,:)), spatial_distances, 'UniformOutput', false)');
+                        spatial_coher_sem = cell2mat(arrayfun(@(x) std(spatial_coher(spatial_dist==x,:))/sqrt(sum(spatial_dist==x)), spatial_distances, 'UniformOutput', false)');
+                        %%
+                        
+                        
+                end
             end
     end
 end

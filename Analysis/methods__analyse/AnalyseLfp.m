@@ -68,7 +68,7 @@ if event_potential
                     [trials_lfps_temp2,ts] = ShiftLfps(trials_lfps_temp,continuous_temp,[events_temp.t_targ],'lfp');
                     lfps_temp2 = interp1(ts,(trials_lfps_temp2),prs.ts.target)';
                     stats.trialtype.(trialtypes{i})(j).events.target.raw.potential_mu = nanmean(lfps_temp2);
-                    stats.trialtype.(trialtypes{i})(j).events.target.raw.potential_sem = nanstd(lfps_temp2)/sqrt(size(lfps_temp2,1)); 
+                    stats.trialtype.(trialtypes{i})(j).events.target.raw.potential_sem = nanstd(lfps_temp2)/sqrt(size(lfps_temp2,1));
                     stats.trialtype.(trialtypes{i})(j).events.target.raw.time = prs.ts.target;
                     
                     [trials_lfps_temp2,ts] = ShiftLfps(trials_lfps_temp,continuous_temp,[events_temp.t_targ],'lfp_theta');
@@ -174,7 +174,7 @@ end
 if compute_spectrum
     spectralparams.tapers = prs.spectrum_tapers;
     spectralparams.Fs = 1/dt;
-    spectralparams.trialave = prs.spectrum_trialave;       
+    spectralparams.trialave = prs.spectrum_trialave;
     
     %% trial periods
     if analyse_trialperiods
@@ -244,7 +244,7 @@ if compute_spectrum
             stats.epoch.eyesfree.spectrum.psd = [];
             stats.epoch.eyesfree.spectrum.freq = [];
         end
-                
+        
         % eyes fixed
         clear lfp_concat sMarkers
         lfp_concat = cell2mat({epochs_lfps.eyesfixed.lfp}); % concatenate trials
@@ -269,7 +269,7 @@ if compute_spectrum
         else
             stats.epoch.eyesfree_mobile.spectrum.psd = [];
             stats.epoch.eyesfree_mobile.spectrum.freq = [];
-        end        
+        end
         
         % eyes free, stationary period
         clear lfp_concat sMarkers
@@ -283,7 +283,7 @@ if compute_spectrum
             stats.epoch.eyesfree_stationary.spectrum.psd = [];
             stats.epoch.eyesfree_stationary.spectrum.freq = [];
         end
-                
+        
         % eyes fixed, mobile period
         clear lfp_concat sMarkers
         lfp_concat = cell2mat({epochs_lfps.eyesfixed_mobile.lfp}); % concatenate trials
@@ -295,7 +295,7 @@ if compute_spectrum
         else
             stats.epoch.eyesfixed_mobile.spectrum.psd = [];
             stats.epoch.eyesfixed_mobile.spectrum.freq = [];
-        end        
+        end
         
         % eyes fixed, stationary period
         clear lfp_concat sMarkers
@@ -308,8 +308,8 @@ if compute_spectrum
         else
             stats.epoch.eyesfixed_stationary.spectrum.psd = [];
             stats.epoch.eyesfixed_stationary.spectrum.freq = [];
-        end                
-    end    
+        end
+    end
     
     %% event aligned spectrograms
     if analyse_eventtriggeredlfp
@@ -325,7 +325,7 @@ if compute_spectrum
         triallen = cellfun(@(x) length(x), {epochs_lfps.fixationevent.lfp});
         sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
         [stats.eventtype.fixate.spectrum.psd , stats.eventtype.fixate.spectrum.freq] = ...
-            mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/        
+            mtspectrumc_unequal_length_trials(lfp_concat(:), [1 1] , spectralparams, sMarkers); % needs http://chronux.org/
         spectralparams.pad = 2;
         [stats.eventtype.fixate.tfspectrum.psd , stats.eventtype.fixate.tfspectrum.time, stats.eventtype.fixate.tfspectrum.freq] = ...
             mtspecgramtrigc(lfp_concat(:), floor(mean(sMarkers,2))/fs_lfp, [1 1], [0.5 0.01] , spectralparams); % needs http://chronux.org/
@@ -401,7 +401,7 @@ if compute_spectrum
         [stats.eventtype.reward.tfspectrum.psd , stats.eventtype.reward.tfspectrum.time, stats.eventtype.reward.tfspectrum.freq] = ...
             mtspecgramtrigc(lfp_concat(:), eventtimes, [1 1], [0.5 0.01] , spectralparams); % needs http://chronux.org/
         
-
+        
     end
     
 end
@@ -437,7 +437,7 @@ if analyse_theta
                 ComputeTuning2D({continuous_temp.v},{continuous_temp.w},{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move,prs.tuning,prs.tuning_method);
             %% horizontal eye velocity
             heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
-            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false); 
+            heyevel = cellfun(@(x) [0 ; diff(x)'/dt],heye,'UniformOutput',false);
             for m=1:length(heyevel), heyevel{m}(abs(heyevel{m})>25) = NaN; end
             heyevel_abs = cellfun(@(x) abs(x),heyevel,'UniformOutput',false);
             stats.trialtype.(trialtypes{i})(j).continuous.heyevel.thetafreq = ...
@@ -452,7 +452,7 @@ if analyse_theta
             %% v_w_heye_veye
             for k=1:length(continuous_temp), continuous_temp(k).w_abs = abs(continuous_temp(k).w); continuous_temp(k).v_abs = abs(continuous_temp(k).v); end % take abs value for w
             stats.trialtype.(trialtypes{i})(j).continuous.vwhv.thetafreq = ...
-                MultiRegress({continuous_temp.v_abs},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move);           
+                MultiRegress({continuous_temp.v_abs},{continuous_temp.w_abs},heyevel_abs,veyevel_abs,{continuous_temp.ts},{trials_theta_temp.freq},timewindow_move);
         end
     end
 end

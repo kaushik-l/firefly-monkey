@@ -2,6 +2,7 @@ function [trials_lfp, epochs_lfp] = AddTrials2Lfp(lfp,fs,trialevents,behv,prs)
 
 ntrls = length(trialevents.t_end);
 trials_lfp(ntrls) = struct();
+epochs_lfp = struct();
 
 %% filter LFP
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin 75]/(fs/2));
