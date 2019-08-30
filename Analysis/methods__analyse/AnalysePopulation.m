@@ -451,7 +451,7 @@ end
 
 %% coherence between LFPs
 if compute_coherencyLFP
-    trlindx = behv_stats.trialtype.all.trlindx;
+    trlindx = behv_stats.trialtype.all.trlindx;  %% add all different trial types 
     lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
     % params
     spectralparams.tapers = prs.spectrum_tapers;
@@ -464,4 +464,26 @@ if compute_coherencyLFP
     fprintf('**********Computing pairwise coherence between LFPs********** \n');
     [stats.crosslfp.coher , stats.crosslfp.phase, ~, ~, stats.crosslfp.freq] = ...
         coherencyc_unequal_length_trials(lfp_concat, prs.spectrum_movingwin , spectralparams, sMarkers); % needs http://chronux.org/
+    % store output of coherencyc_unequal_length_trials to 3-D matrix (freq x electrode_site x electrode_site)
+    ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
+    spatial_coher = []; spatial_phase = [];
+    for i=2:nunits
+        for j=1:i-1
+            stats.crosslfp.spatial_coher(:,i,j) = stats.crosslfp.coher(:,ind2row(i,j));
+            stats.crosslfp.spatial_phase(:,i,j) = stats.crosslfp.phase(:,ind2row(i,j));
+        end
+    end
+    stats.crosslfp.spatial_coher(:,end,end+1) = 0; % pad column of zeros to squarify the matrix
+    stats.crosslfp.spatial_phase(:,end,end+1) = 0;
+    % split electrode pairs based on brain area
+    unique_brain_areas = unique([units.brain_area]); num_brain_areas = numel(unique_brain_areas);
+    for p = 1:num_brain_areas
+        unitindx = strcmp([units.brain_area], unique_brain_areas(p));
+        thisarea_coher = stats.crosslfp.spatial_coher(:,unitindx,unitindx);
+        thisarea_phase = stats.crosslfp.spatial_phase(:,unitindx,unitindx);
+        electrode_type = unique([units(unitindx).electrode_type]);
+        electrode_ids = [units(unitindx).electrode_id];
+        [stats.(unique_brain_areas{p}).coher,stats.(unique_brain_areas{p}).phase,stats.(unique_brain_areas{p}).dist] = ...
+            ComputeCoherenceByDistance(thisarea_coher,thisarea_phase,electrode_ids,electrode_type{:});
+    end
 end

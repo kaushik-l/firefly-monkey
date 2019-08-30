@@ -3,7 +3,7 @@ function AddLfps(this,prs)
 
 %% load plx
 cd(prs.filepath_neur);
-if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_type,'linearprobe16'))
+if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_type,'linearprobe16')) % Modify, keep one brain area for k=1:24, lfps(k).brain_area = lfps(k).brain_area(2); else, lfps(k).brain_area = lfps(k).brain_area(1); end
     if any(strcmp(prs.electrode_type,'linearprobe24')), electrode_type = {'linearprobe24'}; else electrode_type = {'linearprobe16'}; end 
     disp ('loading plexon file...')
     
