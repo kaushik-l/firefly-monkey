@@ -2619,7 +2619,7 @@ monkeyInfo (end).eyechannels = [1 0];
 
 
 
-%% session 168
+%% session 168         Missing behv files
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 168;
 monkeyInfo (end).coord.row = nan;
@@ -2636,7 +2636,7 @@ monkeyInfo (end).eyechannels = [1 0];
 
 
 
-%% session 169
+%% session 169      Missing behv files
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 169;
 monkeyInfo (end).coord.row = nan;
@@ -2653,7 +2653,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 
 
-%% session 170
+%% session 170         Missing behv files
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 170;
 monkeyInfo (end).coord.row = nan;
@@ -2701,7 +2701,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 
 
-%% session 173
+%% session 173  Trial mismatch
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 173;
 monkeyInfo (end).coord.row = nan;
@@ -2723,7 +2723,8 @@ monkeyInfo (end).session_id = 174;
 monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
-monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).channels_plx = 1:24;    
+monkeyInfo (end).channels_nev = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 09 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
@@ -2750,7 +2751,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 
 
-%% session 176
+%% session 176         Trial mismatch
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 176;
 monkeyInfo (end).coord.row = nan;
@@ -2766,7 +2767,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 
 
-%% session 177
+%% session 177   % missing data
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 177;
 monkeyInfo (end).coord.row = nan;
@@ -2782,7 +2783,7 @@ monkeyInfo (end).eyechannels = [2 2];
 
 
 
-%% session 178
+%% session 178 % missing data
 monkeyInfo (end+1).monk_id = 44;
 monkeyInfo (end).session_id = 178;
 monkeyInfo (end).coord.row = nan;
@@ -2795,23 +2796,6 @@ monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, r
 monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
 monkeyInfo (end).area = {'PPC', 'MST'};
 monkeyInfo (end).eyechannels = [2 2];
-
-
-
-%% session 178
-monkeyInfo (end+1).monk_id = 44;
-monkeyInfo (end).session_id = 178;
-monkeyInfo (end).coord.row = nan;
-monkeyInfo (end).coord.column = nan;
-monkeyInfo (end).coord.depth = nan;
-monkeyInfo (end).channels = 1:96;
-monkeyInfo (end).units = 0;
-monkeyInfo (end).folder = 'Quigley\Sim_recordings\Jan 24 2018';
-monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah96', 'linearprobe24'};
-monkeyInfo (end).area = {'PPC', 'MST'};
-monkeyInfo (end).eyechannels = [2 2];
-
 
 
 %% session 179
@@ -2868,7 +2852,8 @@ monkeyInfo (end).session_id = 182;
 monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
-monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).channels_plx = 1:24;     
+monkeyInfo (end).channels_nev = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 08 2018'; 
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};
@@ -2884,7 +2869,8 @@ monkeyInfo (end).session_id = 183;
 monkeyInfo (end).coord.row = nan;
 monkeyInfo (end).coord.column = nan;
 monkeyInfo (end).coord.depth = nan;
-monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).channels_plx = 1:24;  
+monkeyInfo (end).channels_nev = 1:96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Quigley\Sim_recordings\Feb 09 2018';
 monkeyInfo (end).comments = {'two densities, no landmarks, no ptb, random DCI, random ITI, 1D Azimuth, MSTd'};

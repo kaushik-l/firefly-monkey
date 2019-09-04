@@ -451,7 +451,9 @@ end
 
 %% coherence between LFPs
 if compute_coherencyLFP
-    trlindx = behv_stats.trialtype.all.trlindx;  %% add all different trial types 
+    trialtypes = fields(stats.trialtype);
+    
+    trlindx = behv_stats.trialtype.all.trlindx;   %% add all different trial types 
     lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
     % params
     spectralparams.tapers = prs.spectrum_tapers;
@@ -479,11 +481,35 @@ if compute_coherencyLFP
     unique_brain_areas = unique([units.brain_area]); num_brain_areas = numel(unique_brain_areas);
     for p = 1:num_brain_areas
         unitindx = strcmp([units.brain_area], unique_brain_areas(p));
-        thisarea_coher = stats.crosslfp.spatial_coher(:,unitindx,unitindx);
-        thisarea_phase = stats.crosslfp.spatial_phase(:,unitindx,unitindx);
-        electrode_type = unique([units(unitindx).electrode_type]);
-        electrode_ids = [units(unitindx).electrode_id];
-        [stats.(unique_brain_areas{p}).coher,stats.(unique_brain_areas{p}).phase,stats.(unique_brain_areas{p}).dist] = ...
-            ComputeCoherenceByDistance(thisarea_coher,thisarea_phase,electrode_ids,electrode_type{:});
+        coherMat = stats.crosslfp.spatial_coher(:,unitindx,unitindx);
+        phaseMat = stats.crosslfp.spatial_phase(:,unitindx,unitindx);
+        stats.(unique_brain_areas{p}).electrode_type = unique([units(unitindx).electrode_type]);
+        stats.(unique_brain_areas{p}).electrode_ids = [units(unitindx).electrode_id];
+        coherMatFull = coherMat + permute(coherMat,[1 3 2]); coherMatFull(coherMatFull == 0) = NaN; % symmetrify
+        stats.(unique_brain_areas{p}).coherByElectrode = nanmean(coherMatFull,3);  % save freq x elec
+        phaseMatFull = coherMat + permute(phaseMat,[1 3 2]); phaseMatFull(phaseMatFull == 0) = NaN; % symmetrify
+        stats.(unique_brain_areas{p}).phaseByElectrode = nanmean(phaseMatFull,3);  % save freq x elec
+        stats.(unique_brain_areas{p}).coherMatFull = coherMatFull; % save freq x elec x elec
+        stats.(unique_brain_areas{p}).phaseMatFull = phaseMatFull; % save freq x elec x elec
+        [stats.(unique_brain_areas{p}).coherByDist,stats.(unique_brain_areas{p}).phaseByDist,stats.(unique_brain_areas{p}).dist] = ...
+            ComputeCoherenceByDistance(coherMat,phaseMat,stats.(unique_brain_areas{p}).electrode_ids,stats.(unique_brain_areas{p}).electrode_type{:});  % save freq x dist
+    end
+    % analyse cross-area
+    if num_brain_areas==2
+        unitindx1 = strcmp([units.brain_area], unique_brain_areas(1));
+        unitindx2 = strcmp([units.brain_area], unique_brain_areas(2));
+        
+        if max(find(unitindx1)) > min(find(unitindx2)), stats.crossarea.coher12 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx1,unitindx2),3));
+        else, stats.crossarea.coher12 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx2,unitindx1),2)); end
+        
+        if max(find(unitindx2)) > min(find(unitindx1)), stats.crossarea.coher21 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx2,unitindx1),3));
+        else, stats.crossarea.coher21 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx1,unitindx2),2)); end
+        
+        if max(find(unitindx1)) > min(find(unitindx2)), stats.crossarea.phase12 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx1,unitindx2),3));
+        else, stats.crossarea.phase12 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx2,unitindx1),2)); end
+        
+        if max(find(unitindx2)) > min(find(unitindx1)), stats.crossarea.phase21 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx2,unitindx1),3));
+        else, stats.crossarea.phase21 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx1,unitindx2),2)); end
+        
     end
 end

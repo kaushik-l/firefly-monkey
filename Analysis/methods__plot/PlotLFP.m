@@ -830,100 +830,91 @@ else
             end
             
         case 'sim_coherence_dist'
-            C = pop_lfps.stats.crosslfp.coher;
-            f = pop_lfps.stats.crosslfp.freq;
-            for i=1:length(electrode)
-                switch electrode{i}
-                    case 'utah96'
-                        [xloc,yloc] = map_utaharray([],electrode{1}); [~,electrode_id] = MapChannel2Electrode(electrode{i});
-                        spatial_coher = []; spatial_dist = [];
-                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
-                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
-                        for i=1:96
-                            for j=1:i-1
-                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
-                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
-                            end
-                        end
-                        spatial_distances = unique(spatial_dist);
-                        spatial_coher_mu = cell2mat(arrayfun(@(x) mean(spatial_coher(spatial_dist==x,:)), spatial_distances, 'UniformOutput', false)');
-                        spatial_coher_sem = cell2mat(arrayfun(@(x) std(spatial_coher(spatial_dist==x,:))/sqrt(sum(spatial_dist==x)), spatial_distances, 'UniformOutput', false)');
-                        %%
-                        figure; hold on; subplot(1,2,1); hold on;
-                        cmap = gray(numel(spatial_distances));
-                        for i=1:numel(spatial_distances), plot(f,spatial_coher_mu(i,:),'Color',cmap(i,:)); end
-                        axis([2 80 0.65 1]); xlabel('Frequency (Hz)'); ylabel('Magnitude of coherence between LFPs'); set(gca,'Fontsize',10);
-                        [~,theta] = min(abs(f - theta_peak)); [~,beta] = min(abs(f - beta_peak)); spatial_multiplier = prs.electrodespacing;
-                        %
-                        subplot(1,2,2); hold on; %errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,theta),spatial_coher_sem(:,theta),'ok','MarkerFaceColor','r','Capsize',0);
-                        hold on; errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,beta),spatial_coher_sem(:,beta),'dk','Capsize',0);
-                        spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
-                        plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
-                        axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
-                        %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
-                        set(gca,'Fontsize',10); title('utah96');
-                    case 'utah2x48'
-                        [xloc,yloc] = map_utaharray([],electrode{i}); [~,electrode_id] = MapChannel2Electrode(electrode{i});
-                        spatial_coher = []; spatial_dist = []; spatial_loc = [];
-                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
-                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
-                        for i=1:nlfps
-                            for j=1:i-1
-                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
-                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
-                                spatial_loc(end+1,:) = (chan2elec(i,j) <= 48); % true = 1:48, false = 49:96
-                            end
-                        end
-                        set1 = prod(spatial_loc,2);
-                        spatial_dist1 = spatial_dist; spatial_dist1(set1 == 0) = 20;
-                        spatial_distances = unique(spatial_dist1);
-                        spatial_coher_mu = cell2mat(arrayfun(@(x,y) mean(spatial_coher(spatial_dist1==x,:)), spatial_distances, 'UniformOutput', false)');
-                        spatial_coher_sem = cell2mat(arrayfun(@(x,y) std(spatial_coher(spatial_dist1==x,:))/sqrt(sum(spatial_dist1==x)), spatial_distances, 'UniformOutput', false)');
-                        %%
-                        figure; hold on; subplot(1,2,1); hold on;
-                        cmap = gray(numel(spatial_distances));
-                        for i=1:numel(spatial_distances), plot(f,spatial_coher_mu(i,:),'Color',cmap(i,:)); end
-                        axis([2 80 0.65 1]); xlabel('Frequency (Hz)'); ylabel('Magnitude of coherence between LFPs'); set(gca,'Fontsize',10);
-                        [~,theta] = min(abs(f - theta_peak)); [~,beta] = min(abs(f - beta_peak)); spatial_multiplier = prs.electrodespacing;
-                        %
-                        subplot(1,2,2); hold on; %errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,theta),spatial_coher_sem(:,theta),'ok','MarkerFaceColor','r','Capsize',0);
-                        hold on; errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,beta),spatial_coher_sem(:,beta),'sk','Capsize',0);
-                        spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
-                        plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
-                        axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
-                        %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
-                        set(gca,'Fontsize',10);
-                        
-                    case 'linearprobe24'
-                        [xloc,yloc] = map_linearprobe([],electrode{i}); [~,electrode_id] = MapChannel2Electrode(electrode{i});
-                        spatial_coher = []; spatial_dist = [];
-                        ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
-                        chan2elec = @(i,j) [electrode_id(i) electrode_id(j)];
-                        for i=1:nlfps
-                            for j=1:i-1
-                                spatial_coher(end+1,:) = C(:,ind2row(i,j));
-                                spatial_dist(end+1) = sqrt(diff(xloc(chan2elec(i,j)))^2 + diff(yloc(chan2elec(i,j)))^2); % in units of electrodes
-                            end
-                        end
-                        spatial_distances = unique(spatial_dist);
-                        spatial_coher_mu = cell2mat(arrayfun(@(x) mean(spatial_coher(spatial_dist==x,:)), spatial_distances, 'UniformOutput', false)');
-                        spatial_coher_sem = cell2mat(arrayfun(@(x) std(spatial_coher(spatial_dist==x,:))/sqrt(sum(spatial_dist==x)), spatial_distances, 'UniformOutput', false)');
-                        %%
-                        figure; hold on; subplot(1,2,1); hold on;
-                        cmap = gray(numel(spatial_distances));
-                        for i=1:numel(spatial_distances), plot(f,spatial_coher_mu(i,:),'Color',cmap(i,:)); end
-                        axis([2 80 0.65 1]); xlabel('Frequency (Hz)'); ylabel('Magnitude of coherence between LFPs'); set(gca,'Fontsize',10);
-                        [~,theta] = min(abs(f - theta_peak)); [~,beta] = min(abs(f - beta_peak)); spatial_multiplier = prs.electrodespacing;
-                        %
-                        subplot(1,2,2); hold on; %errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,theta),spatial_coher_sem(:,theta),'ok','MarkerFaceColor','r','Capsize',0);
-                        hold on; errorbar(spatial_multiplier*spatial_distances,spatial_coher_mu(:,beta),spatial_coher_sem(:,beta),'dk','Capsize',0);
-                        spatialprs = fmincon(@(x) sum([spatial_coher_mu(:,beta)' - (1 - x(1)*(1 - exp(-(spatial_multiplier*spatial_distances)/x(2))))].^2),[1 1],[],[]);
-                        plot(linspace(0,5,100),(1 - spatialprs(1)*(1 - exp(-(linspace(0,5,100))/spatialprs(2)))),'k');
-                        axis([0 5 0.7 1]); xlabel('Distance between electrodes (mm)'); ylabel('Magnitude of coherence between LFPs');
-                        %                     legend('\theta (8.5 Hz)','\beta (18.5 Hz)');
-                        set(gca,'Fontsize',10); title('linearprobe24');
-                        
-                end
-            end
+            % MST
+            dist_mst = pop_lfps.stats.MST.dist; coher_mst = pop_lfps.stats.MST.coher; phase_mst = pop_lfps.stats.MST.phase; freq = pop_lfps.stats.crosslfp.freq;
+            %plot coher
+            cmap = jet(24);
+            figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
+            set(gca,'xlim',[2 50], 'ylim', [0.7 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence MST'); xlabel('frequency');
+            %plot phase
+            figure; hold on; for k=1:24, plot(freq,phase_mst(:,k),'Color',cmap(k,:)); end
+            set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase MST');
+            % plot across distance  (plot for diff frequencies)
+            figure; plot(dist_mst,nanmean(coher_mst(6:12,:))); hold on;
+            set(gca,'xlim',[1 24], 'ylim', [0.8 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence across distance 6-12 Hz MST'); xlabel('electrode distance'); ylabel('coherence')
+            
+            %                 % distance-coherence
+            %                 spatial_coher = pop_lfps.stats.crosslfp.spatial_coher;
+            %                 figure; hold on; title('spatial coherence MST')
+            %                 for i = 2:40
+            %                     plot(squeeze(nanmean(spatial_coher(i,1:24,:))))
+            %                 end
+            
+            % PPC
+            dist_ppc = pop_lfps.stats.PPC.dist; coher_ppc = pop_lfps.stats.PPC.coher; phase_ppc = pop_lfps.stats.PPC.phase; freq = pop_lfps.stats.crosslfp.freq;
+            %plot coher
+            cmap = jet(49);
+            figure; hold on; for k=1:49, plot(freq,coher_ppc(:,k),'Color',cmap(k,:)); end
+            set(gca,'xlim',[2 50], 'ylim', [0.75 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence PPC'); xlabel('frequency'); ylabel('coherence'); 
+            %plot phase
+            figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
+            set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase PPC'); xlabel('frequency'); ylabel('phase'); 
+            % plot across distance  (plot for diff frequencies)
+            figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
+            set(gca,'xlim',[1 12], 'ylim', [0.8 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence across distance 6-12 Hz PPC'); xlabel('electrodes'); ylabel('coherence')
+            
+          
+
+             case 'sim_coherence_dist_areas'
+            % across areas  --  area 1 is MST, area 2 is PPC. 
+             cmap = jet(24);
+             coher12 = pop_lfps.stats.crossarea.coher12; freq = pop_lfps.stats.crosslfp.freq;
+             figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
+             set(gca,'xlim',[2 50], 'ylim', [0.68 0.76], 'yTick', [0.7 0.75], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --> PPC')
+             
+             cmap = jet(96);
+             coher21 = pop_lfps.stats.crossarea.coher21; 
+             figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
+             set(gca,'xlim',[2 50], 'ylim', [0.68 0.77], 'yTick', [0.7 0.75], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --> MST')
+             
+             %phase
+             cmap = jet(24);
+             phase12 = pop_lfps.stats.crossarea.phase12;
+             figure; hold on; for k=1:24, plot(freq,phase12(:,k),'Color',cmap(k,:)); end
+             set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --- <PPC>'); hline(0, '--k');
+             
+             cmap = jet(96);
+             phase21 = pop_lfps.stats.crossarea.phase21;
+             figure; hold on; for k=1:96, plot(freq,phase21(:,k),'Color',cmap(k,:)); end
+             set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --- <MST>'); hline(0, '--k');
+             
+             % By electrode
+             % MST
+             cmap = jet(24);
+             elec_mst = stats.MST.coherByElectrode;
+             for k=1:24
+                 plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
+                 set(gca,'xlim',[2 50], 'ylim', [0.75 0.95], 'yTick', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
+                 xlabel('frequency'); ylabel('coherency')
+             end
+             
+             % PPC
+             elec_ppc = stats.PPC.coherByElectrode;
+             [xloc,yloc] = map_utaharray([],'utah96');
+             for i=1:96
+                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                 plot(freq,elec_ppc(:,k),'Color', 'k'); box off;
+                 set(gca,'xlim',[2 50], 'ylim', [0.7 0.9], 'TickDir', 'out'); 
+             end
     end
 end

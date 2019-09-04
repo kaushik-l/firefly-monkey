@@ -3,8 +3,9 @@ function AddLfps(this,prs)
 
 %% load plx
 cd(prs.filepath_neur);
-if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_type,'linearprobe16')) % Modify, keep one brain area for k=1:24, lfps(k).brain_area = lfps(k).brain_area(2); else, lfps(k).brain_area = lfps(k).brain_area(1); end
-    if any(strcmp(prs.electrode_type,'linearprobe24')), electrode_type = {'linearprobe24'}; else electrode_type = {'linearprobe16'}; end 
+% get electrode type
+if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_type,'linearprobe16'))
+    if any(strcmp(prs.electrode_type,'linearprobe24')), electrode_type = {'linearprobe24'}; else electrode_type = {'linearprobe16'}; end
     disp ('loading plexon file...')
     
     file_ead_plx=dir('*_ead.plx');
@@ -12,6 +13,8 @@ if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_ty
     file_ns1=dir('*.ns1');
     
     if ~isempty(file_lfp_plx) && ~isempty(file_ead_plx)
+        % get brain area 
+        brain_area = prs.brain_area(2);
         % read events
         fprintf(['... reading events from ' file_ead_plx.name '\n']);
         [events_plx, fs_plx] = GetEvents_plx(file_ead_plx.name);
@@ -31,7 +34,7 @@ if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_ty
                     if adfreq > prs.fs_lfp, N = round(adfreq/prs.fs_lfp); ad = downsample(ad,N); end
                     channel_id = j;
                     fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
-                    this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id),electrode_type,prs.brain_area,prs.coord);
+                    this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id),electrode_type,brain_area,prs.coord);
                     this.lfps(end).AddTrials(ad,adfreq/N,events_plx,this.behaviours,prs);
                 else
                     fprintf('...... LFP is fragmented. Use a machine with more RAM or contact KL\n');
@@ -58,12 +61,13 @@ if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_ty
             events_nev = FixEvents_nev(events_nev,this.behaviours.trials);
         end
         if length(this.behaviours.trials)==length(events_nev.t_end)
+            brain_area = prs.brain_area(1); 
             [ch_id,electrode_id] = MapChannel2Electrode('utah96'); % assuming 96 channel array -- need to generalise this line of code
             for j=1:prs.maxchannels_nev
                 lfpdata = openNSx(['/' file_ns1.name],'report','read', 'uV',['c:' num2str(j)]);
                 channel_id = lfpdata.MetaTags.ChannelID;
                 fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
-                this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id),electrode_type,prs.brain_area,prs.coord);
+                this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id),electrode_type,brain_area,prs.coord);
                 this.lfps(end).AddTrials(lfpdata.Data,lfpdata.MetaTags.SamplingFreq,events_nev,this.behaviours,prs); % end
             end
         else
