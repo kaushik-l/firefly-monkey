@@ -1,6 +1,7 @@
 function stats = AnalysePopulation(units,trials_behv,behv_stats,lfps,prs,stats)
 
 nunits = length(units);
+nlfps = length(lfps);
 dt = prs.dt; % sampling resolution (s)
 
 %% which analayses to do
@@ -9,6 +10,7 @@ compute_canoncorr = prs.compute_canoncorr;
 regress_popreadout = prs.regress_popreadout;
 simulate_population = prs.simulate_population;
 compute_coherencyLFP = prs.compute_coherencyLFP;
+corr_neuronbehverr = prs.corr_neuronbehverr;
 
 %% load cases
 trialtypes = fields(behv_stats.trialtype);
@@ -31,6 +33,7 @@ if fitGAM_coupled
     GAM_prs.varchoose = prs.GAM_varchoose;
     GAM_prs.method = prs.GAM_method;
     for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
+        fprintf(['i = ' num2str(i) '\n']);
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         fprintf(['.........fitting GAM model :: trialtype: ' (trialtypes{i}) '\n']);
@@ -73,8 +76,10 @@ if fitGAM_coupled
                         var_phase = cell(1,nunits);
                         for l = 1:nunits, var_phase{l} = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp{l}.lfp},'UniformOutput',false); end
                     elseif strcmp(vartype(k),'event')
-                        vars{k} = [events_temp.(prs.varlookup(varname{k}))]; 
-                        if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
+                        if ~any(strcmp(varname(k),{'spikehist','h1','h2'}))
+                            vars{k} = [events_temp.(prs.varlookup(varname{k}))];
+                            if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
+                        end
                     end
                     GAM_prs.binrange{k} = prs.binrange.(varname{k});
                 end
@@ -88,6 +93,9 @@ if fitGAM_coupled
                 for k=1:length(vars)
                     if strcmp(varname(k),'phase')
                         xt(:,k) = nan; % works as long as 'phase' is not the first entry in varname
+                    elseif any(strcmp(varname(k),{'h1','h2'}))
+                        [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                        xt(:,k) = xt(:,k)/100; % 1 unit = 100pixels/s
                     elseif ~strcmp(vartype(k),'event')
                         [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     elseif ~strcmp(varname(k),'spikehist')                        
@@ -103,6 +111,7 @@ if fitGAM_coupled
                 end
                 %% fit fully coupled GAM model to each unit
                 for k=1:nunits
+                    fprintf(['k = ' num2str(k) '\n']);
                     % replace xt(:,'phase') with the unit-specific LFP channel
                     xt(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     xt_k = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
@@ -155,6 +164,8 @@ if compute_canoncorr
                         elseif isnan_re, vars{k} = {continuous_temp.yle};
                         else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                         end
+                    elseif strcmp(varname(k),'phase')
+                        vars{k} = {lfps(1).trials(trlindx).lfp};
                     end
                 end
                 %% define time windows for computing tuning
@@ -174,7 +185,7 @@ if compute_canoncorr
                     trials_spks_temp = units(k).trials(trlindx);
                     [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
-                Yt_smooth = SmoothSpikes(Yt, 3*filtwidth);
+                Yt_smooth = SmoothSpikes(Yt, 1*filtwidth);
                 %% compute canonical correlation
                 [X,Y,R,~,~,pstats] = canoncorr(xt,Yt_smooth/dt);
                 stats.trialtype.(trialtypes{i})(j).canoncorr.stim = X;
@@ -195,12 +206,12 @@ if compute_canoncorr
                 stats.trialtype.(trialtypes{i})(j).responsecorr_raw = corr(Yt);
                 stats.trialtype.(trialtypes{i})(j).responsecorr_smooth = corr(Yt_smooth);
                 %% compute pairwise noise correlations
-                for k=1:numel(varname)
-                    binrange{k} = prs.binrange.(varname{k}); 
-                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})}; 
-                end
-                [stats.trialtype.(trialtypes{i})(j).noisecorr_raw,...
-                    stats.trialtype.(trialtypes{i})(j).noisecorr_smooth] = ComputeNoisecorr(Yt,xt,binrange,nbins);
+%                 for k=1:numel(varname)
+%                     binrange{k} = prs.binrange.(varname{k}); 
+%                     nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})}; 
+%                 end
+%                 [stats.trialtype.(trialtypes{i})(j).noisecorr_raw,...
+%                     stats.trialtype.(trialtypes{i})(j).noisecorr_smooth] = ComputeNoisecorr(Yt,xt,binrange,nbins);
             end
         end
     end
@@ -229,9 +240,15 @@ if regress_popreadout
                 trials_spks_temp = units(k).trials(trlindx);
                 [~,~,Yt(:,k)] = ConcatenateTrials({continuous_temp.v},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
             end
+            %% gather all lfps
+            Zt = [];
+            for k=1:nlfps
+                lfps_temp = lfps(k).trials(trlindx);
+                Zt(:,k) = ConcatenateTrials({lfps_temp.lfp},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+            end
             %% build decoder for each variable
             vars = cell(length(varname),1);
-            trials_spks_temp = units(k).trials(trlindx);
+            trials_spks_temp = units(1).trials(trlindx);
             for k=1:length(varname)
                 fprintf(['Building decoder for ' varname{k} '...\n']);
                 if isfield(continuous_temp,varname{k}), vars{k} = {continuous_temp.(varname{k})};
@@ -256,6 +273,8 @@ if regress_popreadout
                     elseif isnan_re, vars{k} = {continuous_temp.yle};
                     else, vars{k} = cellfun(@(x,y) 0.5*(x + y),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false);
                     end
+                elseif strcmp(varname(k),'phase')
+                    vars{k} = {lfps(1).trials(trlindx).lfp};
                 end
                 xt = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 % filter dv and dw
@@ -263,7 +282,7 @@ if regress_popreadout
                 if any(strcmp(varname{k},{'dv','dw'})), xt = conv(xt,h,'same'); end
                 xt(isnan(xt)) = 0;
                 %% fit smoothing window
-                if prs.lineardecoder_fitkernelwidth
+                if prs.lineardecoder_fitkernelwidth % optimise filter width
                     filtwidths=1:5:100; decodingerror = nan(1,length(filtwidths));
                     fprintf('...optimising hyperparameter\n');
                     for l=1:length(filtwidths)
@@ -279,7 +298,16 @@ if regress_popreadout
                     stats.(decodertype).(varname{k}).true = xt;
                     stats.(decodertype).(varname{k}).pred = (Yt_temp*stats.(decodertype).(varname{k}).wts);
                     stats.(decodertype).(varname{k}).corr = corr(stats.(decodertype).(varname{k}).true,stats.(decodertype).(varname{k}).pred);
+                else % use fixed filter width
+                    Yt_temp = SmoothSpikes([Yt Zt], 5*filtwidth); % smooth spiketrains before fitting model
+                    stats.(decodertype).(varname{k}).wts = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
+                    stats.(decodertype).(varname{k}).true = xt;
+                    stats.(decodertype).(varname{k}).pred = (Yt_temp*stats.(decodertype).(varname{k}).wts);
+                    stats.(decodertype).(varname{k}).corr = corr(stats.(decodertype).(varname{k}).true,stats.(decodertype).(varname{k}).pred);
                 end
+                %% split back data into trials
+                stats.(decodertype).(varname{k}).trials.true = DeconcatenateTrials(stats.(decodertype).(varname{k}).true,{continuous_temp.ts},timewindow_full);
+                stats.(decodertype).(varname{k}).trials.pred = DeconcatenateTrials(stats.(decodertype).(varname{k}).pred,{continuous_temp.ts},timewindow_full);
                 %% subsample neurons
                 if prs.lineardecoder_subsample
                     N_neurons = prs.N_neurons; N_samples = prs.N_neuralsamples; Nt = size(Yt,1);
@@ -296,15 +324,33 @@ if regress_popreadout
                         end
                     end
                 end
-                %% fixed filtwidth
-                Yt_temp = SmoothSpikes(Yt, 3*filtwidth); % smooth spiketrains before fitting model
-                stats.(decodertype).(varname{k}).wts2 = (Yt_temp'*Yt_temp)\(Yt_temp'*xt); % analytical
-                stats.(decodertype).(varname{k}).true2 = xt;
-                stats.(decodertype).(varname{k}).pred2 = (Yt_temp*stats.(decodertype).(varname{k}).wts2);
-                stats.(decodertype).(varname{k}).corr2 = corr(stats.(decodertype).(varname{k}).true2,stats.(decodertype).(varname{k}).pred2);
+            end
+            %% reconstruct trajectory from neural data
+            for l = 1:sum(trlindx)
+                [stats.(decodertype).xt_from_vw.trials.pred{l},stats.(decodertype).yt_from_vw.trials.pred{l}] = ...
+                    gen_traj(stats.lineardecoder.w.trials.pred{l},stats.lineardecoder.v.trials.pred{l},continuous_temp(l).ts);
+                stats.(decodertype).xt_from_vw.trials.pred{l}(end) = []; % remove extra time point at the end
+                stats.(decodertype).yt_from_vw.trials.pred{l}(end) = [];
+                [stats.(decodertype).xt.trials.pred{l},stats.(decodertype).yt.trials.pred{l}] = ...
+                    gen_traj(diff(stats.lineardecoder.phi.trials.pred{l})/dt,diff(stats.lineardecoder.d.trials.pred{l})/dt,continuous_temp(l).ts);
             end
         end
     end
+end
+
+%%
+if corr_neuronbehverr
+    for k=1:sum(trlindx)
+        startingtime = find(continuous_temp(k).ts > 0,1);
+        stoppingtime = find(continuous_temp(k).ts > events_temp(k).t_stop,1);
+        stats.error_lineardecoder.r_targ(k) = stats.lineardecoder.r_targ.trials.true{k}(stoppingtime) - stats.lineardecoder.r_targ.trials.pred{k}(stoppingtime);
+        stats.error_lineardecoder.theta_targ(k) = stats.lineardecoder.theta_targ.trials.true{k}(stoppingtime) - stats.lineardecoder.theta_targ.trials.pred{k}(stoppingtime);
+        stats.error_lineardecoder.v(k) = mean(stats.lineardecoder.v.trials.true{k}(startingtime:stoppingtime) - ...
+            stats.lineardecoder.v.trials.pred{k}(startingtime:stoppingtime));
+        stats.error_lineardecoder.w(k) = mean(stats.lineardecoder.w.trials.true{k}(startingtime:stoppingtime) - ...
+            stats.lineardecoder.w.trials.pred{k}(startingtime:stoppingtime));
+    end
+    stats.error_behv.r_targ = behv_stats.trialtype.all.trlerrors;
 end
 
 %% evaluate model responses for coupled and uncoupled models

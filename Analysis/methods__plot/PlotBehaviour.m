@@ -19,7 +19,7 @@ behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect
 
 %% plot
 switch plot_type
-    case 'distance'
+    case 'distance'        
         figure; hold on;
         r_targ = behv.stats.pos_final.r_targ(~crazy);
         r_monk = behv.stats.pos_final.r_monk(~crazy);
@@ -38,6 +38,82 @@ switch plot_type
         xlabel('Target, r(m)');
         set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
         ylabel('Response, r(m)');
+    case 'distance_vs_reward'
+        figure; hold on;
+        
+        r_targ = behv.stats.pos_final.r_targ(incorrect);
+        r_monk = behv.stats.pos_final.r_monk(incorrect);
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
+            trl_indx = trl_indx(1:maxtrls);
+            plot(r_targ(trl_indx), r_monk(trl_indx), '.r','markersize',4);
+        else
+            plot(r_targ, r_monk, '.r','markersize',4);
+        end
+        
+        r_targ = behv.stats.pos_final.r_targ(correct);
+        r_monk = behv.stats.pos_final.r_monk(correct);
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
+            trl_indx = trl_indx(1:maxtrls);
+            plot(r_targ(trl_indx), r_monk(trl_indx), '.b','markersize',4);
+        else
+            plot(r_targ, r_monk, '.b','markersize',4);
+        end
+        
+        axis([0 400 0 400]);
+        plot(0:400,0:400,'--k','Linewidth',1);
+        set(gca, 'XTick', [0 200 400], 'XTickLabel', [0 2 4], 'Fontsize',14);
+        xlabel('Target, r(m)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4]);
+        ylabel('Response, r(m)');
+    case 'dist2targ'
+        r_targ = behv.stats.pos_rel.r_targ(~crazy);
+        t = behv.stats.time(~crazy);
+        events = [behv.trials(~crazy).events]; t_stop = [events.t_stop];
+        ntrls = numel(r_targ);
+        figure; hold on;
+        for i=1:ntrls
+            plot(t{i}(t{i}<t_stop(i)),r_targ{i}(t{i}<t_stop(i)),'k');
+        end
+        hline(65,'--k');
+        set(gca, 'XTick', 0:4, 'XTickLabel', 0:4, 'Fontsize',14);
+        xlabel('Time (s)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4], 'Fontsize',14);
+        ylabel('Distance to target (m)');
+    case 'dist2targ_vs_reward'
+        r_targ = behv.stats.pos_rel.r_targ(correct);
+        t = behv.stats.time(correct);
+        events = [behv.trials(correct).events]; t_stop = [events.t_stop];
+        ntrls = numel(r_targ);
+        figure; hold on;
+        subplot(1,2,1); hold on;
+        for i=1:ntrls
+            t_i = t{i}(t{i}<t_stop(i)); r_i = r_targ{i}(t{i}<t_stop(i));
+            plot(t_i,r_i,'b','Linewidth',0.1);
+            plot(t_i(end),r_i(end),'.k');
+        end        
+        hline(65,'--k');
+                set(gca, 'XTick', 0:4, 'XTickLabel', 0:4, 'Fontsize',14);
+        xlabel('Time since target onset(s)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4], 'Fontsize',14);
+        ylabel('Distance to target (m)');
+        
+        r_targ = behv.stats.pos_rel.r_targ(incorrect);
+        t = behv.stats.time(incorrect);
+        events = [behv.trials(incorrect).events]; t_stop = [events.t_stop];
+        ntrls = numel(r_targ);
+        subplot(1,2,2); hold on;
+        for i=1:ntrls
+            t_i = t{i}(t{i}<t_stop(i)); r_i = r_targ{i}(t{i}<t_stop(i));
+            plot(t_i,r_i,'r','Linewidth',0.1);
+            plot(t_i(end),r_i(end),'.k');
+        end    
+        hline(65,'--k');        
+        set(gca, 'XTick', 0:4, 'XTickLabel', 0:4, 'Fontsize',14);
+        xlabel('Time since target onset(s)');
+        set(gca, 'YTick', [0 200 400], 'YTickLabel', [0 2 4], 'Fontsize',14);
+        ylabel('Distance to target (m)');
     case 'angle'
         figure; hold on;
         theta_targ = behv.stats.pos_final.theta_targ(~crazy);
@@ -53,6 +129,38 @@ switch plot_type
         axis([-40 40 -40 40]);
         plot(-40:40,-40:40,'--k','Linewidth',1);
         plot(-40:40,slope*(-40:40),'r','Linewidth',2);
+        set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
+        xlabel('Target, \theta(deg)');
+        set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);
+        ylabel('Response, \theta(deg)');
+        hline(0, 'k'); vline(0, 'k');
+    case 'angle_vs_reward'
+        figure; hold on;
+        
+        theta_targ = behv.stats.pos_final.theta_targ(incorrect);
+        theta_monk = behv.stats.pos_final.theta_monk(incorrect);
+        slope = behv.stats.trialtype.all.pos_regress.beta_theta;
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
+            trl_indx = trl_indx(1:maxtrls);
+            plot(theta_targ(trl_indx), theta_monk(trl_indx), '.r','markersize',4);
+        else
+            plot(theta_targ, theta_monk, '.r','markersize',4);
+        end
+        
+        theta_targ = behv.stats.pos_final.theta_targ(correct);
+        theta_monk = behv.stats.pos_final.theta_monk(correct);
+        slope = behv.stats.trialtype.all.pos_regress.beta_theta;
+        if ntrls > maxtrls
+            trl_indx = randperm(ntrls);
+            trl_indx = trl_indx(1:maxtrls);
+            plot(theta_targ(trl_indx), theta_monk(trl_indx), '.b','markersize',4);
+        else
+            plot(theta_targ, theta_monk, '.b','markersize',4);
+        end
+        
+        axis([-40 40 -40 40]);
+        plot(-40:40,-40:40,'--k','Linewidth',1);
         set(gca, 'XTick', [-40 0 40], 'XTickLabel', [-40 0 40], 'Fontsize',14);
         xlabel('Target, \theta(deg)');
         set(gca, 'YTick', [-40 0 40], 'YTickLabel', [-40 0 40]);

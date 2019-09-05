@@ -107,12 +107,12 @@ if compute_tuning
                 %% linear velocity, v
                 if any(strcmp(gettuning,'v'))
                     stats.trialtype.(trialtypes{i})(j).continuous.v = ...
-                        ComputeTuning({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning({continuous_temp.v},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.v);
                 end
                 %% angular velocity, w
                 if any(strcmp(gettuning,'w'))
                     stats.trialtype.(trialtypes{i})(j).continuous.w = ...
-                        ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning({continuous_temp.w},{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.w);
                 end
                 %% velocity, vw (two dimensional)
                 if any(strcmp(gettuning,'vw'))
@@ -124,14 +124,14 @@ if compute_tuning
                     a = cellfun(@(x) diff(x)/dt,{continuous_temp.v},'UniformOutput',false);
                     a_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.a = ...
-                        ComputeTuning(a,a_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(a,a_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,[]);
                 end
                 %% angular acceleration, alpha
                 if any(strcmp(gettuning,'alpha'))
                     alpha = cellfun(@(x) diff(x)/dt,{continuous_temp.w},'UniformOutput',false);
                     alpha_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.alpha = ...
-                        ComputeTuning(alpha,alpha_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(alpha,alpha_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,[]);
                 end
                 %% acceleration, aalpha (two dimensional)
                 if any(strcmp(gettuning,'aalpha'))
@@ -142,39 +142,39 @@ if compute_tuning
                 if any(strcmp(gettuning,'v_abs'))
                     v_abs = cellfun(@abs,{continuous_temp.v},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.v_abs = ...
-                        ComputeTuning(v_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(v_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.v);
                 end
                 %% magnitude of angular velocity, |w|
                 if any(strcmp(gettuning,'w_abs'))
                     w_abs = cellfun(@abs,{continuous_temp.w},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.w_abs = ...
-                        ComputeTuning(w_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(w_abs,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,[]);
                 end
                 %% magnitude of linear acceleration, |a|
                 if any(strcmp(gettuning,'a_abs'))
                     a_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.v},'UniformOutput',false);
                     a_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.a_abs = ...
-                        ComputeTuning(a_abs,a_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(a_abs,a_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,[]);
                 end
                 %% magnitude of angular acceleration, |alpha|
                 if any(strcmp(gettuning,'alpha_abs'))
                     alpha_abs = cellfun(@(x) abs(diff(x)/dt),{continuous_temp.w},'UniformOutput',false);
                     alpha_abs_ts = cellfun(@(x) x(2:end),{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.alpha_abs = ...
-                        ComputeTuning(alpha_abs,alpha_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(alpha_abs,alpha_abs_ts,{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,[]);
                 end
                 %% vertical eye position, veye
                 if any(strcmp(gettuning,'veye'))
                     veye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.zle},{continuous_temp.zre},'UniformOutput',false); % average both eyes (if available)
                     stats.trialtype.(trialtypes{i})(j).continuous.veye = ...
-                        ComputeTuning(veye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(veye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.eye_ver);
                 end
                 %% horizontal eye position, heye
                 if any(strcmp(gettuning,'heye'))
                     heye = cellfun(@(x,y) nanmean([x(:)' ; y(:)']),{continuous_temp.yle},{continuous_temp.yre},'UniformOutput',false); % average both eyes (if available)
                     stats.trialtype.(trialtypes{i})(j).continuous.heye = ...
-                        ComputeTuning(heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(heye,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_move,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.eye_hor);
                 end
                 %% eye position, vheye (two dimensional)
                 if any(strcmp(gettuning,'vheye'))
@@ -185,13 +185,13 @@ if compute_tuning
                 if any(strcmp(gettuning,'r'))
                     r = cellfun(@(x,y) sqrt((x(:)-x0).^2 + (y(:)-y0).^2),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.r = ...
-                        ComputeTuning(r,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(r,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.r_targ);
                 end
                 %% bearing, theta
                 if any(strcmp(gettuning,'theta'))
                     theta = cellfun(@(x,y) atan2d(x(:)-x0,y(:)-y0),{continuous_temp.xmp},{continuous_temp.ymp},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.theta = ...
-                        ComputeTuning(theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(theta,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.theta_targ);
                 end
                 %% position, rtheta (two dimensional)
                 if any(strcmp(gettuning,'rtheta'))
@@ -202,13 +202,13 @@ if compute_tuning
                 if any(strcmp(gettuning,'d'))
                     d = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.d = ...
-                        ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(d,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.d);
                 end
                 %% heading, phi
                 if any(strcmp(gettuning,'phi'))
                     phi = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                     stats.trialtype.(trialtypes{i})(j).continuous.phi = ...
-                        ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(phi,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.phi);
                 end
                 %% path, dphi (two dimensional)
                 if any(strcmp(gettuning,'dphi'))
@@ -219,13 +219,13 @@ if compute_tuning
                 if any(strcmp(gettuning,'r_targ'))
                     r_targ = behv_stats.pos_rel.r_targ(trlindx);
                     stats.trialtype.(trialtypes{i})(j).continuous.r_targ = ...
-                        ComputeTuning(r_targ,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(r_targ,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.r_targ);
                 end
                 %% distance to stop, r_stop
                 if any(strcmp(gettuning,'r_stop'))
                     r_stop = behv_stats.pos_rel.r_stop(trlindx);
                     stats.trialtype.(trialtypes{i})(j).continuous.r_stop = ...
-                        ComputeTuning(r_stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method);
+                        ComputeTuning(r_stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.r_targ);
                 end
             end
         end
@@ -296,7 +296,10 @@ if fitGAM_tuning
                 %% concatenate data from all trials
                 xt = []; yt = [];
                 for k=1:length(vars)
-                    if ~strcmp(vartype(k),'event')
+                    if any(strcmp(varname(k),{'h1','h2'}))
+                        [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                        xt(:,k) = xt(:,k)/100; % 1 unit = 100pixels/s
+                    elseif ~strcmp(vartype(k),'event')
                         [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     elseif ~strcmp(varname(k),'spikehist')                        
                         [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);

@@ -41,14 +41,14 @@ prs.saccadeduration = 0.05; % saccades last ~50ms
 % behavioural analysis
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
-prs.saccade_thresh = 200; % deg/s
+prs.saccade_thresh = 50; % deg/s
 prs.saccade_duration = 0.15; %seconds
 prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 0.5; % (s) // duration to extract before target onset or movement onset, whichever is earlier
-prs.posttrial = 0.5; % (s) // duration to extract following end-of-trial timestamp
+prs.pretrial = 0.25; % (s) // duration to extract before target onset or movement onset, whichever is earlier
+prs.posttrial = 0.25; % (s) // duration to extract following end-of-trial timestamp
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 prs.maxtrialduration = 4; % (s) more than this is abnormal
 prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey position during teleportation (cm)
@@ -124,25 +124,27 @@ prs.binrange.r_targ = [0 ; 400]; %cm
 prs.binrange.theta_targ = [-60 ; 60]; %cm
 prs.binrange.d = [0 ; 400]; %cm
 prs.binrange.phi = [-90 ; 90]; %deg
+prs.binrange.h1 = [-0.36 ; 0.36]; %s
+prs.binrange.h2 = [-0.36 ; 0.36]; %s
 prs.binrange.eye_ver = [-25 ; 0]; %deg
 prs.binrange.eye_hor = [-40 ; 40]; %deg
 prs.binrange.veye_vel = [-15 ; 5]; %deg
 prs.binrange.heye_vel = [-30 ; 30]; %deg
 prs.binrange.phase = [-pi ; pi]; %rad
-prs.binrange.target_ON = [-0.24 ; 0.48];
-prs.binrange.target_OFF = [-0.36 ; 0.36];
-prs.binrange.move = [-0.36 ; 0.36];
-prs.binrange.stop = [-0.36 ; 0.36];
-prs.binrange.reward = [-0.36 ; 0.36];
-prs.binrange.spikehist = [0.012 ; 0.252];
+prs.binrange.target_ON = [-0.24 ; 0.48]; %s
+prs.binrange.target_OFF = [-0.36 ; 0.36]; %s
+prs.binrange.move = [-0.36 ; 0.36]; %s
+prs.binrange.stop = [-0.36 ; 0.36]; %s
+prs.binrange.reward = [-0.36 ; 0.36]; %s
+prs.binrange.spikehist = [0.012 ; 0.252]; %s
 
 % fitting models to neural data
 prs.neuralfiltwidth = 10;
-prs.nfolds = 10; % number of folds for cross-validation
+prs.nfolds = 5; % number of folds for cross-validation
 
 % decoder - parameters
 prs.decodertype = 'lineardecoder'; % name of model to fit: linear regression == 'LR'
-prs.lineardecoder_fitkernelwidth = true;
+prs.lineardecoder_fitkernelwidth = false;
 prs.lineardecoder_subsample = false;
 prs.N_neurons = 2.^(0:9); % number of neurons to sample
 prs.N_neuralsamples = 20; % number of times to resample neurons
@@ -158,9 +160,30 @@ prs.varlookup('v') = 'lin vel';
 prs.varlookup('w') = 'ang vel';
 prs.varlookup('d') = 'dist moved';
 prs.varlookup('phi') = 'ang turned';
+prs.varlookup('h1') = 'hand vel PC1';
+prs.varlookup('h2') = 'hand vel PC2';
 prs.varlookup('r_targ') = 'targ dist';
 prs.varlookup('theta_targ') = 'targ ang';
 prs.varlookup('phase') = 'lfp phase';
+prs.varlookup('spikehist') = 'spike history';
+
+%% has table to specify units of measurement
+prs.unitlookup = containers.Map;
+prs.unitlookup('target_ON') = 's';
+prs.unitlookup('target_OFF') = 's';
+prs.unitlookup('move') = 's';
+prs.unitlookup('stop') = 's';
+prs.unitlookup('reward') = 's';
+prs.unitlookup('v') = 'cm/s';
+prs.unitlookup('w') = 'deg/s';
+prs.unitlookup('d') = 'cm';
+prs.unitlookup('phi') = 'deg';
+prs.unitlookup('h1') = 'pixels/s';
+prs.unitlookup('h2') = 'pixels/s';
+prs.unitlookup('r_targ') = 'cm';
+prs.unitlookup('theta_targ') = 'deg';
+prs.unitlookup('phase') = 'rad';
+prs.unitlookup('spikehist') = 's';
 
 %% plotting parameters
 prs.binwidth_abs = prs.temporal_binwidth; % use same width as for the analysis
@@ -176,33 +199,35 @@ prs.bootstrap_trl = 50; % number of trials to bootstrap
 %% traditional methods
 prs.hand_features = {'Finger1','Finger2','Finger3','Finger4','Wrist-down','Wrist-up','Hand-down','Hand-up'};
 prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choose from elements of event_vars (above)
-prs.tuning_continuous = {'v','w','eye_ver','eye_hor'}; % continuous variables - choose from elements of continuous_vars (above)
+prs.tuning_continuous = {'v','w','r_targ','theta_targ','d','phi','eye_ver','eye_hor','phase'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
-prs.GAM_varname = {'v','w','r_targ','theta_targ','phase','move','target_OFF','stop','reward'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','1Dcirc','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_varname = {'v','w','d','phi','h1','h2','phase','move','target_OFF','stop','reward','spikehist'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','event','event','1Dcirc','event','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_basistype = {'boxcar','boxcar','boxcar','boxcar','raisedcosine','raisedcosine','boxcar','raisedcosine','raisedcosine','raisedcosine','raisedcosine'}; % type of variable: 'boxcar', 'nlraisedcosine'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10,10,10,10,10,10}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,1e2,1e2,1e2,1e2}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10,20,20,10,20,20,20,20,20}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [0,0,0,0,0,0,0,0,0]; % set to 1 to always include a variable, 0 to make it optional
-prs.GAM_method = 'FastForward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
+prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_method = 'Forward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
 prs.NNM_vartype = prs.GAM_vartype;
 prs.NNM_nbins = prs.GAM_nbins;
 prs.NNM_method = 'feedforward_nn'; % choose from 'feedforward_nn', 'random_forest' or 'xgboost'
 %% population analysis
-prs.canoncorr_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to include in the task variable matrix
-prs.simulate_varname = {'v','w','d','phi','eye_ver','eye_hor'}; % list of variables to use as inputs in simulation
-prs.simulate_vartype = {'1D','1D','1D','1D','1D','1D'};
-prs.readout_varname = {'dv','dw'};
+prs.canoncorr_varname = {'v','w','d','phi','dv','dw'}; % list of variables to include in the task variable matrix
+prs.simulate_varname = {'v','w','d','phi','dv','dw'}; % list of variables to use as inputs in simulation
+prs.simulate_vartype = {'1D','1D','1D','1D','1D','1D','1D','1D'};
+% prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ','dv','dw','eye_ver','eye_hor'};
+prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','eye_ver','eye_hor'};
 
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = true; % regress response against target position
-prs.regress_eye = true; % regress eye position against target position
+prs.regress_behv = false; % regress response against target position
+prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
@@ -210,14 +235,15 @@ prs.evaluate_peaks = false; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
-prs.GAM_varexp = false; % compute variance explained by each prdictor using GAM
-prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.GAM_varexp = false; % compute variance explained by each predictor using GAM
+prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = false; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models
+prs.corr_neuronbehverr = false;
 
 %% LFP
 prs.event_potential = false;

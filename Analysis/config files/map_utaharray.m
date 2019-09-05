@@ -287,5 +287,5 @@ switch electrode
         else
             xcoords = (xcoords/400)  + 1;
             ycoords = (ycoords/400)  + 1;
-        end;
+        end
 end

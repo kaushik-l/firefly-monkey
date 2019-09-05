@@ -19,6 +19,7 @@ chno.yre = find(strcmp(ch_title,'RDy')); chno.zre = find(strcmp(ch_title,'RDz'))
 chno.xfp = find(strcmp(ch_title,'FireflyX')); chno.yfp = find(strcmp(ch_title,'FireflyY'));
 chno.xmp = find(strcmp(ch_title,'MonkeyX')); chno.ymp = find(strcmp(ch_title,'MonkeyY'));
 chno.v = find(strcmp(ch_title,'ForwardV')); chno.w = find(strcmp(ch_title,'AngularV'));
+if ~isempty(find(strcmp(ch_title,'Pulse'), 1)), chno.microstim = find(strcmp(ch_title,'Pulse')); end
 
 %% scale
 scaling.t = data(chno.mrk).hdr.tim.Scale*data(chno.mrk).hdr.tim.Units;
@@ -32,6 +33,7 @@ scaling.xmp = data(chno.xmp).hdr.adc.Scale; offset.xmp = data(chno.xmp).hdr.adc.
 scaling.ymp = -data(chno.ymp).hdr.adc.Scale; offset.ymp = -data(chno.ymp).hdr.adc.DC;
 scaling.v = data(chno.v).hdr.adc.Scale; offset.v = data(chno.v).hdr.adc.DC;
 scaling.w = data(chno.w).hdr.adc.Scale; offset.w = data(chno.w).hdr.adc.DC;
+if isfield(chno,'microstim'), scaling.microstim = data(chno.microstim).hdr.adc.Scale; offset.microstim = data(chno.microstim).hdr.adc.DC; end
 
 %% event markers
 markers = data(chno.mrk).imp.mrk(:,1);
@@ -60,6 +62,7 @@ for i=1:length(chnames)
         MAX_LENGTH = min(length(ch.(chnames{i})),MAX_LENGTH);
     end
 end
+if any(strcmp(chnames,'microstim')), dt_microstim = dt(end); dt(end) = dt(1); end
 if length(unique(dt))==1
     dt = dt(1);
 else
@@ -68,7 +71,7 @@ end
 
 %% filter position and velocity channels
 for i=1:length(chnames)
-    if ~any(strcmp(chnames{i},{'mrk','yle','yre','zle','zre'}))
+    if ~any(strcmp(chnames{i},{'mrk','yle','yre','zle','zre','microstim'}))
         ch.(chnames{i}) = conv(ch.(chnames{i})(1:MAX_LENGTH),h,'same');
 %         ch.(chnames{i}) = ch.(chnames{i})(sz/2+1:end);
     end
@@ -77,7 +80,15 @@ ch.yle = ch.yle(1:MAX_LENGTH);
 ch.yre = ch.yre(1:MAX_LENGTH);
 ch.zle = ch.zle(1:MAX_LENGTH);
 ch.zre = ch.zre(1:MAX_LENGTH);
-ts = dt:dt:length(ch.(chnames{end}))*dt;
+ts = dt:dt:length(ch.(chnames{end-1}))*dt;
+if any(strcmp(chnames,'microstim'))
+    ts2 = dt_microstim:dt_microstim:length(ch.microstim)*dt_microstim; ch.microstim = interp1(ts2,ch.microstim,ts); 
+    ch.microstim = ch.microstim(:);
+end
+
+%% import hand position
+[ch.h1, ch.h2, isavailable] = ImportHandPosition(ch.v,ch.w,dt,prs);
+if isavailable, chnames(end+1:end+2) = {'h1','h2'}; end % append two more channels
 
 %% replace the signal from the untracked eye (if any) with NaNs
 if prs.eyechannels(1) == 0
@@ -209,7 +220,8 @@ for j=1:length(t.end)
             if any(strcmp(chnames{i},{'xfp','xmp','yfp','ymp'})) % set position values prior to target onset to nan
                 trl(j).continuous.(chnames{i})(1:floor(pretrial/dt_original)) = nan;
             end
-            trl(j).continuous.(chnames{i}) = downsample(trl(j).continuous.(chnames{i}),prs.factor_downsample);
+            if ~strcmp(chnames{i},'microstim'), trl(j).continuous.(chnames{i}) = downsample(trl(j).continuous.(chnames{i}),prs.factor_downsample);
+            else, trl(j).continuous.ts_microstim = (dt_original:dt_original:length(trl(j).continuous.microstim)*dt_original)' - pretrial; end
         end
     end
     trl(j).continuous.ts = (dt:dt:length(trl(j).continuous.(chnames{2}))*dt)' - pretrial;
@@ -265,6 +277,19 @@ for i=1:length(trl)
     trl(i).events.t_microstim = trl(i).events.t_microstim - exp_beg - trl(i).events.t_beg;
     trl(i).events.t_targ = 0;
     trl(i).events.t_beg_correction = t_beg_correction(i);
+    trl(i).events.t_flyON = t_flyON_trl(i) - exp_beg;
+    trl(i).events.t_flyON_minus_teleport = t_flyON_trl(i) - t_teleport_trl(i);
+end
+
+%% detect trials where targets appeared again during the trial
+for i=1:length(trl)
+    timeindx = trl(i).continuous.ts<trl(i).events.t_end;
+    dPf__dt = [0 ; sqrt(diff(trl(i).continuous.xfp(timeindx)).^2 + diff(trl(i).continuous.yfp(timeindx)).^2)];
+    if findpeaks(dPf__dt,dt*(1:length(dPf__dt)),'MinPeakHeight',prs.minpeakprominence.flypos)>0 % detect peaks
+        trl(i).logical.spurioustarg = true;
+    else
+        trl(i).logical.spurioustarg = false;
+    end
 end
 
 %% downsample continuous data

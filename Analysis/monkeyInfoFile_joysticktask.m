@@ -3146,7 +3146,7 @@ monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Bruno\U-probe\May 26 2017';
 monkeyInfo (end).comments = {'four densities, no landmarks, no ptb, fixed DCI, fixed ITI'};
 monkeyInfo (end).electrode = 'linearprobe24';
-monkeyInfo (end).eyechannels = [2 2];
+monkeyInfo (end).eyechannels = [0 0]; % last block smr file has no eye data
 
 %% session 15
 monkeyInfo (end+1).monk_id = 51;
@@ -5628,6 +5628,45 @@ monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, r
 monkeyInfo (end).electrode = 'utah2x48';
 monkeyInfo (end).eyechannels = [2 2];
 
+%% session 88
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 88;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\U-probe\Sep 13 2018';
+monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
+monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).eyechannels = [2 2];
+
+%% session 89
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 89;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\U-probe\Sep 14 2018';
+monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
+monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).eyechannels = [2 2];
+
+%% session 90
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 90;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:24;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\U-probe\Sep 17 2018';
+monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
+monkeyInfo (end).electrode = 'linearprobe24';
+monkeyInfo (end).eyechannels = [2 2];
+
 %% session 99
 monkeyInfo (end+1).monk_id = 53;
 monkeyInfo (end).session_id = 99;
@@ -5653,3 +5692,29 @@ monkeyInfo (end).folder = 'Schro\Stimulation\Apr 14 2019';
 monkeyInfo (end).comments = {'no ptb, fixed density, no landmarks, random DCI, random ITI, multifirelfly'};
 monkeyInfo (end).electrode = 'utah2x48';
 monkeyInfo (end).eyechannels = [2 2];
+
+%% session 101
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 101;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\Stimulation\May 21 2019';
+monkeyInfo (end).comments = {'microstimulation'};
+monkeyInfo (end).electrode = 'tungsten';
+monkeyInfo (end).eyechannels = [2 2];
+
+%% session 102
+monkeyInfo (end+1).monk_id = 53;
+monkeyInfo (end).session_id = 102;
+monkeyInfo (end).coord.row = nan;
+monkeyInfo (end).coord.column = nan;
+monkeyInfo (end).coord.depth = nan;
+monkeyInfo (end).channels = 1:96;
+monkeyInfo (end).units = 0;
+monkeyInfo (end).folder = 'Schro\Stimulation\Jun 05 2019';
+monkeyInfo (end).comments = {'microstimulation'};
+monkeyInfo (end).electrode = 'tungsten';
+monkeyInfo (end).eyechannels = [0 0];

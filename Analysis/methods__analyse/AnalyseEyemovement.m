@@ -32,7 +32,7 @@ for i=1:ntrls
     else, t_fix(i) = 0 + saccade_duration/2; 
     end % if no saccade detected, assume monkey was already fixating on target
     % remove saccade periods from eye position data
-    sacstart = []; sacend = []; 
+    sacstart = []; sacend = [];
     for j=1:length(t_sac2)
         sacstart(j) = find(ts{i}>(t_sac2(j) - saccade_duration/2), 1);
         sacend(j) = find(ts{i}>(t_sac2(j) + saccade_duration/2), 1);
@@ -44,11 +44,13 @@ for i=1:ntrls
 %     t_fix(i) = 0;
     pretrial = 0; posttrial = 0;
     % select data between target fixation and end of movement
+    timeindx = find(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+    
     % target position
-    xt{i} = x_fly{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); yt{i} = y_fly{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+    xt{i} = x_fly{i}(timeindx); yt{i} = y_fly{i}(timeindx);
     xt{i}(isnan(xt{i})) = xt{i}(find(~isnan(xt{i}),1)); yt{i}(isnan(yt{i})) = yt{i}(find(~isnan(yt{i}),1));
     % subject position
-    xmt{i} = x_monk{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)) - x_monk{i}(find(~isnan(x_monk{i}),1)); ymt{i} = y_monk{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)) - y_monk{i}(find(~isnan(y_monk{i}),1));
+    xmt{i} = x_monk{i}(timeindx) - x_monk{i}(find(~isnan(x_monk{i}),1)); ymt{i} = y_monk{i}(timeindx) - y_monk{i}(find(~isnan(y_monk{i}),1));
     xmt{i}(isnan(xmt{i})) = xmt{i}(find(~isnan(xmt{i}),1)); ymt{i}(isnan(ymt{i})) = ymt{i}(find(~isnan(ymt{i}),1));
     % variance in subject position
     [~,x_indx] = min(abs(xmt{i}-spatialerr.x),[],2);
@@ -56,8 +58,8 @@ for i=1:ntrls
     var_xmt{i} = (spatialerr.x_err_smooth(sub2ind(size(spatialerr.x_err_smooth), x_indx, y_indx))).^2;
     var_ymt{i} = (spatialerr.y_err_smooth(sub2ind(size(spatialerr.y_err_smooth), x_indx, y_indx))).^2;
     % eye position
-    yle{i} = yle{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); yre{i} = yre{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
-    zle{i} = zle{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial)); zre{i} = zre{i}(ts{i}>(t_fix(i)-pretrial) & ts{i}<(t_stop(i)+posttrial));
+    yle{i} = yle{i}(timeindx); yre{i} = yre{i}(timeindx);
+    zle{i} = zle{i}(timeindx); zre{i} = zre{i}(timeindx);
     
     % ground truth prediction for eye position (if the monkey really followed the target)
     yle_pred{i} = atan2d(xt{i} + delta, sqrt(yt{i}.^2 + zt^2));
@@ -76,7 +78,30 @@ for i=1:ntrls
     % fly position
     rt{i} = sqrt(xt{i}.^2 + yt{i}.^2);
     thetat{i} = atan2d(xt{i},yt{i});
+    
+    % saccade direction
+    sacxy{i} = []; sacxy_pred{i} = []; sacdir{i} = []; sacdir_pred{i} = []; sac_time{i} = []; errxy{i} = []; errdir{i} = [];
+    if ~isempty(timeindx)
+        for j=1:length(t_sac2)
+            sacstartindx = find(ts{i}>(t_sac2(j) - saccade_duration/2), 1) - timeindx(1) - 2;
+            sacendindx = find(ts{i}>(t_sac2(j) + saccade_duration/2), 1) - timeindx(1) + 2;
+            if sacstartindx>0 && sacendindx<=(numel(timeindx)-50) % only consider saccades 300ms (= 50 samples) before stopping
+                sacxy{i} = [sacxy{i} [ver_mean{i}(sacendindx) - ver_mean{i}(sacstartindx); hor_mean{i}(sacendindx) - hor_mean{i}(sacstartindx)]];
+                sacdir{i} = [sacdir{i} atan2d(sacxy{i}(1,end),sacxy{i}(2,end))];
+                sacxy_pred{i} = [sacxy_pred{i} [ver_mean_pred{i}(sacstartindx) - ver_mean{i}(sacstartindx); hor_mean_pred{i}(sacstartindx) - hor_mean{i}(sacstartindx)]];
+                sacdir_pred{i} = [sacdir_pred{i} atan2d(sacxy_pred{i}(1,end),sacxy_pred{i}(2,end))];
+                sac_time{i} = [sac_time{i} sacstartindx*prs.dt]; % time since target fixation
+            end
+        end
+    end
 end
+
+%% save saccadic eye movements
+eye_movement.saccade.true.val = cell2mat(sacxy);
+eye_movement.saccade.true.dir = cell2mat(sacdir);
+eye_movement.saccade.pred.val = cell2mat(sacxy_pred);
+eye_movement.saccade.pred.dir = cell2mat(sacdir_pred);
+eye_movement.saccade.time = cell2mat(sac_time);
 
 %% correlation between behv error and eye-movement prediction error
 eye_mean_err = nan(ntrls, 1);
@@ -116,6 +141,21 @@ ver_mean1 = cell2mat(cellfun(@(x) [x(:) ; nan(Nt - length(x),1)],ver_mean,'Unifo
 hor_mean1 = cell2mat(cellfun(@(x) [x(:) ; nan(Nt - length(x),1)],hor_mean,'UniformOutput',false));
 ver_diff1 = cell2mat(cellfun(@(x) [x(:) ; nan(Nt - length(x),1)],ver_diff,'UniformOutput',false));
 hor_diff1 = cell2mat(cellfun(@(x) [x(:) ; nan(Nt - length(x),1)],hor_diff,'UniformOutput',false));
+
+% cross-correlation between observed and predicted eye positions
+zeropad_length = 200; % pad these many bins around each trial
+
+pred = [zeros(zeropad_length,ntrls); ver_mean_pred1; zeros(zeropad_length,ntrls)]; pred_shuffled = pred(:,randperm(ntrls));
+pred = pred(:); pred(isnan(pred)) = 0; pred_shuffled = pred_shuffled(:); pred_shuffled(isnan(pred_shuffled)) = 0;
+obs = [zeros(zeropad_length,ntrls); ver_mean1; zeros(zeropad_length,ntrls)];  obs = obs(:); obs(isnan(obs)) = 0;
+[eye_movement.eyepos.pred_vs_true.ver_mean.xcorr.c,eye_movement.eyepos.pred_vs_true.ver_mean.xcorr.lag] = xcorr(pred,obs,400,'coeff');
+eye_movement.eyepos.pred_vs_true.ver_mean.xcorr.c_shuffled = xcorr(pred_shuffled,obs,400,'coeff');
+
+pred = [zeros(zeropad_length,ntrls); hor_mean_pred1; zeros(zeropad_length,ntrls)]; pred_shuffled = pred(:,randperm(ntrls));
+pred = pred(:); pred(isnan(pred)) = 0; pred_shuffled = pred_shuffled(:); pred_shuffled(isnan(pred_shuffled)) = 0;
+obs = [zeros(zeropad_length,ntrls); hor_mean1; zeros(zeropad_length,ntrls)];  obs = obs(:); obs(isnan(obs)) = 0;
+[eye_movement.eyepos.pred_vs_true.hor_mean.xcorr.c,eye_movement.eyepos.pred_vs_true.hor_mean.xcorr.lag] = xcorr(pred,obs,400,'coeff');
+eye_movement.eyepos.pred_vs_true.hor_mean.xcorr.c_shuffled = xcorr(pred_shuffled,obs,400,'coeff');
 
 % timecourse of component-wise corr between predicted & true eye position
 [eye_movement.eyepos.pred_vs_true.ver_mean.rho.startaligned,eye_movement.eyepos.pred_vs_true.ver_mean.pval.startaligned] = arrayfun(@(i) corr(ver_mean1(i,:)',ver_mean_pred1(i,:)','Type','Spearman','rows','complete'), 1:Nt);
