@@ -210,7 +210,7 @@ prs.GAM_nbins = {10,10,10,10,20,20,10,20,20,20,20,20}; % number of bins for each
 prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
 prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
-prs.GAM_method = 'Forward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
+prs.GAM_method = 'Backward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
 prs.NNM_vartype = prs.GAM_vartype;

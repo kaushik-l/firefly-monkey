@@ -18,7 +18,7 @@ behv_correct = behv.trials(correct); ntrls_correct = length(behv_correct);
 behv_incorrect = behv.trials(incorrect); ntrls_incorrect = length(behv_incorrect);
 
 %% population dynamics
-switch plot_type
+switch lower(plot_type)
     case 'psth_trial'
         %% psth of all neurons on one trial
         spks_all = units(1).trials(~crazy);
@@ -213,7 +213,7 @@ switch plot_type
             elseif strcmp(units(i).type,'multiunit'), plot(tspk,electrode_ids(i),'.','Color',[0.5 0.5 0.5],'Markersize',0.5); end
         end
         
-    case 'GAM'
+    case 'gam'
         nvars = 9; cmap = jet(nvars); cmap(5,2) = 0.25;
         for i=1:nunits
             models = units(i).stats.trialtype.all.GAM.log;

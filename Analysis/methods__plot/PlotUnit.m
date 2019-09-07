@@ -295,21 +295,63 @@ switch lower(plot_type)
             end
         end
         
-    case 'gam'
+    case 'gam_uncoupled'
         %% plot model-based tuning functions
         nvars = numel(unit.Uncoupledmodel.x);
-        figure; hold on;
         bestmodel = unit.Uncoupledmodel.bestmodel;
+        ymin = inf; ymax = -inf;
+        if ~isnan(bestmodel)
+            figure; hold on;
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i); hold on;
+                plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{end}{i},'k');
+                if ~isempty(unit.Uncoupledmodel.marginaltunings{bestmodel}{i})
+                    plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{bestmodel}{i},'r');
+                    ymin = min(ymin,min(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
+                    ymax = max(ymax,max(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
+                end
+                xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))];
+                set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
+            end
+            % match y-scales
+            subplot(2,ceil(nvars/2),1); ylabel('(spk/s)');
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i);
+                ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
+                xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
+                if strcmp(unit.Uncoupledmodel.xtype{i},'event')
+                    set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]);
+                    xlabel({'Time (s) rel. to'; prs.GAM_varname{i}}); vline(0,'k');
+                end
+            end
+            pnum = find(cellfun(@(x) ~isempty(x), unit.Uncoupledmodel.marginaltunings{bestmodel}),1);
+            subplot(2,ceil(nvars/2),pnum);
+            legend({'full model','best model'});
+        end
+        %% plot log-likelihood vlues of aaaaaalllll models
+%         modelclass = cell2mat(unit.Uncoupledmodel.class);
+%         nmodels = size(modelclass,1);
+%         for i=1:nmodels, LLval(i) = nanmean(unit.Uncoupledmodel.testFit{i}(:,3)); end
+%         colorcode = jet(max(sum(modelclass,2)));
+%         colorcode = [0.7 0.3 0.8 ; [0.7 0.3 0.8] + 0.2; [0 0.6 0]; [0 0.6 0] + 0.3; ...
+%     [0.25 0.25 0.25]; [0.5 0.5 0.5]; [0.75 0.75 0.75]; [1 1 1]]; % hardcode for 8 vars (4 cont + 4 discrete)
+%         stackedbarweb(LLval, modelclass, colorcode);
+%         figure; bar(LLval,'stacked'); axis([0 nmodels 0 max(LLval)]);
+
+    case 'gam_coupled'
+        %% plot model-based tuning functions
+        nvars = numel(unit.Coupledmodel.x)-1;
+        figure; hold on;
         ymin = inf; ymax = -inf;
         for i=1:nvars
             subplot(2,ceil(nvars/2),i); hold on;
-            plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{end}{i},'k');
-            if ~isempty(unit.Uncoupledmodel.marginaltunings{bestmodel}{i})
-                plot(unit.Uncoupledmodel.x{i},unit.Uncoupledmodel.marginaltunings{bestmodel}{i},'r');
-                ymin = min(ymin,min(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
-                ymax = max(ymax,max(unit.Uncoupledmodel.marginaltunings{bestmodel}{i}));
+            plot(unit.Coupledmodel.x{i},unit.Coupledmodel.marginaltunings{i},'k');
+            if ~isempty(unit.Coupledmodel.marginaltunings{i})
+                plot(unit.Coupledmodel.x{i},unit.Coupledmodel.marginaltunings{i},'r');
+                ymin = min(ymin,min(unit.Coupledmodel.marginaltunings{i}));
+                ymax = max(ymax,max(unit.Coupledmodel.marginaltunings{i}));
             end
-            xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))]; 
+            xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))];
             set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
         end
         % match y-scales
@@ -318,23 +360,15 @@ switch lower(plot_type)
             subplot(2,ceil(nvars/2),i);
             ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
             xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
-            if strcmp(unit.Uncoupledmodel.xtype{i},'event')
-                set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]); 
-                xlabel({'Time (s) rel. to'; prs.GAM_varname{i}}); vline(0,'k'); 
+            if strcmp(unit.Coupledmodel.xtype{i},'event')
+                set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0.5]);
+                xlabel({'Time (s) rel. to'; prs.GAM_varname{i}}); vline(0,'k');
             end
         end
-        pnum = find(cellfun(@(x) ~isempty(x), unit.Uncoupledmodel.marginaltunings{bestmodel}),1);
+        pnum = find(cellfun(@(x) ~isempty(x), unit.Coupledmodel.marginaltunings),1);
         subplot(2,ceil(nvars/2),pnum);
         legend({'full model','best model'});
-        %% plot log-likelihood vlues of aaaaaalllll models
-        modelclass = cell2mat(unit.Uncoupledmodel.class);
-        nmodels = size(modelclass,1);
-        for i=1:nmodels, LLval(i) = nanmean(unit.Uncoupledmodel.testFit{i}(:,3)); end
-%         colorcode = jet(max(sum(modelclass,2)));
-        colorcode = [0.7 0.3 0.8 ; [0.7 0.3 0.8] + 0.2; [0 0.6 0]; [0 0.6 0] + 0.3; ...
-    [0.25 0.25 0.25]; [0.5 0.5 0.5]; [0.75 0.75 0.75]; [1 1 1]]; % hardcode for 8 vars (4 cont + 4 discrete)
-        stackedbarweb(LLval, modelclass, colorcode);
-%         figure; bar(LLval,'stacked'); axis([0 nmodels 0 max(LLval)]);
+        
     case 'sfc'
         lfps = unit.stats.trialtype.all.continuous.lfps;
         nlfps = length(lfps);
@@ -361,6 +395,31 @@ switch lower(plot_type)
                 end
         end
         
+    case 'sfc'
+        lfps = unit.stats.trialtype.all.continuous.lfps;
+        nlfps = length(lfps);
+        f = lfps(1).sta.f;
+        maxpeak = nan(nlfps,1);
+        sfc = nan(nlfps,length(f));
+        for i=1:nlfps
+            sfc(i,:) = lfps(i).sta.sfc;
+            [pks,locs] = findpeaks(sfc(i,:),f,'minpeakprominence',0.001);
+            if ~isempty(max(pks((locs>5 & locs<40)))), maxpeak(i) = max(pks((locs>5 & locs<40))); end
+        end
+        maxpeak = max(maxpeak); if isnan(maxpeak), maxpeak = 1e-3; end
+        switch electrode
+            case 'utah96'
+                [xloc,yloc] = map_utaharray([],electrode);
+                [channel_id,electrode_id] = MapChannel2Electrode(electrode);
+                [~,indx] = sort(electrode_id); reorderindx = channel_id(indx);
+                sfc = sfc(reorderindx,:);
+                hold on;
+                for i=1:nlfps
+                    subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                    plot(f,sfc(i,:)); axis([2 70 -1e-1*maxpeak 1.5*maxpeak]); axis off;
+                    if i==electrode_id(unit.channel_id), axis on; box on; set(gca,'XTick',[]); set(gca,'YTick',[]); end
+                end
+        end
     case 'sta'
         lfps = unit.stats.trialtype.all.continuous.lfps;
         nlfps = length(lfps);
