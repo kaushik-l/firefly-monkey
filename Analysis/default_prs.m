@@ -218,11 +218,11 @@ prs.regress_popreadout = false; % regress population activity against individual
 prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% LFP
-prs.event_potential = true;
+prs.event_potential = false;
 
 prs.compute_spectrum = true;
 prs.analyse_eventtriggeredlfp = false; % get beta and theta fixation and saccadic events
-prs.analyse_trialperiods = true;
+prs.analyse_trialperiods = false;
 prs.analyse_lfpepochs = false; % extract and analyse lfp for epochs (mobile,stationary,eyes_moving,eyes_fixed etc.)
 
 prs.analyse_theta = false;

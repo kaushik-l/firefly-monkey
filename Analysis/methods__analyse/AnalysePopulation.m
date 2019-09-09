@@ -73,7 +73,7 @@ if fitGAM_coupled
                         var_phase = cell(1,nunits);
                         for l = 1:nunits, var_phase{l} = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp{l}.lfp},'UniformOutput',false); end
                     elseif strcmp(vartype(k),'event')
-                        vars{k} = [events_temp.(prs.varlookup(varname{k}))]; 
+                        vars{k} = [events_temp.(prs.varlookup(varname{k}))];
                         if strcmp(varname(k),'target_OFF'), vars{k} = vars{k} + prs.fly_ONduration; end % target_OFF = t_targ + fly_ONduration
                     end
                     GAM_prs.binrange{k} = prs.binrange.(varname{k});
@@ -83,14 +83,14 @@ if fitGAM_coupled
                 timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
                     [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
                 %% concatenate stimulus data from all trials
-                xt = []; yt = []; 
+                xt = []; yt = [];
                 trials_spks_temp = units(1).trials(trlindx); % dummy
                 for k=1:length(vars)
                     if strcmp(varname(k),'phase')
                         xt(:,k) = nan; % works as long as 'phase' is not the first entry in varname
                     elseif ~strcmp(vartype(k),'event')
                         [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
-                    elseif ~strcmp(varname(k),'spikehist')                        
+                    elseif ~strcmp(varname(k),'spikehist')
                         [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     end
                 end
@@ -188,7 +188,7 @@ if compute_canoncorr
                     wy = Y(:,k)/sqrt(Y(:,k)'*Y(:,k));
                     xt_proj = xt*wx; yt_proj = (Yt_smooth/dt)*wy;
                     cov_temp = cov([xt_proj yt_proj]);
-                    taskcov(k) = cov_temp(1,2); % off-diagonal entry                    
+                    taskcov(k) = cov_temp(1,2); % off-diagonal entry
                 end
                 stats.trialtype.(trialtypes{i})(j).canoncorr.dimensionality = sum(taskcov)^2/sum(taskcov.^2); % defined analogously to participation ratio
                 %% compute pairwise correlations
@@ -196,8 +196,8 @@ if compute_canoncorr
                 stats.trialtype.(trialtypes{i})(j).responsecorr_smooth = corr(Yt_smooth);
                 %% compute pairwise noise correlations
                 for k=1:numel(varname)
-                    binrange{k} = prs.binrange.(varname{k}); 
-                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})}; 
+                    binrange{k} = prs.binrange.(varname{k});
+                    nbins{k} = prs.GAM_nbins{strcmp(prs.GAM_varname,varname{k})};
                 end
                 [stats.trialtype.(trialtypes{i})(j).noisecorr_raw,...
                     stats.trialtype.(trialtypes{i})(j).noisecorr_smooth] = ComputeNoisecorr(Yt,xt,binrange,nbins);
@@ -221,7 +221,7 @@ if regress_popreadout
             timewindow_move = [[events_temp.t_move]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
             timewindow_path = [[events_temp.t_targ]' [events_temp.t_stop]']; % only consider data when the subject is integrating path
             timewindow_full = [min([events_temp.t_move],[events_temp.t_targ]) - prs.pretrial ;... % from "min(move,targ) - pretrial_buffer"
-                    [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
+                [events_temp.t_end] + prs.posttrial]'; % till "end + posttrial_buffer"
             nunits = length(units);
             %% gather spikes from all units
             Yt = [];
@@ -356,7 +356,7 @@ if simulate_population && exist('stats','var') && isfield(stats.trialtype.all,'m
                 trials_spks_temp = units(1).trials(trlindx);
                 xt = [];
                 for k=1:length(vars)
-                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full); 
+                    xt(:,k) = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     xt(isnan(xt(:,k)),k) = 0;
                 end
                 %% encode stimulus as one-hot variables
@@ -366,7 +366,7 @@ if simulate_population && exist('stats','var') && isfield(stats.trialtype.all,'m
                 Yt_uncoupled = zeros(size(xt,1),nunits);
                 for k=1:nunits
                     y_temp = zeros(length(vars),size(xt,1));
-                    uncoupledmodel = stats.trialtype.all.models.log.units(k).Uncoupledmodel;                    
+                    uncoupledmodel = stats.trialtype.all.models.log.units(k).Uncoupledmodel;
                     if ~isnan(uncoupledmodel.bestmodel), wts = uncoupledmodel.wts{uncoupledmodel.bestmodel};
                     else, wts = uncoupledmodel.wts{1}; end
                     for l = 1:length(vars)
@@ -451,65 +451,67 @@ end
 
 %% coherence between LFPs
 if compute_coherencyLFP
-    trialtypes = fields(stats.trialtype);
-    
-    trlindx = behv_stats.trialtype.all.trlindx;   %% add all different trial types 
-    lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
-    % params
-    spectralparams.tapers = prs.spectrum_tapers;
-    spectralparams.Fs = 1/dt;
-    spectralparams.trialave = prs.spectrum_trialave;
-    % data
-    for i=1:nunits, lfp_concat(:,i) = cell2mat({units(i).trials(trlindx).lfp}'); end
-    triallen = cellfun(@(x) length(x), {units(1).trials(trlindx).lfp});
-    sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
-    fprintf('**********Computing pairwise coherence between LFPs********** \n');
-    [stats.crosslfp.coher , stats.crosslfp.phase, ~, ~, stats.crosslfp.freq] = ...
-        coherencyc_unequal_length_trials(lfp_concat, prs.spectrum_movingwin , spectralparams, sMarkers); % needs http://chronux.org/
-    % store output of coherencyc_unequal_length_trials to 3-D matrix (freq x electrode_site x electrode_site)
-    ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
-    spatial_coher = []; spatial_phase = [];
-    for i=2:nunits
-        for j=1:i-1
-            stats.crosslfp.spatial_coher(:,i,j) = stats.crosslfp.coher(:,ind2row(i,j));
-            stats.crosslfp.spatial_phase(:,i,j) = stats.crosslfp.phase(:,ind2row(i,j));
+    for s = 1:length(trialtypes)
+        clear trlindx lfp_concat triallen sMarkers
+        trlindx = behv_stats.trialtype.(trialtypes{s}).trlindx;
+        lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
+        % params
+        spectralparams.tapers = prs.spectrum_tapers;
+        spectralparams.Fs = 1/dt;
+        spectralparams.trialave = prs.spectrum_trialave;
+        % data
+        for i=1:nunits, lfp_concat(:,i) = cell2mat({units(i).trials(trlindx).lfp}'); end
+            triallen = cellfun(@(x) length(x), {units(1).trials(trlindx).lfp});
+            sMarkers(:,1) = cumsum([1 triallen(1:end-1)]); sMarkers(:,2) = cumsum(triallen); % demarcate trial onset and end
+            fprintf('**********Computing pairwise coherence between LFPs********** \n');
+            [stats.(trialtypes{s}).crosslfp.coher , stats.(trialtypes{s}).crosslfp.phase, ~, ~, stats.(trialtypes{s}).crosslfp.freq] = ...
+                coherencyc_unequal_length_trials(lfp_concat, prs.spectrum_movingwin , spectralparams, sMarkers); % needs http://chronux.org/
+            % store output of coherencyc_unequal_length_trials to 3-D matrix (freq x electrode_site x electrode_site)
+            ind2row = @(i,j) min(i,j) + (max(i,j)-1)*(max(i,j)-2)/2; % to read the output of "coherencyc_unequal_length_trials" function from Chronux
+            spatial_coher = []; spatial_phase = [];
+            for i=2:nunits
+                for j=1:i-1
+                    stats.(trialtypes{s}).crosslfp.spatial_coher(:,i,j) = stats.(trialtypes{s}).crosslfp.coher(:,ind2row(i,j));
+                    stats.(trialtypes{s}).crosslfp.spatial_phase(:,i,j) = stats.(trialtypes{s}).crosslfp.phase(:,ind2row(i,j));
+                end
+            end
+            stats.(trialtypes{s}).crosslfp.spatial_coher(:,end,end+1) = 0; % pad column of zeros to squarify the matrix
+            stats.(trialtypes{s}).crosslfp.spatial_phase(:,end,end+1) = 0;
+            % split electrode pairs based on brain area
+            unique_brain_areas = unique([units.brain_area]); num_brain_areas = numel(unique_brain_areas);
+            for p = 1:num_brain_areas
+                unitindx = strcmp([units.brain_area], unique_brain_areas(p));
+                coherMat = stats.(trialtypes{s}).crosslfp.spatial_coher(:,unitindx,unitindx);
+                phaseMat = stats.(trialtypes{s}).crosslfp.spatial_phase(:,unitindx,unitindx);
+                stats.(trialtypes{s}).(unique_brain_areas{p}).electrode_type = unique([units(unitindx).electrode_type]);
+                stats.(trialtypes{s}).(unique_brain_areas{p}).electrode_ids = [units(unitindx).electrode_id];
+                coherMatFull = coherMat + permute(coherMat,[1 3 2]); coherMatFull(coherMatFull == 0) = NaN; % symmetrify
+                stats.(trialtypes{s}).(unique_brain_areas{p}).coherByElectrode = nanmean(coherMatFull,3);  % save freq x elec
+                phaseMatFull = coherMat + permute(phaseMat,[1 3 2]); phaseMatFull(phaseMatFull == 0) = NaN; % symmetrify
+                stats.(trialtypes{s}).(unique_brain_areas{p}).phaseByElectrode = nanmean(phaseMatFull,3);  % save freq x elec
+                stats.(trialtypes{s}).(unique_brain_areas{p}).coherMatFull = coherMatFull; % save freq x elec x elec
+                stats.(trialtypes{s}).(unique_brain_areas{p}).phaseMatFull = phaseMatFull; % save freq x elec x elec
+                [stats.(trialtypes{s}).(unique_brain_areas{p}).coherByDist,stats.(trialtypes{s}).(unique_brain_areas{p}).phaseByDist,stats.(trialtypes{s}).(unique_brain_areas{p}).dist] = ...
+                    ComputeCoherenceByDistance(coherMat,phaseMat,stats.(trialtypes{s}).(unique_brain_areas{p}).electrode_ids,stats.(trialtypes{s}).(unique_brain_areas{p}).electrode_type{:});  % save freq x dist
+            end
+            % analyse cross-area
+            if num_brain_areas==2
+                unitindx1 = strcmp([units.brain_area], unique_brain_areas(1));
+                unitindx2 = strcmp([units.brain_area], unique_brain_areas(2));
+                
+                if max(find(unitindx1)) > min(find(unitindx2)), stats.(trialtypes{s}).crossarea.coher12 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_coher(:,unitindx1,unitindx2),3));
+                else, stats.(trialtypes{s}).crossarea.coher12 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_coher(:,unitindx2,unitindx1),2)); end
+                
+                if max(find(unitindx2)) > min(find(unitindx1)), stats.(trialtypes{s}).crossarea.coher21 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_coher(:,unitindx2,unitindx1),3));
+                else, stats.(trialtypes{s}).crossarea.coher21 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_coher(:,unitindx1,unitindx2),2)); end
+                
+                if max(find(unitindx1)) > min(find(unitindx2)), stats.(trialtypes{s}).crossarea.phase12 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_phase(:,unitindx1,unitindx2),3));
+                else, stats.(trialtypes{s}).crossarea.phase12 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_phase(:,unitindx2,unitindx1),2)); end
+                
+                if max(find(unitindx2)) > min(find(unitindx1)), stats.(trialtypes{s}).crossarea.phase21 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_phase(:,unitindx2,unitindx1),3));
+                else, stats.(trialtypes{s}).crossarea.phase21 = squeeze(mean(stats.(trialtypes{s}).crosslfp.spatial_phase(:,unitindx1,unitindx2),2)); end
+                
+            end
         end
-    end
-    stats.crosslfp.spatial_coher(:,end,end+1) = 0; % pad column of zeros to squarify the matrix
-    stats.crosslfp.spatial_phase(:,end,end+1) = 0;
-    % split electrode pairs based on brain area
-    unique_brain_areas = unique([units.brain_area]); num_brain_areas = numel(unique_brain_areas);
-    for p = 1:num_brain_areas
-        unitindx = strcmp([units.brain_area], unique_brain_areas(p));
-        coherMat = stats.crosslfp.spatial_coher(:,unitindx,unitindx);
-        phaseMat = stats.crosslfp.spatial_phase(:,unitindx,unitindx);
-        stats.(unique_brain_areas{p}).electrode_type = unique([units(unitindx).electrode_type]);
-        stats.(unique_brain_areas{p}).electrode_ids = [units(unitindx).electrode_id];
-        coherMatFull = coherMat + permute(coherMat,[1 3 2]); coherMatFull(coherMatFull == 0) = NaN; % symmetrify
-        stats.(unique_brain_areas{p}).coherByElectrode = nanmean(coherMatFull,3);  % save freq x elec
-        phaseMatFull = coherMat + permute(phaseMat,[1 3 2]); phaseMatFull(phaseMatFull == 0) = NaN; % symmetrify
-        stats.(unique_brain_areas{p}).phaseByElectrode = nanmean(phaseMatFull,3);  % save freq x elec
-        stats.(unique_brain_areas{p}).coherMatFull = coherMatFull; % save freq x elec x elec
-        stats.(unique_brain_areas{p}).phaseMatFull = phaseMatFull; % save freq x elec x elec
-        [stats.(unique_brain_areas{p}).coherByDist,stats.(unique_brain_areas{p}).phaseByDist,stats.(unique_brain_areas{p}).dist] = ...
-            ComputeCoherenceByDistance(coherMat,phaseMat,stats.(unique_brain_areas{p}).electrode_ids,stats.(unique_brain_areas{p}).electrode_type{:});  % save freq x dist
-    end
-    % analyse cross-area
-    if num_brain_areas==2
-        unitindx1 = strcmp([units.brain_area], unique_brain_areas(1));
-        unitindx2 = strcmp([units.brain_area], unique_brain_areas(2));
-        
-        if max(find(unitindx1)) > min(find(unitindx2)), stats.crossarea.coher12 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx1,unitindx2),3));
-        else, stats.crossarea.coher12 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx2,unitindx1),2)); end
-        
-        if max(find(unitindx2)) > min(find(unitindx1)), stats.crossarea.coher21 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx2,unitindx1),3));
-        else, stats.crossarea.coher21 = squeeze(mean(stats.crosslfp.spatial_coher(:,unitindx1,unitindx2),2)); end
-        
-        if max(find(unitindx1)) > min(find(unitindx2)), stats.crossarea.phase12 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx1,unitindx2),3));
-        else, stats.crossarea.phase12 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx2,unitindx1),2)); end
-        
-        if max(find(unitindx2)) > min(find(unitindx1)), stats.crossarea.phase21 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx2,unitindx1),3));
-        else, stats.crossarea.phase21 = squeeze(mean(stats.crosslfp.spatial_phase(:,unitindx1,unitindx2),2)); end
-        
     end
 end

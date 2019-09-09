@@ -876,13 +876,13 @@ else
              cmap = jet(24);
              coher12 = pop_lfps.stats.crossarea.coher12; freq = pop_lfps.stats.crosslfp.freq;
              figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
-             set(gca,'xlim',[2 50], 'ylim', [0.68 0.76], 'yTick', [0.7 0.75], 'TickDir', 'out', 'FontSize', 20); box off
+             set(gca,'xlim',[2 50], 'ylim', [0.74 0.8], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
              title('MST --> PPC')
              
              cmap = jet(96);
              coher21 = pop_lfps.stats.crossarea.coher21; 
              figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
-             set(gca,'xlim',[2 50], 'ylim', [0.68 0.77], 'yTick', [0.7 0.75], 'TickDir', 'out', 'FontSize', 20); box off
+             set(gca,'xlim',[2 50], 'ylim', [0.74 0.8], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
              title('PPC --> MST')
              
              %phase
