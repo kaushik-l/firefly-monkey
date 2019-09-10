@@ -10,10 +10,10 @@ function AddUnits(this,prs)
         t_events = GetEvents_plx(file_ead.name);
         file_plx=dir('*_spk.plx');
         fprintf(['... reading ' file_plx.name '\n']);
-        for j=1:prs.maxchannels
-            fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels) '\n']);
+        for j=1:prs.maxchannels_plx
+            fprintf(['...... channel ' num2str(j) '/' num2str(prs.maxchannels_plx) '\n']);
             smua = GetUnits_plx(file_plx.name,prs.units,j); % smua = singleunits + multiunits
-            %fetch multiunit
+            %fetch multiunit 
             this.units(end+1) = unit('multiunit',smua(1),prs.fs_spk);
             this.units(end).AddTrials(smua(1).tspk,t_events,this.behaviours,prs);
             %fetch units
