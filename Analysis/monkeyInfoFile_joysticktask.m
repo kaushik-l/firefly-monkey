@@ -6924,7 +6924,7 @@ monkeyInfo (end).channels_nev = 96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 29 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).electrode_type = {'utah2x48', 'linearprobe24'};
 monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 
@@ -7111,7 +7111,7 @@ monkeyInfo (end).channels_nev = 96;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 17 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
+monkeyInfo (end).electrode_type = {'utah2x48','linearprobe24'};
 monkeyInfo (end).area = {'PPC', 'PFC'};
 monkeyInfo (end).eyechannels = [2 2];
 

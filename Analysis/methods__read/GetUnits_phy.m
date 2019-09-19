@@ -17,7 +17,7 @@ for i = 1:length(sua_indx)
     if ~isempty(cluster_locs)
         sua(i).channel_id = table2array(cluster_locs(str2double({clusters.id}) == str2double(clusters(sua_indx(i)).id),'Ch_num'));
         sua(i).electrode_id = electrode_id(sua(i).channel_id);
-        sua(i).spkwf = squeeze(mean(waveForms(str2double({clusters.id}) == str2double(clusters(sua_indx(i)).id),:,:),2));
+        sua(i).spkwf = squeeze(nanmean(waveForms(str2double({clusters.id}) == str2double(clusters(sua_indx(i)).id),:,:),2));
     else
         sua(i).channel_id = [];
         sua(i).electrode_id = [];
@@ -32,7 +32,7 @@ for i = 1:length(mua_indx)
     if ~isempty(cluster_locs)
         mua(i).channel_id = table2array(cluster_locs(str2double({clusters.id}) == str2double(clusters(mua_indx(i)).id),'Ch_num'));
         mua(i).electrode_id = electrode_id(mua(i).channel_id);
-        mua(i).spkwf = squeeze(mean(waveForms(str2double({clusters.id}) == str2double(clusters(mua_indx(i)).id),:,:),2));
+        mua(i).spkwf = squeeze(nanmean(waveForms(str2double({clusters.id}) == str2double(clusters(mua_indx(i)).id),:,:),2));
     else
         mua(i).channel_id = [];
         mua(i).electrode_id = [];

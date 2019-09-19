@@ -26,7 +26,7 @@ function AddUnits(this,prs)
         end
     elseif ~isempty(file_nev) % data recorded using Cereplex
         prs.neur_filetype = 'nev';
-        [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.electrode); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
+        [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.electrode_type); % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
         fprintf(['... reading events from ' file_nev.name '\n']);
         [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK
         if length(this.behaviours.trials)~=length(events_nev.t_end)
