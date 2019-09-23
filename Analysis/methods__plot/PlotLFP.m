@@ -836,11 +836,11 @@ else
             cmap = jet(24);
             figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [0.9 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence MST'); xlabel('frequency');
+            title('Coherence MST'); xlabel('frequency');  ylabel('coherence');
             %plot phase
             figure; hold on; for k=1:24, plot(freq,phase_mst(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase MST');
+            title('Phase MST'); xlabel('frequency');  ylabel('rad');
             % plot across distance  (plot for diff frequencies)
             figure; plot(dist_mst,nanmean(coher_mst(6:12,:))); hold on;
             set(gca,'xlim',[1 24], 'ylim', [0.8 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
@@ -863,11 +863,11 @@ else
             %plot phase
             figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase PPC'); xlabel('frequency'); ylabel('phase'); 
+            title('Phase PPC'); xlabel('frequency'); ylabel('rad'); 
             % plot across distance  (plot for diff frequencies)
             figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
             set(gca,'xlim',[1 12], 'ylim', [0.8 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz PPC'); xlabel('electrodes'); ylabel('coherence')
+            title('Coherence across distance 6-12 Hz PPC'); xlabel('electrode distance'); ylabel('coherence')
              
              case 'sim_coherence_dist_rew'
             % MST
@@ -903,11 +903,11 @@ else
             %plot phase
             figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase rew PPC'); xlabel('frequency'); ylabel('phase'); 
+            title('Phase rew PPC'); xlabel('frequency'); ylabel('rad'); 
             % plot across distance  (plot for diff frequencies)
             figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
             set(gca,'xlim',[1 12], 'ylim', [0.8 0.95],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz rew PPC'); xlabel('electrodes'); ylabel('coherence')
+            title('Coherence across distance 6-12 Hz rew PPC'); xlabel('electrode distance'); ylabel('coherence')
             
              case 'sim_coherence_dist_density'
             % MST
@@ -916,7 +916,7 @@ else
             cmap = jet(24);
             figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [0.9 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence MST (density)'); xlabel('frequency');
+            title('Coherence MST (density)'); xlabel('frequency');  ylabel('coherence');
             %plot phase
             figure; hold on; for k=1:24, plot(freq,phase_mst(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
@@ -943,11 +943,11 @@ else
             %plot phase
             figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
             set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase PPC (density)'); xlabel('frequency'); ylabel('phase'); 
+            title('Phase PPC (density)'); xlabel('frequency'); ylabel('rad'); 
             % plot across distance  (plot for diff frequencies)
             figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
             set(gca,'xlim',[1 12], 'ylim', [0.8 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz PPC (density)'); xlabel('electrodes'); ylabel('coherence')
+            title('Coherence across distance 6-12 Hz PPC (density)'); xlabel('electrode distance'); ylabel('coherence')
             
           
 
@@ -957,26 +957,26 @@ else
              coher12 = pop_lfps.stats.trialtype.all.crossarea.coher12; freq = pop_lfps.stats.trialtype.all.crosslfp.freq;
              figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
              set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --> PPC')
+             title('MST --> PPC'); xlabel('frequency');  ylabel('coherence');
              
              cmap = jet(96);
              coher21 = pop_lfps.stats.trialtype.all.crossarea.coher21; 
              figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
              set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --> MST')
+             title('PPC --> MST'); xlabel('frequency');  ylabel('coherence');
              
              %phase
              cmap = jet(24);
              phase12 = pop_lfps.stats.trialtype.all.crossarea.phase12;
              figure; hold on; for k=1:24, plot(freq,phase12(:,k),'Color',cmap(k,:)); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --- <PPC>'); hline(0, '--k');
+             title('MST --- <PPC>'); hline(0, '--k'); xlabel('frequency');  ylabel('rad');
              
              cmap = jet(96);
              phase21 = pop_lfps.stats.trialtype.all.crossarea.phase21;
              figure; hold on; for k=1:96, plot(freq,phase21(:,k),'Color',cmap(k,:)); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --- <MST>'); hline(0, '--k');
+             title('PPC --- <MST>'); hline(0, '--k'); xlabel('frequency');  ylabel('rad');
              
              % By electrode
              % MST
@@ -985,7 +985,7 @@ else
              for k=1:24
                  plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
                  set(gca,'xlim',[2 50], 'ylim', [0.75 0.95], 'yTick', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency')
+                 xlabel('frequency'); ylabel('coherence')
              end
              
              % PPC
@@ -1033,7 +1033,7 @@ else
              for k=1:24
                  plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
                  set(gca,'xlim',[2 50], 'ylim', [0.75 1], 'yTick', [0.75 1], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency'); title('coher by electrode MST');
+                 xlabel('frequency'); ylabel('coherence'); title('coher by electrode MST');
              end
              
              % PPC
@@ -1052,26 +1052,26 @@ else
              coher12 = pop_lfps.stats.trialtype.density.crossarea.coher12; freq = pop_lfps.stats.trialtype.density.crosslfp.freq;
              figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
              set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --> PPC')
+             title('MST --> PPC'); xlabel('frequency');  ylabel('coherence');
              
              cmap = jet(96);
              coher21 = pop_lfps.stats.trialtype.density.crossarea.coher21; 
              figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
              set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --> MST')
+             title('PPC --> MST'); xlabel('frequency');  ylabel('coherence');
              
              %phase
              cmap = jet(24);
              phase12 = pop_lfps.stats.trialtype.density.crossarea.phase12;
              figure; hold on; for k=1:24, plot(freq,phase12(:,k),'Color',cmap(k,:)); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --- <PPC>'); hline(0, '--k');
+             title('MST --- <PPC>'); hline(0, '--k'); xlabel('frequency');  ylabel('rad');
              
              cmap = jet(96);
              phase21 = pop_lfps.stats.trialtype.all.crossarea.phase21;
              figure; hold on; for k=1:96, plot(freq,phase21(:,k),'Color',cmap(k,:)); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --- <MST>'); hline(0, '--k');
+             title('PPC --- <MST>'); hline(0, '--k'); xlabel('frequency');  ylabel('rad');
              
              % By electrode
              % MST
@@ -1080,7 +1080,7 @@ else
              for k=1:24
                  plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
                  set(gca,'xlim',[2 50], 'ylim', [0.9 1], 'yTick', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency')
+                 xlabel('frequency'); ylabel('coherence')
              end
              
              % PPC
