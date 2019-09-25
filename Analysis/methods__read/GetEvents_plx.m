@@ -28,3 +28,7 @@ end
 t_events.t_beg = t_beg;
 t_events.t_rew = t_rew;
 t_events.t_end = t_end;
+
+% convert eventtimes from samples to seconds
+t_events.start = t_events.start/fs;
+t_events.t_beg = t_events.t_beg/fs; t_events.t_end = t_events.t_end/fs; t_events.t_rew = t_events.t_rew/fs;

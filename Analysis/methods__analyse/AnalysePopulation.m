@@ -22,6 +22,7 @@ if fitGAM_coupled
     stats = [];
     GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
     GAM_prs.vartype = prs.GAM_vartype; vartype = GAM_prs.vartype;
+    GAM_prs.basistype = prs.GAM_basistype; % enable only for branch smoothbasis of BuildGAM
     GAM_prs.nbins = prs.GAM_nbins;
     GAM_prs.binrange = [];
     GAM_prs.nfolds = prs.nfolds;
@@ -32,7 +33,7 @@ if fitGAM_coupled
     GAM_prs.alpha = prs.GAM_alpha;
     GAM_prs.varchoose = prs.GAM_varchoose;
     GAM_prs.method = prs.GAM_method;
-    for i=1% if i=1, fit model using data from all trials rather than separately to data from each condition
+    for i=1:3% if i=1, fit model using data from all trials rather than separately to data from each condition
         fprintf(['i = ' num2str(i) '\n']);
         nconds = length(behv_stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
@@ -110,7 +111,7 @@ if fitGAM_coupled
                     [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
                 %% fit fully coupled GAM model to each unit
-                for k=1:nunits
+                for k=1:5 %nunits
                     fprintf(['k = ' num2str(k) '\n']);
                     % replace xt(:,'phase') with the unit-specific LFP channel
                     xt(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);

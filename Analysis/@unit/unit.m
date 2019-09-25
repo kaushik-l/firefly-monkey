@@ -4,6 +4,8 @@ classdef unit < handle
         cluster_id
         channel_id
         electrode_id
+        electrode_type
+        brain_area
         spkwf
         spkwidth
         type
@@ -17,6 +19,7 @@ classdef unit < handle
             this.cluster_id = unit.cluster_id;
             this.channel_id = unit.channel_id;
             this.electrode_id = unit.electrode_id;
+            this.electrode_type = unit.electrode_type;
             this.spkwf = unit.spkwf; %mean spike-waveform;     
             this.spkwidth = Compute_SpikeWidth(unit.spkwf,Fs);
             this.type = unittype;

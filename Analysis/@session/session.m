@@ -3,7 +3,7 @@ classdef session < handle
     properties
         monk_id
         sess_id
-        coord
+        sess_date
         behaviours = behaviour.empty();                                     % trial
         units = unit.empty();                                               % single/multiunit
         lfps = lfp.empty();                                                 % lfp
@@ -12,10 +12,10 @@ classdef session < handle
     %%
     methods
         %% class constructor
-        function this = session(monk_id,sess_id,coord)
+        function this = session(monk_id,sess_id,sess_date)
             this.monk_id = monk_id;
             this.sess_id = sess_id;
-            this.coord = coord;
+            this.sess_date = sess_date;
         end
     end
 end
