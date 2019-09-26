@@ -31,7 +31,7 @@ switch lower(plot_type)
             % re-order
             Td = [events_trials(trlindx(k,:)).t_end] - [events_trials(trlindx(k,:)).t_targ]; [~,indx] = sort(Td);
             spks_selectedtrials = spks_selectedtrials(indx); events_selectedtrials = events_selectedtrials(indx);
-            subplot(1,nconds,k); hold on;set(gcf,'Position',[100 100 400 400]);
+            subplot(1,nconds,k); hold on; set(gcf,'Position',[100 100 400 400]);
             for i=1:ntrls
                 tspk = spks_selectedtrials(i).tspk - events_selectedtrials(i).t_move;
                 if ~isempty(tspk), plot(tspk(1:30:end),i,'.r','MarkerSize',2,'Color',[.5 .5 .5]); end % plot every 30th spike
@@ -48,7 +48,7 @@ switch lower(plot_type)
             % re-order
             Td = [events_trials(trlindx(k,:)).t_end] - [events_trials(trlindx(k,:)).t_targ]; [~,indx] = sort(Td);
             spks_selectedtrials = spks_selectedtrials(indx); events_selectedtrials = events_selectedtrials(indx);
-            subplot(1,nconds,k); hold on;set(gcf,'Position',[100 100 400 400]);
+            subplot(1,nconds,k); hold on; set(gcf,'Position',[100 100 400 400]);
             for i=1:ntrls
                 tspk = spks_selectedtrials(i).tspk - events_selectedtrials(i).t_targ;
                 if ~isempty(tspk), plot(tspk(1:30:end),i,'.r','MarkerSize',2,'Color',[.5 .5 .5]); end % plot every 30th spike
@@ -66,7 +66,7 @@ switch lower(plot_type)
             % re-order
             Td = [events_trials(trlindx(k,:)).t_end] - [events_trials(trlindx(k,:)).t_targ]; [~,indx] = sort(Td);
             spks_selectedtrials = spks_selectedtrials(indx); events_selectedtrials = events_selectedtrials(indx);
-            subplot(1,nconds,k); hold on;set(gcf,'Position',[300 300 400 400]);
+            subplot(1,nconds,k); hold on; set(gcf,'Position',[300 300 400 400]);
             for i=1:ntrls
                 tspk = spks_selectedtrials(i).tspk - events_selectedtrials(i).t_stop;
                 if ~isempty(tspk), plot(tspk(1:30:end),i,'.r','MarkerSize',2,'Color',[.5 .5 .5]); end % plot every 30th spike
@@ -84,7 +84,7 @@ switch lower(plot_type)
             % re-order
             Td = [events_trials(trlindx(k,:)).t_end] - [events_trials(trlindx(k,:)).t_targ]; [~,indx] = sort(Td);
             spks_selectedtrials = spks_selectedtrials(indx); events_selectedtrials = events_selectedtrials(indx);
-            subplot(1,nconds,k); hold on;set(gcf,'Position',[100 100 400 400]);
+            subplot(1,nconds,k); hold on; set(gcf,'Position',[100 100 400 400]);
             for i=1:ntrls
                 tspk = spks_selectedtrials(i).tspk - events_selectedtrials(i).t_rew;
                 if ~isempty(tspk), plot(tspk(1:30:end),i,'.r','MarkerSize',2,'Color',[.5 .5 .5]); end % plot every 30th spike
@@ -94,8 +94,9 @@ switch lower(plot_type)
         
     case 'rate_move'
         %% mean firing rate - aligned to movement onset
+        figure; hold on;
         for k=1:nconds
-            hold on;set(gcf,'Position',[100 100 400 400]);
+            hold on; set(gcf,'Position',[100 100 400 400]);
             t = unit.stats.trialtype.(trial_type)(k).events.move.time;
             r = unit.stats.trialtype.(trial_type)(k).events.move.rate;
             plot(t,r);
@@ -105,8 +106,9 @@ switch lower(plot_type)
         
     case 'rate_targ'
         %% mean firing rate - aligned to target onset
+        figure; hold on;
         for k=1:nconds
-            hold on;set(gcf,'Position',[100 100 400 400]);
+            hold on; set(gcf,'Position',[100 100 400 400]);
             t = unit.stats.trialtype.(trial_type)(k).events.target.time;
             r = unit.stats.trialtype.(trial_type)(k).events.target.rate;
             plot(t,r);
@@ -116,8 +118,9 @@ switch lower(plot_type)
         
     case 'rate_stop'
         %% mean firing rate - aligned to monkey stopping
+        figure; hold on;
         for k=1:nconds
-            hold on;set(gcf,'Position',[100 100 400 400]);
+            hold on; set(gcf,'Position',[100 100 400 400]);
             t = unit.stats.trialtype.(trial_type)(k).events.stop.time;
             r = unit.stats.trialtype.(trial_type)(k).events.stop.rate;
             plot(t,r);
@@ -127,8 +130,9 @@ switch lower(plot_type)
         
     case 'rate_rew'
         %% mean firing rate - aligned to reward delivery
+        figure; hold on;
         for k=1:nconds
-            hold on;set(gcf,'Position',[100 100 400 400]);
+            hold on; set(gcf,'Position',[100 100 400 400]);
             t = unit.stats.trialtype.(trial_type)(k).events.reward.time;
             r = unit.stats.trialtype.(trial_type)(k).events.reward.rate;
             plot(t,r);
