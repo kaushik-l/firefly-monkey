@@ -831,7 +831,7 @@ else
             
         case 'sim_coherence_dist_all'
             % MST
-            dist_mst = pop_lfps.stats.trialtype.all.MST.dist; coher_mst = pop_lfps.stats.trialtype.all.MST.coherByElectrode; phase_mst =  pop_lfps.stats.trialtype.all.MST.phaseByDist; freq =  pop_lfps.stats.trialtype.all.crosslfp.freq;
+            dist_mst = pop_lfps.stats.trialtype.all.MST.dist; coher_mst = pop_lfps.stats.trialtype.all.MST.coherByDist; phase_mst =  pop_lfps.stats.trialtype.all.MST.phaseByDist; freq =  pop_lfps.stats.trialtype.all.crosslfp.freq;
             %plot coher
             cmap = jet(24);
             figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
@@ -868,90 +868,122 @@ else
             figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
             set(gca,'xlim',[1 12], 'ylim', [0.8 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
             title('Coherence across distance 6-12 Hz PPC'); xlabel('electrodes'); ylabel('coherence')
-             
-             case 'sim_coherence_dist_rew'
-            % MST
-            dist_mst = pop_lfps.stats.trialtype.reward.MST.dist; coher_mst = pop_lfps.stats.trialtype.reward.MST.coherByDist; phase_mst = pop_lfps.stats.trialtype.reward.MST.phaseByDist; freq = pop_lfps.stats.trialtype.reward.crosslfp.freq;
+        
+            case 'sim_coherence_dist_rew'
+       %%   MST
+            dist_mst_err = pop_lfps.stats.trialtype.reward(1).MST.dist; coher_mst_err = pop_lfps.stats.trialtype.reward(1).MST.coherByDist; phase_mst_err = pop_lfps.stats.trialtype.reward(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
+            dist_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.dist; coher_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.coherByDist; phase_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.phaseByDist;
+           
             %plot coher
-            cmap = jet(24);
-            figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [0.75 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence rew MST'); xlabel('frequency'); ylabel('coherence');
-            %plot phase
-            figure; hold on; for k=1:24, plot(freq,phase_mst(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [-0.5 0.2], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase rew MST'); xlabel('frequency'); ylabel('rad');
-            % plot across distance  (plot for diff frequencies)
-            figure; plot(dist_mst,nanmean(coher_mst(6:12,:))); hold on;
-            set(gca,'xlim',[1 24], 'ylim', [0.8 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz rew MST'); xlabel('electrode distance'); ylabel('coherence')
+            % color denotes distance between pairs of electrodes.
+            figure; hold on; for k=1:24, plot(freq,coher_mst_err(:,k),'Color','r'); end
+            for k=1:24, plot(freq,coher_mst_corr(:,k),'Color','k'); end
+            set(gca,'xlim',[2 50], 'ylim', [0.68 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence MST reward'); xlabel('frequency'); ylabel('coherence');
+            % plot difference
+            figure; hold on; plot(freq,(coher_mst_err - coher_mst_corr),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((coher_mst_err - coher_mst_corr),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [-0.02 0.1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence MST reward diff'); xlabel('frequency'); ylabel('coherence');
+
+            figure; hold on; for k=1:24, plot(freq,phase_mst_err(:,k),'Color','r'); end
+            for k=1:24, plot(freq,phase_mst_corr(:,k),'Color','k'); end
+            set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase MST reward'); xlabel('frequency'); ylabel('rad');
+
+            % plot across distance  (plot for diff frequencies) 
+            figure; plot(dist_mst_err,nanmean(coher_mst_err(6:12,:)), 'Color', 'r'); hold on;
+            plot(dist_mst_corr,nanmean(coher_mst_corr(6:12,:)),'Color', 'k');
+            set(gca,'xlim',[1 24], 'ylim', [0.7 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence across distance 6-12 Hz MST err'); xlabel('electrode distance'); ylabel('coherence')
             
-            %                 % distance-coherence
-            %                 spatial_coher = pop_lfps.stats.crosslfp.spatial_coher;
-            %                 figure; hold on; title('spatial coherence MST')
-            %                 for i = 2:40
-            %                     plot(squeeze(nanmean(spatial_coher(i,1:24,:))))
-            %                 end
+            %% PPC
+            dist_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.dist; coher_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.coherByDist; phase_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
+            dist_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.dist; coher_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.coherByDist; phase_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.phaseByDist;
             
-            % PPC
-            dist_ppc = pop_lfps.stats.trialtype.reward.PPC.dist; coher_ppc = pop_lfps.stats.trialtype.reward.PPC.coherByDist; phase_ppc = pop_lfps.stats.trialtype.reward.PPC.phaseByDist; freq = pop_lfps.stats.trialtype.reward.crosslfp.freq;
-            %plot coher
-            cmap = jet(49);
-            figure; hold on; for k=1:49, plot(freq,coher_ppc(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [0.8 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence rew PPC'); xlabel('frequency'); ylabel('coherence'); 
-            %plot phase
-            figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
+            %plot coher rewarded
+            % color denotes distance between pairs of electrodes.
+            figure; hold on; for k=1:49, plot(freq,coher_ppc_err(:,k),'Color','r'); end
+            for k=1:49, plot(freq,coher_ppc_corr(:,k),'Color','k'); end
+            set(gca,'xlim',[2 50], 'ylim', [0.7 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence rew PPC'); xlabel('frequency'); ylabel('coherence');
+            % plot coher diff
+            figure; hold on; plot(freq,(coher_ppc_err - coher_ppc_corr),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((coher_ppc_err - coher_ppc_corr),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [0 0.07], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence PPC reward diff'); xlabel('frequency'); ylabel('coherence');
+            
+            
+            %plot phase err
+            figure; hold on; for k=1:49, plot(freq,phase_ppc_err(:,k),'Color','r'); end
+            for k=1:49, plot(freq,phase_ppc_corr(:,k),'Color','k'); end
             set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase rew PPC'); xlabel('frequency'); ylabel('phase'); 
-            % plot across distance  (plot for diff frequencies)
-            figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
-            set(gca,'xlim',[1 12], 'ylim', [0.8 0.95],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase PPC err'); xlabel('frequency'); ylabel('phase');
+            
+            % plot across distance  (plot for diff frequencies) 
+            figure; plot(dist_ppc_err,nanmean(coher_ppc_err(6:12,:)),'Color', 'r'); hold on;
+            plot(dist_ppc_corr,nanmean(coher_ppc_corr(6:12,:)), 'Color', 'k');
+            set(gca,'xlim',[1 12], 'ylim', [0.7 0.95],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
             title('Coherence across distance 6-12 Hz rew PPC'); xlabel('electrodes'); ylabel('coherence')
             
-             case 'sim_coherence_dist_density'
-            % MST
-            dist_mst =  pop_lfps.stats.trialtype.density.MST.dist; coher_mst = pop_lfps.stats.trialtype.density.MST.coherByDist; phase_mst = pop_lfps.stats.trialtype.density.MST.phaseByDist; freq = pop_lfps.stats.trialtype.density.crosslfp.freq;
-            %plot coher
-            cmap = jet(24);
-            figure; hold on; for k=1:24, plot(freq,coher_mst(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [0.9 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence MST (density)'); xlabel('frequency');
-            %plot phase
-            figure; hold on; for k=1:24, plot(freq,phase_mst(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase MST (density)');
-            % plot across distance  (plot for diff frequencies)
-            figure; plot(dist_mst,nanmean(coher_mst(6:12,:))); hold on;
-            set(gca,'xlim',[1 24], 'ylim', [0.8 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz MST (density)'); xlabel('electrode distance'); ylabel('coherence')
             
-            %                 % distance-coherence
-            %                 spatial_coher = pop_lfps.stats.crosslfp.spatial_coher;
-            %                 figure; hold on; title('spatial coherence MST')
-            %                 for i = 2:40
-            %                     plot(squeeze(nanmean(spatial_coher(i,1:24,:))))
-            %                 end
+            case 'sim_coherence_dist_density'
+            %% MST
+            dist_mst_low =  pop_lfps.stats.trialtype.density(1).MST.dist; coher_mst_low = pop_lfps.stats.trialtype.density(1).MST.coherByDist; phase_mst_low = pop_lfps.stats.trialtype.density(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
+            dist_mst_high =  pop_lfps.stats.trialtype.density(2).MST.dist; coher_mst_high = pop_lfps.stats.trialtype.density(2).MST.coherByDist; phase_mst_high = pop_lfps.stats.trialtype.density(2).MST.phaseByDist;
             
-            % PPC
-            dist_ppc = pop_lfps.stats.trialtype.density.PPC.dist; coher_ppc = pop_lfps.stats.trialtype.density.PPC.coher; phase_ppc = pop_lfps.stats.trialtype.density.PPC.phase; freq = pop_lfps.stats.trialtype.density.crosslfp.freq;
-            %plot coher
-            cmap = jet(49);
-            figure; hold on; for k=1:49, plot(freq,coher_ppc(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [0.75 1], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence PPC (density)'); xlabel('frequency'); ylabel('coherence'); 
-            %plot phase
-            figure; hold on; for k=1:49, plot(freq,phase_ppc(:,k),'Color',cmap(k,:)); end
-            set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Phase PPC (density)'); xlabel('frequency'); ylabel('phase'); 
-            % plot across distance  (plot for diff frequencies)
-            figure; plot(dist_ppc,nanmean(coher_ppc(6:12,:))); hold on;
-            set(gca,'xlim',[1 12], 'ylim', [0.8 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
-            title('Coherence across distance 6-12 Hz PPC (density)'); xlabel('electrodes'); ylabel('coherence')
-            
-          
+           % color denotes distance between pairs of electrodes.
+            figure; hold on; for k=1:24, plot(freq,coher_mst_low(:,k),'Color','b'); end
+            for k=1:24, plot(freq,coher_mst_high(:,k),'Color','m'); end
+            set(gca,'xlim',[2 50], 'ylim', [0.7 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence MST density'); xlabel('frequency'); ylabel('coherence');
+            % plot difference
+            figure; hold on; plot(freq,(coher_mst_low - coher_mst_high),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((coher_mst_low - coher_mst_high),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [-0.06 0.05], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence MST density diff'); xlabel('frequency'); ylabel('coherence');
 
-             case 'sim_coherence_dist_areas_all'
+            figure; hold on; for k=1:24, plot(freq,phase_mst_low(:,k),'Color','b'); end
+            for k=1:24, plot(freq,phase_mst_high(:,k),'Color','m'); end
+            set(gca,'xlim',[2 50], 'ylim', [-0.2 0.2], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase MST density'); xlabel('frequency'); ylabel('rad');
+
+            % plot across distance  (plot for diff frequencies) 
+            figure; plot(dist_mst_low,nanmean(coher_mst_low(6:12,:)), 'Color', 'b'); hold on;
+            plot(dist_mst_high,nanmean(coher_mst_high(6:12,:)),'Color', 'm');
+            set(gca,'xlim',[1 24], 'ylim', [0.7 1],'xTick',[1 23], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence across distance 6-12 Hz MST err'); xlabel('electrode distance'); ylabel('coherence')
+            
+            %% PPC
+            dist_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.dist; coher_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.coherByDist; phase_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
+            dist_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.dist; coher_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.coherByDist; phase_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.phaseByDist; 
+
+            %plot coher rewarded
+            % color denotes distance between pairs of electrodes.
+            figure; hold on; for k=1:49, plot(freq,coher_ppc_low(:,k),'Color','b'); end
+            for k=1:49, plot(freq,coher_ppc_high(:,k),'Color','m'); end
+            set(gca,'xlim',[2 50], 'ylim', [0.7 1], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence PPC density'); xlabel('frequency'); ylabel('coherence');
+            % plot coher diff
+            figure; hold on; plot(freq,(coher_ppc_low - coher_ppc_high),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((coher_ppc_low - coher_ppc_high),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [-0.04 0.04], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence PPC density diff'); xlabel('frequency'); ylabel('coherence');
+            
+            
+            %plot phase err
+            figure; hold on; for k=1:49, plot(freq,phase_ppc_low(:,k),'Color','r'); end
+            for k=1:49, plot(freq,phase_ppc_high(:,k),'Color','k'); end
+            set(gca,'xlim',[2 50], 'ylim', [-0.4 0.4], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Phase PPC density'); xlabel('frequency'); ylabel('phase');
+            
+            % plot across distance  (plot for diff frequencies) 
+            figure; plot(dist_ppc_low,nanmean(coher_ppc_low(6:12,:)),'Color', 'b'); hold on;
+            plot(dist_ppc_high,nanmean(coher_ppc_high(6:12,:)), 'Color', 'm');
+            set(gca,'xlim',[1 12], 'ylim', [0.75 0.9],'xTick',[1 11], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence across distance 6-12 Hz PPC density'); xlabel('electrodes'); ylabel('coherence')
+            
+             case 'sim_coherence_between_areas_all'
             % across areas  --  area 1 is MST, area 2 is PPC. 
              cmap = jet(24);
              coher12 = pop_lfps.stats.trialtype.all.crossarea.coher12; freq = pop_lfps.stats.trialtype.all.crosslfp.freq;
@@ -985,7 +1017,7 @@ else
              for k=1:24
                  plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
                  set(gca,'xlim',[2 50], 'ylim', [0.75 0.95], 'yTick', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency')
+                 xlabel('frequency'); ylabel('coherence')
              end
              
              % PPC
@@ -998,98 +1030,231 @@ else
              end
              
              
-             case 'sim_coherence_dist_areas_rew'
-            % across areas  --  area 1 is MST, area 2 is PPC. 
-               % across areas  --  area 1 is MST, area 2 is PPC. 
+             case 'sim_coherence_betw_areas_rew'
+            % across areas  --  area 1 is MST, area 2 is PPC.
              cmap = jet(24);
-             coher12 = pop_lfps.stats.trialtype.reward.crossarea.coher12; freq = pop_lfps.stats.trialtype.reward.crosslfp.freq;
-             figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
-             set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.85], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --> PPC'); xlabel('frequency'); ylabel('coherence'); 
+             coher12_err = pop_lfps.stats.trialtype.reward(1).crossarea.coher12; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
+             coher12_corr = pop_lfps.stats.trialtype.reward(2).crossarea.coher12; freq = pop_lfps.stats.trialtype.reward(2).crosslfp.freq;
+             figure; hold on; for k=1:24, plot(freq,coher12_err(:,k),'Color','r'); end  
+             for k=1:24, plot(freq,coher12_corr(:,k),'Color','k'); end  
+             set(gca,'xlim',[2 50], 'ylim', [0.65 0.8], 'yTick', [0.75 0.85], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --> <PPC> rew'); xlabel('frequency'); ylabel('coherence'); 
+             % Plot diff
+             figure; hold on; for k=1:24, plot(freq,coher12_err(:,k)-coher12_corr(:,k),'Color','r'); end  
+             set(gca,'xlim',[2 50], 'ylim', [-0.01 0.07], 'yTick', [0 0.05 0.1], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --> <PPC> rew diff'); xlabel('frequency'); ylabel('coherence'); 
              
              cmap = jet(96);
-             coher21 = pop_lfps.stats.trialtype.reward.crossarea.coher21; 
-             figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
-             set(gca,'xlim',[2 50], 'ylim', [0.8 0.85], 'yTick', [0.8 0.85], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --> MST'); xlabel('frequency'); ylabel('coherence');
+             coher21_err = pop_lfps.stats.trialtype.reward(1).crossarea.coher21;
+             coher21_corr = pop_lfps.stats.trialtype.reward(2).crossarea.coher21; 
+             figure; hold on; for k=1:96, plot(freq,coher21_err(:,k),'Color','r'); end 
+             for k=1:96, plot(freq,coher21_corr(:,k),'Color','k'); end 
+             set(gca,'xlim',[2 50], 'ylim', [0.66 0.8], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --> <MST> rew'); xlabel('frequency'); ylabel('coherence');
+             % Plot diff
+             figure; hold on; for k=1:24, plot(freq,coher12_err(:,k)-coher12_corr(:,k),'Color','r'); end  
+             set(gca,'xlim',[2 50], 'ylim', [-0.01 0.06], 'yTick', [0 0.05 0.1], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --> <MST> rew diff'); xlabel('frequency'); ylabel('coherence'); 
+             
              
              %phase
              cmap = jet(24);
-             phase12 = pop_lfps.stats.trialtype.reward.crossarea.phase12;
-             figure; hold on; for k=1:24, plot(freq,phase12(:,k),'Color',cmap(k,:)); end
+             phase12_err = pop_lfps.stats.trialtype.reward(1).crossarea.phase12;
+             phase12_corr = pop_lfps.stats.trialtype.reward(2).crossarea.phase12;
+             figure; hold on; for k=1:24, plot(freq,phase12_err(:,k),'Color','r'); end
+             for k=1:24, plot(freq,phase12_corr(:,k),'Color','k'); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --- <PPC>'); hline(0, '--k'); xlabel('frequency'); ylabel('rad');
+             title('MST --- <PPC> rew'); hline(0, '--k'); xlabel('frequency'); ylabel('rad');
              
              cmap = jet(96);
-             phase21 = pop_lfps.stats.trialtype.reward.crossarea.phase21;
-             figure; hold on; for k=1:96, plot(freq,phase21(:,k),'Color',cmap(k,:)); end
+             phase21_err = pop_lfps.stats.trialtype.reward(1).crossarea.phase21;
+             phase21_corr = pop_lfps.stats.trialtype.reward(2).crossarea.phase21;
+             figure; hold on; for k=1:96, plot(freq,phase21_err(:,k),'Color','r'); end
+             for k=1:96, plot(freq,phase21_corr(:,k),'Color','k'); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --- <MST>'); hline(0, '--k'); xlabel('frequency'); ylabel('rad');
+             title('PPC --- <MST> rew'); hline(0, '--k'); xlabel('frequency'); ylabel('rad');
              
              % By electrode
              % MST
              cmap = jet(24); 
-             elec_mst = pop_lfps.stats.trialtype.reward.MST.coherByElectrode;
+             elec_mst_err = pop_lfps.stats.trialtype.reward(1).MST.coherByElectrode; elec_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.coherByElectrode;
              for k=1:24
-                 plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
-                 set(gca,'xlim',[2 50], 'ylim', [0.75 1], 'yTick', [0.75 1], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency'); title('coher by electrode MST');
+                 plot(freq,elec_mst_err(:,k),'Color','r'); hold on;
+                 plot(freq,elec_mst_corr(:,k),'Color','k'); hold on; 
+                 set(gca,'xlim',[2 50], 'ylim', [0.7 0.95], 'yTick', [0.75 1], 'TickDir', 'out','FontSize', 18); box off
+                 xlabel('frequency'); ylabel('coherence'); title('coher by electrode MST');
              end
+             % plot diff 
+            figure; hold on; plot(freq,(elec_mst_err - elec_mst_corr),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((elec_mst_err - elec_mst_corr),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [-0.01 0.065], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence by electrode MST reward diff'); xlabel('frequency'); ylabel('coherence');
+             
              
              % PPC
-             elec_ppc = pop_lfps.stats.trialtype.reward.PPC.coherByElectrode;
+             elec_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.coherByElectrode; elec_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.coherByElectrode;
              [xloc,yloc] = map_utaharray([],'utah96');
              for i=1:96
                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                 plot(freq,elec_ppc(:,k),'Color', 'k'); box off;
-                 set(gca,'xlim',[2 50], 'ylim', [0.85 0.95],'yTick', [0.85 0.95], 'TickDir', 'out');
+%                  plot(freq,elec_ppc_err(:,k),'Color', 'r'); box off;
+%                  plot(freq,elec_ppc_corr(:,k),'Color', 'k'); box off;
+                 plot(freq,(elec_ppc_err(:,k)-elec_ppc_corr(:,k)), 'Color', 'k'); 
+                 set(gca,'xlim',[2 50], 'ylim', [0 0.06], 'TickDir', 'out');
              end
- 
              
-             case 'sim_coherence_dist_areas_density'
+             
+             case 'sim_coherence_betw_areas_density'
              % across areas  --  area 1 is MST, area 2 is PPC. 
+             %% low
              cmap = jet(24);
-             coher12 = pop_lfps.stats.trialtype.density.crossarea.coher12; freq = pop_lfps.stats.trialtype.density.crosslfp.freq;
-             figure; hold on; for k=1:24, plot(freq,coher12(:,k),'Color',cmap(k,:)); end  
-             set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --> PPC')
+             coher12_low = pop_lfps.stats.trialtype.density(1).crossarea.coher12; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
+             coher12_high = pop_lfps.stats.trialtype.density(2).crossarea.coher12;
+             figure; hold on; for k=1:24, plot(freq,coher12_high(:,k),'Color','m'); end  
+             for k=1:24, plot(freq,coher12_low(:,k),'Color','b'); end  
+             set(gca,'xlim',[2 50], 'ylim', [0.74 0.84], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --> <PPC> density')
+             % Plot diff  
+             figure; hold on; for k=1:24, plot(freq,coher12_low(:,k)-coher12_high(:,k),'Color','m'); end  
+             set(gca,'xlim',[2 50], 'ylim', [0 0.05], 'TickDir', 'out', 'FontSize', 20); box off
+             title('MST --> <PPC> density diff'); xlabel('frequency'); ylabel('coherence'); 
              
              cmap = jet(96);
-             coher21 = pop_lfps.stats.trialtype.density.crossarea.coher21; 
-             figure; hold on; for k=1:96, plot(freq,coher21(:,k),'Color',cmap(k,:)); end 
-             set(gca,'xlim',[2 50], 'ylim', [0.75 0.85], 'yTick', [0.75 0.8], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --> MST')
+             coher21_low = pop_lfps.stats.trialtype.density(1).crossarea.coher21; coher21_high = pop_lfps.stats.trialtype.density(2).crossarea.coher21; 
+             coher21_high = pop_lfps.stats.trialtype.density(2).crossarea.coher21; 
+             figure; hold on; for k=1:96, plot(freq,coher21_low(:,k),'Color','b'); end
+             for k=1:96, plot(freq,coher21_high(:,k),'Color','m'); end 
+             set(gca,'xlim',[2 50], 'ylim', [0.7 0.85], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --> <MST> ')
+              % Plot diff
+             figure; hold on; for k=1:24, plot(freq,coher12_low(:,k)-coher12_high(:,k),'Color','m'); end  
+             set(gca,'xlim',[2 50], 'ylim', [0 0.05], 'TickDir', 'out', 'FontSize', 20); box off
+             title('PPC --> <MST> density diff'); xlabel('frequency'); ylabel('coherence'); 
              
              %phase
              cmap = jet(24);
-             phase12 = pop_lfps.stats.trialtype.density.crossarea.phase12;
-             figure; hold on; for k=1:24, plot(freq,phase12(:,k),'Color',cmap(k,:)); end
+             phase12_low = pop_lfps.stats.trialtype.density(1).crossarea.phase12;
+             phase12_high = pop_lfps.stats.trialtype.density(2).crossarea.phase12;
+             figure; hold on; for k=1:24, plot(freq,phase12_low(:,k),'Color','b'); end
+             for k=1:24, plot(freq,phase12_high(:,k),'Color','m'); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('MST --- <PPC>'); hline(0, '--k');
+             title('MST --- <PPC> '); hline(0, '--k');
              
              cmap = jet(96);
-             phase21 = pop_lfps.stats.trialtype.all.crossarea.phase21;
-             figure; hold on; for k=1:96, plot(freq,phase21(:,k),'Color',cmap(k,:)); end
+             phase21_low = pop_lfps.stats.trialtype.density(1).crossarea.phase21;
+             phase21_high = pop_lfps.stats.trialtype.density(2).crossarea.phase21;
+             figure; hold on; for k=1:96, plot(freq,phase21_low(:,k),'Color','b'); end
+             for k=1:96, plot(freq,phase21_high(:,k),'Color','m'); end
              set(gca,'xlim',[2 50], 'ylim', [-0.5 0.5], 'yTick', [-0.5 0.5], 'TickDir', 'out', 'FontSize', 20); box off
-             title('PPC --- <MST>'); hline(0, '--k');
+             title('PPC --- <MST> '); hline(0, '--k');
              
              % By electrode
              % MST
              cmap = jet(24);
-             elec_mst = pop_lfps.stats.trialtype.all.MST.coherByElectrode;
+             elec_mst_low = pop_lfps.stats.trialtype.density(1).MST.coherByElectrode; elec_mst_high = pop_lfps.stats.trialtype.density(2).MST.coherByElectrode;
              for k=1:24
-                 plot(freq,elec_mst(:,k),'Color',cmap(k,:)); hold on; 
-                 set(gca,'xlim',[2 50], 'ylim', [0.9 1], 'yTick', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
-                 xlabel('frequency'); ylabel('coherency')
+                 plot(freq,elec_mst_low(:,k),'Color','b'); hold on; 
+                 plot(freq,elec_mst_high(:,k),'Color','m'); hold on; 
+                 set(gca,'xlim',[2 50], 'ylim', [0.75 0.95], 'TickDir', 'out','FontSize', 18); box off
+                 xlabel('frequency'); ylabel('coherence'); title('density');
              end
+              % plot diff 
+            figure; hold on; plot(freq,(elec_mst_low - elec_mst_high),'Color',[0.5 0.5 0.5]);
+            plot(freq,nanmean((elec_mst_low - elec_mst_high),2),'Color','k', 'LineWidth',2);
+            set(gca,'xlim',[2 50], 'ylim', [-0.03 0.06], 'TickDir', 'out', 'FontSize', 20); box off
+            title('Coherence by electrode MST density diff'); xlabel('frequency'); ylabel('coherence');
              
              % PPC
-             elec_ppc = pop_lfps.stats.trialtype.all.PPC.coherByElectrode;
+             elec_ppc_low = pop_lfps.stats.trialtype.all.PPC.coherByElectrode; elec_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.coherByElectrode;
              [xloc,yloc] = map_utaharray([],'utah96');
              for i=1:96
-                subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
-                 plot(freq,elec_ppc(:,k),'Color', 'k'); box off;
-                 set(gca,'xlim',[2 50], 'ylim', [0.7 0.9], 'TickDir', 'out'); 
+                 subplot(10,10,10*(xloc(i)-1) + yloc(i)); hold on;
+                 %                  plot(freq,elec_ppc_low(:,k),'Color', 'b'); box off;
+                 %                  plot(freq,elec_ppc_high(:,k),'Color', 'm'); box off;
+                 plot(freq,(elec_ppc_low(:,k)-elec_ppc_high(:,k)), 'Color', 'k');
+                 set(gca,'xlim',[2 50], 'ylim', [0 0.03], 'TickDir', 'out');
              end
+             
+        case 'coherence_matrix_rew'
+            dist_mst = pop_lfps.stats.trialtype.reward(1).MST.dist; coher_mst_err = pop_lfps.stats.trialtype.reward(1).MST.coherByDist; phase_mst_err = pop_lfps.stats.trialtype.reward(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
+            coher_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.coherByDist; phase_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.phaseByDist;
+           
+            dist_ppc = pop_lfps.stats.trialtype.reward(1).PPC.dist; coher_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.coherByDist; phase_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
+            coher_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.coherByDist; phase_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.phaseByDist;
+            
+            %% MST
+            % unrew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_err,[0.7 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence unrew MST')
+            box off; 
+            
+            % rew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_corr,[0.7 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence rew MST')
+            box off; 
+            
+            % diff 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_mst, freq,(coher_mst_err-coher_mst_corr),[min(min(coher_mst_err-coher_mst_corr)) max(max(coher_mst_err-coher_mst_corr))]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence diff rew MST')
+            box off; 
+            
+            %% PPC
+             % unrew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_ppc, freq, coher_ppc_err,[0.7 1]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence unrew PPC')
+            box off; 
+            
+            % rew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_ppc, freq, coher_ppc_corr,[0.7 1]);
+           set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence rew PPC')
+            box off; 
+            
+            % diff 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist_ppc, freq,(coher_ppc_err-coher_ppc_corr),[min(min(coher_ppc_err-coher_ppc_corr)) max(max(coher_ppc_err-coher_ppc_corr))]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence diff rew PPC')
+            box off; 
+            
+            
+            
+          case 'coherence_matrix_density'
+            dist_mst =  pop_lfps.stats.trialtype.density(1).MST.dist; coher_mst_low = pop_lfps.stats.trialtype.density(1).MST.coherByDist; phase_mst_low = pop_lfps.stats.trialtype.density(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
+            coher_mst_high = pop_lfps.stats.trialtype.density(2).MST.coherByDist; phase_mst_high = pop_lfps.stats.trialtype.density(2).MST.phaseByDist;
+           
+            dist_ppc = pop_lfps.stats.trialtype.density(1).PPC.dist; coher_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.coherByDist; phase_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
+            coher_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.coherByDist; phase_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.phaseByDist; 
+
+             
+            % unrew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist, freq, coher_mst_err,[0.7 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence unrew')
+            box off; 
+            
+            % rew
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist, freq, coher_mst_corr,[0.7 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence rew')
+            box off; 
+            
+            % diff 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            imagesc(dist, freq,(coher_mst_err-coher_mst_corr),[min(min(coher_mst_err-coher_mst_corr)) max(max(coher_mst_err-coher_mst_corr))]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            xlabel('frequency'); xlabel('distance'); title('coherence diff rew')
+            box off; 
+             
     end
 end

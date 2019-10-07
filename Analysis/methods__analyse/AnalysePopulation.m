@@ -453,13 +453,13 @@ end
 if compute_coherencyLFP
     for type = 1:length(trialtypes)
         nconds = length(behv_stats.trialtype.(trialtypes{type}));
-        if ~strcmp((trialtypes{type}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
-        for cond = 1:length(nconds)
+        %if ~strcmp((trialtypes{type}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
+        for cond = 1:nconds
             %             if copystats % if only one condition present, no need to recompute stats --- simply copy them from 'all' trials
             %                 stats.trialtype.(trialtypes{i})(j) = stats.trialtype.all;
             %             else
             clear trlindx lfp_concat triallen sMarkers
-            trlindx = behv_stats.trialtype.(trialtypes{type}).trlindx;
+            trlindx = behv_stats.trialtype.(trialtypes{type})(cond).trlindx;
             lfp_concat = nan(length(cell2mat({units(1).trials(trlindx).lfp}')),nunits);
             % params
             spectralparams.tapers = prs.spectrum_tapers;
