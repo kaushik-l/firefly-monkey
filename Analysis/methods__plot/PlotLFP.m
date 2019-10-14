@@ -1243,52 +1243,56 @@ else
              
         case 'coherence_matrix_rew'
             dist_mst = pop_lfps.stats.trialtype.reward(1).MST.dist; coher_mst_err = pop_lfps.stats.trialtype.reward(1).MST.coherByDist; phase_mst_err = pop_lfps.stats.trialtype.reward(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
-            coher_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.coherByDist; phase_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.phaseByDist;
-           
+            coher_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.coherByDist; phase_mst_corr = pop_lfps.stats.trialtype.reward(2).MST.phaseByDist;freq_indx = freq<50; 
+            coher_mst_err = coher_mst_err(freq_indx,:); coher_mst_corr = coher_mst_corr(freq_indx,:);
+            
             dist_ppc = pop_lfps.stats.trialtype.reward(1).PPC.dist; coher_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.coherByDist; phase_ppc_err = pop_lfps.stats.trialtype.reward(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.reward(1).crosslfp.freq;
             coher_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.coherByDist; phase_ppc_corr = pop_lfps.stats.trialtype.reward(2).PPC.phaseByDist;
             
+            min_coher_mst = min([min(coher_mst_corr(coher_mst_corr>0)) min(coher_mst_err(coher_mst_err>0))]); max_coher_mst = max([max(coher_mst_corr(coher_mst_corr>0)) max(coher_mst_err(coher_mst_err>0))]); 
+            min_coher_ppc = min([min(coher_ppc_err(coher_ppc_err>0)) min(coher_ppc_corr(coher_ppc_corr>0))]); max_coher_ppc = max([min(coher_ppc_err(coher_ppc_err>0)) max(coher_ppc_corr(coher_ppc_corr>0))]); 
+            % prct 5% to 95%
             %% MST
             % unrew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist_mst, freq, coher_mst_err,[0.7 1]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_err,[0.8 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18);
             xlabel('frequency'); xlabel('distance'); title('coherence unrew MST')
             box off; 
             
             % rew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist_mst, freq, coher_mst_corr,[0.7 1]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_corr,[0.8 1]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18);
             xlabel('frequency'); xlabel('distance'); title('coherence rew MST')
             box off; 
             
             % diff 
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
             imagesc(dist_mst, freq,(coher_mst_err-coher_mst_corr),[min(min(coher_mst_err-coher_mst_corr)) max(max(coher_mst_err-coher_mst_corr))]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
             xlabel('frequency'); xlabel('distance'); title('coherence diff rew MST')
             box off; 
             
             %% PPC
              % unrew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist_ppc, freq, coher_ppc_err,[0.7 1]);
-            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_ppc, freq, coher_ppc_err,[0.75 0.9]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18);
             xlabel('frequency'); xlabel('distance'); title('coherence unrew PPC')
             box off; 
             
             % rew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist_ppc, freq, coher_ppc_corr,[0.7 1]);
-           set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_ppc, freq, coher_ppc_corr,[0.75 0.9]);
+           set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18);
             xlabel('frequency'); xlabel('distance'); title('coherence rew PPC')
             box off; 
             
             % diff 
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
             imagesc(dist_ppc, freq,(coher_ppc_err-coher_ppc_corr),[min(min(coher_ppc_err-coher_ppc_corr)) max(max(coher_ppc_err-coher_ppc_corr))]);
-            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18);
             xlabel('frequency'); xlabel('distance'); title('coherence diff rew PPC')
             box off; 
             
@@ -1296,32 +1300,60 @@ else
             
           case 'coherence_matrix_density'
             dist_mst =  pop_lfps.stats.trialtype.density(1).MST.dist; coher_mst_low = pop_lfps.stats.trialtype.density(1).MST.coherByDist; phase_mst_low = pop_lfps.stats.trialtype.density(1).MST.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
-            coher_mst_high = pop_lfps.stats.trialtype.density(2).MST.coherByDist; phase_mst_high = pop_lfps.stats.trialtype.density(2).MST.phaseByDist;
-           
+            coher_mst_high = pop_lfps.stats.trialtype.density(2).MST.coherByDist; phase_mst_high = pop_lfps.stats.trialtype.density(2).MST.phaseByDist; freq_indx = freq<50; 
+            coher_mst_low = coher_mst_low(freq_indx,:); coher_mst_high = coher_mst_high(freq_indx,:);
+            
             dist_ppc = pop_lfps.stats.trialtype.density(1).PPC.dist; coher_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.coherByDist; phase_ppc_low = pop_lfps.stats.trialtype.density(1).PPC.phaseByDist; freq = pop_lfps.stats.trialtype.density(1).crosslfp.freq;
             coher_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.coherByDist; phase_ppc_high = pop_lfps.stats.trialtype.density(2).PPC.phaseByDist; 
-
-             
-            % unrew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist, freq, coher_mst_err,[0.7 1]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
-            xlabel('frequency'); xlabel('distance'); title('coherence unrew')
+            coher_ppc_low = coher_ppc_low(freq_indx,:); coher_ppc_high = coher_ppc_high(freq_indx,:);
+            
+            min_coher_mst = min([min(coher_mst_high(coher_mst_high>0)) min(coher_mst_low(coher_mst_low>0))]); max_coher_mst = max([max(coher_mst_high(coher_mst_high>0)) max(coher_mst_low(coher_mst_low>0))]); 
+            min_coher_ppc = min([min(coher_ppc_high(coher_ppc_high>0)) min(coher_ppc_low(coher_ppc_low>0))]); max_coher_ppc = max([min(coher_ppc_high(coher_ppc_high>0)) max(coher_ppc_low(coher_ppc_low>0))]); 
+            
+            %% mst
+            % low
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_low,[min_coher_mst max_coher_mst]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence MST low')
             box off; 
             
-            % rew
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist, freq, coher_mst_corr,[0.7 1]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
-            xlabel('frequency'); xlabel('distance'); title('coherence rew')
+            % high
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_mst, freq, coher_mst_high,[min_coher_mst max_coher_mst]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence MST high')
             box off; 
             
             % diff 
-            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(bone); % winter bone copper
-            imagesc(dist, freq,(coher_mst_err-coher_mst_corr),[min(min(coher_mst_err-coher_mst_corr)) max(max(coher_mst_err-coher_mst_corr))]);
-            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal') 
-            xlabel('frequency'); xlabel('distance'); title('coherence diff rew')
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_mst, freq,(coher_mst_low-coher_mst_high),[min(min(coher_mst_low-coher_mst_high)) max(max(coher_mst_low-coher_mst_high))]);
+            set(gca,'xlim', [1 23], 'xTick', [1 12 23], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence MST diff density')
             box off; 
-             
+            
+            
+            %% PPC
+             % low
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            %imagesc(dist_ppc, freq, coher_ppc_low,[min_coher_ppc max_coher_ppc]);
+            imagesc(dist_ppc, freq, coher_ppc_low,[0.7 0.95]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence PPC low')
+            box off; 
+            
+            % high
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_ppc, freq, coher_ppc_high,[min_coher_ppc max_coher_ppc]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence PPC high')
+            box off; 
+            
+            % diff 
+            figure; set(gcf,'Position',[100 200 300 300]); axes('DataAspectRatio', [1 1 1]); colormap(winter); % winter bone copper
+            imagesc(dist_ppc, freq,(coher_ppc_low-coher_ppc_high),[min(min(coher_ppc_low-coher_ppc_high)) max(max(coher_ppc_low-coher_ppc_high))]);
+            set(gca,'xlim', [1 round(max(dist_ppc))], 'xTick', [1 6 round(max(dist_ppc))], 'ylim', [2 50],'yTick', [10 20 30 40 50],'yDir', 'normal', 'FontSize', 18); 
+            xlabel('frequency'); xlabel('distance'); title('coherence diff PPC density')
+            box off; 
     end
 end
