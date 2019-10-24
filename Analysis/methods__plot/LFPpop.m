@@ -226,9 +226,10 @@ psd = pop.psd.all_mu; psd_sem = pop.psd.all_sem;
 
 %figure; plot(f,psd,'LineWidth',2,'Color','k');
 shadedErrorBar(f,psd,psd_sem, 'lineprops','k');
-xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (dB)'); %ylabel('Power spectral density (\muV^2/Hz)');
+xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('PSD (dB)'); %ylabel('Power spectral density (\muV^2/Hz)');
 set(gca,'TickDir', 'out', 'FontSize', 22, 'YScale', 'log'); box off; title('all');
 
+% monk 1 = Schro monk 2 = Bruno monk 3 = Quigley
 % per monkey
 f1 = monk(1).freq;
 psd1 = monk(1).psd.all; psd2 = monk(2).psd.all; psd3 = monk(3).psd.all;
@@ -250,9 +251,9 @@ figure; subplot(1,2,1); hold on; %plot(f,psd1,'Color', 'k', 'LineWidth',2); plot
 shadedErrorBar(f,psd1, psd1_sem,'lineprops','k');
 shadedErrorBar(f,psd2, psd2_sem,'lineprops','r');
 xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (dB)'); %ylabel('Power spectral density (\muV^2/Hz)');
-box off; set(gca,'TickDir', 'out', 'FontSize', 22,'YScale', 'log'); ylim([0.0035 1]);
+box off; set(gca,'xTick', [10 20 30 40 50],'TickDir', 'out', 'FontSize', 22,'YScale', 'log'); ylim([0.0035 1]);
 subplot(1,2,2); hold on; plot(mobile_ratio', 'k'); plot(nanmean(mobile_ratio), 'LineWidth',2, 'Color','k');
-axis([1 50 0 6]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('Power spectral density ratio');
+axis([1 50 0 6]); hline(1,'k'); xlabel('Frequency (Hz)'); ylabel('PSD');
 box off; set(gca,'TickDir', 'out', 'FontSize', 22); title('motion');
 
 l_lim = 12 ; h_lim = 19; % beta band
@@ -261,7 +262,7 @@ figure; hold on;
 errorbar(1,nanmean(psd1_band),std(psd1_band),'ok', 'MarkerFaceColor', 'k', 'LineWidth',1,'CapSize',0);
 errorbar(2,nanmean(psd2_band),std(psd2_band),'or','MarkerFaceColor', 'r','LineWidth',1,'CapSize',0);
 set(gca,'xlim', [0 3], 'TickDir', 'out', 'FontSize',18);
-ylabel('\beta - Power spectral density'); ylim([0.05 0.2]);
+ylabel('\beta - PSD'); ylim([0.05 0.2]);
 
 % per monkey
 f1 = monk(1).freq;
@@ -269,18 +270,18 @@ psd1_mob = monk(1).psd.mobile; psd2_mob = monk(2).psd.mobile; psd3_mob = monk(3)
 
 figure; hold on;
 plot(f1,psd1_mob, 'Color', 'k', 'Linewidth',2); plot(f1,psd1_st, 'Color', 'r', 'Linewidth',2);
-xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (dB)'); %ylabel('Power spectral density (\muV^2/Hz)');
+xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('PSD (dB)'); %ylabel('Power spectral density (\muV^2/Hz)');
 set(gca,'TickDir', 'out', 'FontSize', 22,'YScale', 'log'); box off; title('S');
 psd1_mob_mu = nanmean(monk(1).psd.mobile(f>l_lim & f<h_lim)); psd1_mob_std = std(monk(1).psd.mobile(f>l_lim & f<h_lim));
 
 figure; hold on;
 plot(f1,psd2_mob, 'Color', 'k', 'Linewidth',2); plot(f1,psd2_st, 'Color', 'r', 'Linewidth',2);
-xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (dB)');%  ylabel('Power spectral density (\muV^2/Hz)');
+xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('PSD (dB)');%  ylabel('Power spectral density (\muV^2/Hz)');
 set(gca,'TickDir', 'out', 'FontSize', 22,'YScale', 'log'); box off; title('B');
 
 figure; hold on;
 plot(f1,psd3_mob, 'Color', 'k', 'Linewidth',2); plot(f1,psd3_st, 'Color', 'r', 'Linewidth',2);
-xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('Power spectral density (dB)'); % ylabel('Power spectral density (\muV^2/Hz)');
+xlim([2 50]); xlabel('Frequency (Hz)'); ylabel('PSD (dB)'); % ylabel('Power spectral density (\muV^2/Hz)');
 set(gca,'TickDir', 'out', 'FontSize', 22,'YScale', 'log'); box off; title('Q');
 
 %% eyes free vs eyes fixed
@@ -1460,7 +1461,7 @@ for i = 1:length(monk)
     set(gca,'TickDir', 'out', 'FontSize', 18, 'xTick', [], 'xTickLabel', []); box off;
 end
 hline(0, '--k');
-ylabel('Time from movement onset (s)');
+ylabel('Time from period onset (s)');
 
 %% plot max ERP for all conditions
 
