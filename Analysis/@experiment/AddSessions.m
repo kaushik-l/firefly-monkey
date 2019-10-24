@@ -18,7 +18,7 @@ function AddSessions(this,monk_id,sess_id,content,ovwrt) % e.g. content = {'behv
     this.sessions(new_instance).AddBehaviours(prs);
     if islfps
         this.sessions(new_instance).AddLfps(prs);
-        this.sessions(new_instance).AnalyseLfps(prs);
+        this.sessions(new_instance).AnalyseLfps(prs); % create: prs = default_prs(monkey number, session number); --> experiments.sessions(n).AnalyseLfps(prs)
     end
     if isunits
         this.sessions(new_instance).AddUnits(prs);

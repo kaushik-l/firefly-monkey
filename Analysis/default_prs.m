@@ -5,8 +5,8 @@ if nargin<2, session_id = 1; end
 %% session specific parameters
 monkeyInfoFile_joysticktask;
 monkeyInfo = monkeyInfo([monkeyInfo.session_id]==session_id & [monkeyInfo.monk_id]==monk_id);
-prs.filepath_behv = ['C:\Users\eao5\Documents\temp_data\' monkeyInfo.folder '\behavioural data\']; % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\']; % ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % 
-prs.filepath_neur = ['C:\Users\eao5\Documents\temp_data\' monkeyInfo.folder '\neural data\'];  % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  %  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; %
+prs.filepath_behv = ['D:\' monkeyInfo.folder '\behavioural data\']; % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\behavioural data\']; % ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/behavioural data/']; % 
+prs.filepath_neur = ['D:\' monkeyInfo.folder '\neural data\'];  % ['Z:\Data\Monkey2_newzdrive\' monkeyInfo.folder '\neural data\'];  %  ['/Users/eavilao/Documents/Temp_data/firefly-monkey-data/' monkeyInfo.folder '/neural data/']; %
 prs.filepath_neuralnet = 'C:\Users\jkl9\Documents\GitHub\spykesML\MLencoding\';
 prs.maxchannels_plx = max(monkeyInfo.channels_plx);
 prs.maxchannels_nev = max(monkeyInfo.channels_nev);
@@ -218,7 +218,8 @@ prs.regress_popreadout = false; % regress population activity against individual
 prs.simulate_population = false; % simulate population activity by running the encoding models
 
 %% LFP
-prs.event_potential = false;
+prs.event_potential = true;
+prs.avg_lfp = true; 
 
 prs.compute_spectrum = true;
 prs.analyse_eventtriggeredlfp = false; % get beta and theta fixation and saccadic events

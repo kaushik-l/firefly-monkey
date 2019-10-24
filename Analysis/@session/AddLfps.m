@@ -62,7 +62,7 @@ if any(strcmp(prs.electrode_type,'linearprobe24')) | any(strcmp(prs.electrode_ty
         end
         if length(this.behaviours.trials)==length(events_nev.t_end)
             brain_area = prs.brain_area(1); 
-            [ch_id,electrode_id] = MapChannel2Electrode('utah96'); % assuming 96 channel array -- need to generalise this line of code
+            [ch_id,electrode_id] = MapChannel2Electrode(electrode_type{1}); % assuming 96 channel array -- need to generalise this line of code
             for j=1:prs.maxchannels_nev
                 lfpdata = openNSx(['/' file_ns1.name],'report','read', 'uV',['c:' num2str(j)]);
                 channel_id = lfpdata.MetaTags.ChannelID;
