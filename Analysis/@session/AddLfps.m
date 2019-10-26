@@ -1,9 +1,15 @@
 %% add lfps
-function AddLfps(this,prs)
+function AddLfps(this,prs)    
     cd(prs.filepath_neur);
-    linearprobe_type = find(cellfun(@(electrode_type) strcmp(prs.electrode_type,electrode_type), prs.linearprobe.types),1);
-    utaharray_type = find(cellfun(@(electrode_type) strcmp(prs.electrode_type,electrode_type), prs.utaharray.types),1);
+    % determine type of electrode
+    linearprobe_type = []; utaharray_type = [];
+    for k=1:length(prs.electrode_type)
+        linearprobe_type = [linearprobe_type find(cellfun(@(electrode_type) strcmp(prs.electrode_type{k},electrode_type), prs.linearprobe.types),1)]; 
+        utaharray_type = [utaharray_type find(cellfun(@(electrode_type) strcmp(prs.electrode_type{k},electrode_type), prs.utaharray.types),1)];
+    end
+    
     if ~isempty(linearprobe_type) % assume linearprobe is recorded using Plexon
+        brain_area = prs.area{strcmp(prs.electrode_type,prs.linearprobe.types{linearprobe_type})};
         file_ead=dir('*_ead.plx'); file_lfp=dir('*_lfp.plx'); prs.neur_filetype = 'plx';
         % read events
         fprintf(['... reading events from ' file_ead.name '\n']);
@@ -19,7 +25,8 @@ function AddLfps(this,prs)
                     if adfreq > prs.fs_lfp, N = round(adfreq/prs.fs_lfp); ad = downsample(ad,N); end
                     channel_id = j;
                     fprintf(['Segmenting LFP :: channel ' num2str(channel_id) '\n']);
-                    this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id));
+                    this.lfps(end+1) = lfp(channel_id,electrode_id(ch_id == channel_id),prs.linearprobe.types{linearprobe_type});
+                    this.lfps(end).brain_area = brain_area;
                     this.lfps(end).AddTrials(ad,adfreq/N,events_plx,this.behaviours,prs);
                 else
                     fprintf('...... LFP is fragmented. Use a machine with more RAM or contact KL\n');
@@ -31,7 +38,11 @@ function AddLfps(this,prs)
                 ' , SMR file - ' num2str(length(this.behaviours.trials)) '\n']);
             fprintf('Debug and try again! \n');
         end
-    elseif ~isempty(utaharray_type) % assume utaharray is recorded using Cereplex
+    else
+        fprintf('No Plexon neural data files in the specified path \n');
+    end
+        
+    if ~isempty(utaharray_type) % assume utaharray is recorded using Cereplex
         file_nev=dir('*.nev'); file_ns1=dir('*.ns1'); prs.neur_filetype = 'nev';
         fprintf(['... reading events from ' file_nev.name '\n']);
         [events_nev,prs] = GetEvents_nev(file_nev.name,prs); % requires package from Blackrock Microsystems: https://github.com/BlackrockMicrosystems/NPMK
@@ -58,6 +69,7 @@ function AddLfps(this,prs)
             fprintf('Debug and try again! \n');
         end
     else
-        fprintf('No neural data files in the specified path \n');
+        fprintf('No Cereplex neural data files in the specified path \n');
     end
+    
 end

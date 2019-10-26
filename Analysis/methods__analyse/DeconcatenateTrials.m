@@ -14,7 +14,7 @@ twin = mat2cell(timewindow,ones(1,ntrls));
 t2 = cellfun(@(x) x(2:end-1),ts,'UniformOutput',false);
 nt = (cellfun(@(x) numel(x), t2));
 
-% concatenate stimulus
+% deconcatenate stimulus
 x = [];
 if ~isempty(xt)
     for i=1:length(nt)

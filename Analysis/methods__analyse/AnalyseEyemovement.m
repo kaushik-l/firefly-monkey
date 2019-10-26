@@ -80,7 +80,7 @@ for i=1:ntrls
     thetat{i} = atan2d(xt{i},yt{i});
     
     % saccade direction
-    sacxy{i} = []; sacxy_pred{i} = []; sacdir{i} = []; sacdir_pred{i} = []; sac_time{i} = []; errxy{i} = []; errdir{i} = [];
+    sacxy{i} = []; sacxy_pred{i} = []; sacdir{i} = []; sacdir_pred{i} = []; sac_time{i} = [];
     if ~isempty(timeindx)
         for j=1:length(t_sac2)
             sacstartindx = find(ts{i}>(t_sac2(j) - saccade_duration/2), 1) - timeindx(1) - 2;

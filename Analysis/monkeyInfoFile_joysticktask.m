@@ -6481,8 +6481,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jun 29 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
-monkeyInfo (end).area = {{'PPC', 'PFC'}};
+monkeyInfo (end).electrode_type = {'linearprobe24','utah2x48'};
+monkeyInfo (end).area = {'MST',{'PPC', 'PFC'}};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6871,8 +6871,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 30 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
-monkeyInfo (end).area = {{'PPC', 'PFC'}};
+monkeyInfo (end).electrode_type = {'linearprobe24','utah2x48'};
+monkeyInfo (end).area = {{'MST',{'PPC', 'PFC'}}};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6886,8 +6886,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Aug 31 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
-monkeyInfo (end).area = {{'PPC', 'PFC'}};
+monkeyInfo (end).electrode_type = {'linearprobe24','utah2x48'};
+monkeyInfo (end).area = {'MST',{'PPC', 'PFC'}};
 monkeyInfo (end).eyechannels = [2 2];
 
 
@@ -6901,8 +6901,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Sep 01 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
-monkeyInfo (end).area = {{'PPC', 'PFC'}};
+monkeyInfo (end).electrode_type = {'linearprobe24','utah2x48'};
+monkeyInfo (end).area = {'MST',{'PPC', 'PFC'}};
 monkeyInfo (end).eyechannels = [2 2];
 
 

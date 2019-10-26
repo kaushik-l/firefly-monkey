@@ -58,6 +58,8 @@ prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice
 prs.ncorrbins = 100; % 100 bins of data in each trial
 prs.pretrial = 0.5; % (s) // duration to extract before target onset or movement onset, whichever is earlier
 prs.posttrial = 0.5; % (s) // duration to extract following end-of-trial timestamp
+prs.presaccade = 0.5; % (s) // time window for saccade-triggered analysis
+prs.postsaccade = 0.5; % (s)
 prs.min_intersaccade = 0.1; % (s) minimum inter-saccade interval
 prs.maxtrialduration = 4; % (s) more than this is abnormal
 prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey position during teleportation (cm)
@@ -211,15 +213,15 @@ prs.tuning_events = {'move','target','stop','reward'}; % discrete events - choos
 prs.tuning_continuous = {'v','w','r_targ','theta_targ','d','phi','eye_ver','eye_hor','phase'}; % continuous variables - choose from elements of continuous_vars (above)
 prs.tuning_method = 'binning'; % choose from (increasing computational complexity): 'binning', 'k-nearest', 'nadaraya-watson', 'local-linear'
 %% GAM fitting
-prs.GAM_varname = {'v','w','d','phi','phase','move','target_OFF','stop','reward','spikehist'}; % list of variable names to include in the generalised additive model
-prs.GAM_vartype = {'1D','1D','1D','1D','1Dcirc','event','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
-prs.GAM_basistype = {'boxcar','boxcar','boxcar','boxcar',...
+prs.GAM_varname = {'v','w','d','phi','r_targ','theta_targ','phase','move','target_OFF','stop','reward','spikehist'}; % list of variable names to include in the generalised additive model
+prs.GAM_vartype = {'1D','1D','1D','1D','1D','1D','1Dcirc','event','event','event','event','event'}; % type of variable: '1d', '1dcirc', 'event'
+prs.GAM_basistype = {'boxcar','boxcar','boxcar','boxcar','boxcar','boxcar',...
     'boxcar','raisedcosine','raisedcosine','raisedcosine','raisedcosine','nlraisedcosine'}; % type of variable: 'boxcar', 'raisedcosine', 'nlraisedcosine'
 prs.GAM_linkfunc = 'log'; % choice of link function: 'log','identity','logit'
-prs.GAM_nbins = {10,10,10,10,10,20,20,20,20,20}; % number of bins for each variable
-prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
+prs.GAM_nbins = {10,10,10,10,10,10,10,20,20,20,20,20}; % number of bins for each variable
+prs.GAM_lambda = {5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1,5e1}; % hyperparameter to penalise rough weight profiles
 prs.GAM_alpha = 0.05; % significance level for model comparison
-prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
+prs.GAM_varchoose = [1,1,1,1,1,1,1,1,1,1,1,1]; % set to 1 to always include a variable, 0 to make it optional
 prs.GAM_method = 'fastbackward'; % use ('Backward') backward elimination or ('Forward') forward-selection method
 %% NNM fitting
 prs.NNM_varname = prs.GAM_varname;
@@ -236,11 +238,11 @@ prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','ey
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = true; % regress response against target position
-prs.regress_eye = false; % regress eye position against target position
+prs.regress_eye = true; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.evaluate_peaks = false; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors

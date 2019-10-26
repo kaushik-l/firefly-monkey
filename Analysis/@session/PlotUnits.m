@@ -9,8 +9,8 @@ if ~iscell(unit_id) % plot specific unit
         figure; hold on; suptitle(['m' num2str(this.monk_id) 's' num2str(this.sess_id) 'u' num2str(unit_id)]);
         PlotUnit(prs,behv,unit,plot_type,trial_type);        % plot data from one specific unit
     else
-        conditions = this.populations.units.stats.trialtype.(trial_type); nconds = numel(conditions);
-        for k=1:nconds, condition(k) = conditions(k).models.log.units(unit_id); end
+        conditions = this.units(unit_id).stats.trialtype.(trial_type); nconds = numel(conditions);
+        for k=1:nconds, condition(k) = conditions(k).GAM.log; end
         PlotUnit(prs,behv,condition,plot_type,trial_type);
     end
 else % plot all units
@@ -21,6 +21,6 @@ else % plot all units
         PlotUnits(prs,behv,units(selectedunits),plot_type,trial_type); % plot data from all units
     else
         conditions = this.populations.units.stats.trialtype.(trial_type); nconds = numel(conditions);
-        for k=1:nconds, condition(k) = conditions(k).models.log.units(selectedunits); end
+        for k=1:nconds, condition{k} = conditions(k).models.log.units(selectedunits); end
     end
 end

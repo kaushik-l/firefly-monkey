@@ -2,10 +2,15 @@
 function AddUnits(this,prs)
 
 cd(prs.filepath_neur);
-linearprobe_type = find(cellfun(@(electrode_type) strcmp(prs.electrode_type,electrode_type), prs.linearprobe.types),1);
-utaharray_type = find(cellfun(@(electrode_type) strcmp(prs.electrode_type,electrode_type), prs.utaharray.types),1);
+% determine type of electrode
+linearprobe_type = []; utaharray_type = [];
+for k=1:length(prs.electrode_type)
+    linearprobe_type = [linearprobe_type find(cellfun(@(electrode_type) strcmp(prs.electrode_type{k},electrode_type), prs.linearprobe.types),1)];
+    utaharray_type = [utaharray_type find(cellfun(@(electrode_type) strcmp(prs.electrode_type{k},electrode_type), prs.utaharray.types),1)];
+end
 
 if ~isempty(linearprobe_type) % assume linearprobe is recorded using Plexon
+    brain_area = prs.area{strcmp(prs.electrode_type,prs.linearprobe.types{linearprobe_type})};
     file_ead=dir('*_ead.plx'); prs.neur_filetype = 'plx';
     fprintf(['... reading ' file_ead.name '\n']);
     [events_plx,prs.fs_spk] = GetEvents_plx(file_ead.name);
@@ -13,14 +18,16 @@ if ~isempty(linearprobe_type) % assume linearprobe is recorded using Plexon
     fprintf(['... reading ' file_plx.name '\n']);
     for j=1:prs.linearprobe.channelcount(linearprobe_type)
         fprintf(['...... channel ' num2str(j) '/' num2str(prs.linearprobe.channelcount(linearprobe_type)) '\n']);
-        smua = GetUnits_plx(file_plx.name,prs.units,j); % smua = singleunits + multiunits
+        smua = GetUnits_plx(file_plx.name,prs.units,j,prs.linearprobe.types{linearprobe_type}); % smua = singleunits + multiunits
         %fetch multiunit
         this.units(end+1) = unit('multiunit',smua(1),prs.fs_spk);
+        this.units(end).brain_area = brain_area;
         this.units(end).AddTrials(smua(1).tspk,events_plx,this.behaviours,prs);
         %fetch units
         if length(smua)>1
             for k=2:length(smua)
                 this.units(end+1) = unit('singleunit',smua(k),prs.fs_spk);
+                this.units(end).brain_area = brain_area;
                 this.units(end).AddTrials(smua(k).tspk,events_plx,this.behaviours,prs);
             end
         end

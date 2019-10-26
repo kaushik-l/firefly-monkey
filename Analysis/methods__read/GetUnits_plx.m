@@ -1,4 +1,4 @@
-function units = GetUnits_plx(fname,getall,getch)
+function units = GetUnits_plx(fname,getall,getch,electrode_type)
 
 nunits=0;
 tscounts = plx_info(fname,1);                                               % changed from fullread=1 to 0 on 051815
@@ -18,6 +18,7 @@ if isempty(getch)
                 units(nunits).channel_id = i-1;
                 units(nunits).electrode_id = i-1;
                 units(nunits).cluster_id = j-1;
+                units(nunits).electrode_type = electrode_type;
             end
         end
     end
@@ -31,6 +32,7 @@ else
             units(nunits).channel_id = getch;
             units(nunits).electrode_id = getch;
             units(nunits).cluster_id = j-1;
+            units(nunits).electrode_type = electrode_type;
         end
     end
 end

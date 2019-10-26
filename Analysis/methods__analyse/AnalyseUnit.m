@@ -236,6 +236,7 @@ end
 if fitGAM_tuning
     GAM_prs.varname = prs.GAM_varname; varname = GAM_prs.varname;
     GAM_prs.vartype = prs.GAM_vartype; vartype = GAM_prs.vartype;
+    GAM_prs.basistype = prs.GAM_basistype; % enable only for branch smoothbasis of BuildGAM
     GAM_prs.nbins = prs.GAM_nbins;
     GAM_prs.binrange = [];
     GAM_prs.nfolds = prs.nfolds;

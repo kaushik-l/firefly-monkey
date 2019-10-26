@@ -118,13 +118,91 @@ switch lower(plot_type)
         xlabel('Time from reward (s)'); ylabel('Z-scored firing rate');
         h = findobj(gca);
         legend(h(4*(nconds:-1:1)),condnames,'Location','best');
-    
+        
     case 'gam_uncoupled'
-        zz = 1;
+        condition = units;
+        nunits = numel(condition{1});
+        %% plot model-based tuning functions
+        nvars = numel(condition{1}(1).Uncoupledmodel.x);
+        ymin = inf; ymax = -inf;
+        for k=1:nconds
+            figure; hold on; set(gcf,'Position',[100 100 800 400]);
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i); hold on;
+                for j=1:nunits
+                    if ~isempty(condition{k}(j).Uncoupledmodel.marginaltunings{1}{i}.mean)
+                        plot(condition{k}(j).Uncoupledmodel.x{i},condition{k}(j).Uncoupledmodel.marginaltunings{1}{i}.mean,'Color',cmap(k,:));
+                        ymin = min(ymin,min(condition{k}(j).Uncoupledmodel.marginaltunings{1}{i}.mean));
+                        ymax = max(ymax,max(condition{k}(j).Uncoupledmodel.marginaltunings{1}{i}.mean));
+                    end
+                    xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))];
+                    set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
+                end
+            end
+            % match y-scales
+            subplot(2,ceil(nvars/2),1);
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i);
+                ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
+                xlabel(prs.varlookup(prs.GAM_varname{i}));
+                %                 xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
+                if strcmp(condition{k}(1).Uncoupledmodel.xtype{i},'event')
+                    if strcmp(prs.GAM_varname{i},'target_OFF')
+                        set(gca,'xlim',[-0.5 0.5],'XTick',[-0.3 0.2],'XTickLabel',[-0.3 0.2] + 0.3);
+                        xlabel({'Time (s) rel. to'; prs.varlookup(prs.GAM_varname{i})},'Interpreter','none'); vline(-0.3,'k'); ylabel('(spk/s)');
+                    else
+                        set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0 0.5]);
+                        xlabel({'Time (s) rel. to'; prs.varlookup(prs.GAM_varname{i})},'Interpreter','none'); vline(0,'k'); ylabel('(spk/s)');
+                    end
+                end
+            end
+            pnum = find(cellfun(@(x) ~isempty(x), condition{k}(1).Uncoupledmodel.marginaltunings{1}),1);
+            subplot(2,ceil(nvars/2),pnum);
+            suptitle(condnames{k});
+        end
         
     case 'gam_coupled'
-        
-        
+        condition = units;
+        nunits = numel(condition{1});
+        %% plot model-based tuning functions
+        nvars = numel(condition{1}(1).Coupledmodel.x)-1;
+        ymin = inf; ymax = -inf;
+        for k=1:nconds
+            figure; hold on; set(gcf,'Position',[100 100 800 400]);
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i); hold on;
+                for j=1:nunits
+                    if ~isempty(condition{k}(j).Coupledmodel.marginaltunings{i}.mean)
+                        plot(condition{k}(j).Coupledmodel.x{i},condition{k}(j).Coupledmodel.marginaltunings{i}.mean,'Color',cmap(k,:));
+                        ymin = min(ymin,min(condition{k}(j).Coupledmodel.marginaltunings{i}.mean));
+                        ymax = max(ymax,max(condition{k}(j).Coupledmodel.marginaltunings{i}.mean));
+                    end
+                    xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))];
+                    set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
+                end
+            end
+            % match y-scales
+            subplot(2,ceil(nvars/2),1); ylabel('(spk/s)');
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i);
+                ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
+                xlabel(prs.varlookup(prs.GAM_varname{i}));
+                %                 xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
+                if strcmp(condition{k}(1).Coupledmodel.xtype{i},'event')
+                    if strcmp(prs.GAM_varname{i},'target_OFF')
+                        set(gca,'xlim',[-0.5 0.5],'XTick',[-0.3 0.2],'XTickLabel',[-0.3 0.2] + 0.3);
+                        xlabel({'Time (s) rel. to'; prs.varlookup(prs.GAM_varname{i})},'Interpreter','none'); vline(-0.3,'k'); ylabel('(spk/s)');
+                    else
+                        set(gca,'xlim',[-0.5 0.5],'XTick',[-0.5 0 0.5]);
+                        xlabel({'Time (s) rel. to'; prs.varlookup(prs.GAM_varname{i})},'Interpreter','none'); vline(0,'k'); ylabel('(spk/s)');
+                    end
+                end
+            end
+            pnum = find(cellfun(@(x) ~isempty(x), condition{k}(1).Coupledmodel.marginaltunings),1);
+            subplot(2,ceil(nvars/2),pnum);
+            suptitle(condnames{k});
+        end
+                
     case 'sta'
         for i=1:nunits
             t(i,:) = units(i).stats.trialtype.all.continuous.lfps.sta.t;

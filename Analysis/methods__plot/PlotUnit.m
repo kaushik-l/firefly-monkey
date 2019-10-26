@@ -143,19 +143,19 @@ switch lower(plot_type)
     case 'gam_uncoupled'
         condition = unit;
         %% plot model-based tuning functions
-        nvars = numel(condition(1).Coupledmodel.x)-1;
-        bestmodel = condition(1).Uncoupledmodel.bestmodel;
-        figure; hold on;
+        nvars = numel(condition(1).x);
+        bestmodel = 1;%condition(1).bestmodel;
+        figure; hold on; %set(gcf,'Position',[100 100 800 400]);
         ymin = inf; ymax = -inf;
         for k=1:nconds
             if ~isnan(bestmodel)
                 for i=1:nvars
                     subplot(2,ceil(nvars/2),i); hold on;
-                    if ~isempty(condition(k).Uncoupledmodel.marginaltunings{bestmodel}{i})
-                        shadedErrorBar(condition(k).Uncoupledmodel.x{i},condition(k).Uncoupledmodel.marginaltunings{bestmodel}{i}.mean,...
-                            condition(k).Uncoupledmodel.marginaltunings{bestmodel}{i}.std,'lineprops',{'Color',cmap(k,:)});
-                        ymin = min(ymin,min(condition(k).Uncoupledmodel.marginaltunings{bestmodel}{i}.mean));
-                        ymax = max(ymax,max(condition(k).Uncoupledmodel.marginaltunings{bestmodel}{i}.mean));
+                    if ~isempty(condition(k).marginaltunings{bestmodel}{i})
+                        shadedErrorBar(condition(k).x{i},condition(k).marginaltunings{bestmodel}{i}.mean,...
+                            condition(k).marginaltunings{bestmodel}{i}.std,'lineprops',{'Color',cmap(k,:)});
+                        ymin = min(ymin,min(condition(k).marginaltunings{bestmodel}{i}.mean));
+                        ymax = max(ymax,max(condition(k).marginaltunings{bestmodel}{i}.mean));
                     end
                     xlim2 = get(gca,'xlim'); xlim2 = [floor(xlim2(1)) ceil(xlim2(2))];
                     set(gca,'xlim',xlim2,'xTick',xlim2,'Fontsize',10);
@@ -167,7 +167,7 @@ switch lower(plot_type)
                     ylim2 = [floor(ymin) ceil(ymax)]; set(gca,'ylim',ylim2);
                     xlabel(prs.varlookup(prs.GAM_varname{i}));
                     %                 xlabel(prs.GAM_varname{i}(1:min(4,length(prs.GAM_varname{i}))));
-                    if strcmp(condition(k).Coupledmodel.xtype{i},'event')
+                    if strcmp(condition(k).xtype{i},'event')
                         if strcmp(prs.GAM_varname{i},'target_OFF')
                             set(gca,'xlim',[-0.5 0.5],'XTick',[-0.3 0.2],'XTickLabel',[-0.3 0.2] + 0.3); 
                             xlabel({'Time (s) rel. to'; prs.varlookup(prs.GAM_varname{i})},'Interpreter','none'); vline(-0.3,'k');
@@ -177,7 +177,7 @@ switch lower(plot_type)
                         end
                     end
                 end
-                pnum = find(cellfun(@(x) ~isempty(x), condition(k).Uncoupledmodel.marginaltunings{bestmodel}),1);
+                pnum = find(cellfun(@(x) ~isempty(x), condition(k).marginaltunings{bestmodel}),1);
                 subplot(2,ceil(nvars/2),pnum);
             end
         end
@@ -188,7 +188,7 @@ switch lower(plot_type)
         condition = unit;
         %% plot model-based tuning functions
         nvars = numel(condition(1).Coupledmodel.x)-1;
-        figure; hold on;
+        figure; hold on; set(gcf,'Position',[100 100 800 400]);
         ymin = inf; ymax = -inf;
         for k=1:nconds
             for i=1:nvars
@@ -230,7 +230,7 @@ switch lower(plot_type)
         %% plot model-based tuning functions
         nvars = numel(condition(1).Coupledmodel.x)-1;
         bestmodel = condition(1).Uncoupledmodel.bestmodel;
-        figure; hold on;
+        figure; hold on; set(gcf,'Position',[100 100 800 400]);
         ymin = inf; ymax = -inf;
         for k=1:nconds
             if ~isnan(bestmodel)
@@ -263,6 +263,18 @@ switch lower(plot_type)
         h = findobj(gca);
         legend([h(2) h(3)],{'Coupled','Uncoupled'},'Location','best');
 
+    case 'tuning_continuous'
+        continuous = [unit.stats.trialtype.(trial_type).continuous];
+        varnames = fieldnames(continuous(k));
+        nvars = numel(varnames);
+        for k=1:nconds
+            for i=1:nvars
+                subplot(2,ceil(nvars/2),i); hold on;
+                shadedErrorBar(continuous(k).(varnames{k}).tuning.stim.mu,continuous(k).(varnames{i}).tuning.rate.mu,...
+                    continuous(k).(varnames{i}).tuning.rate.sem,'lineprops',{'Color',cmap(k,:)});
+            end
+        end
+        
     case 'sfc'
         lfps = unit.stats.trialtype.all.continuous.lfps;
         nlfps = length(lfps);

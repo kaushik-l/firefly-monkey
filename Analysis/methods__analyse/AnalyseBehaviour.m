@@ -17,7 +17,11 @@ continuous = cell2mat({trials.continuous}); % extract continuous channels
 events = cell2mat({trials.events}); % extract event channels
 logical = cell2mat({trials.logical}); % extract logical channels
 trialparams = cell2mat({trials.prs});
+phi = cellfun(@(ts,w) cumsum(w.*(ts>0))*prs.dt, {continuous.ts}, {continuous.w}, 'UniformOutput', false);
+R = @(phi) [cosd(phi) -sind(phi); sind(phi) cosd(phi)];
 for i=1:ntrls
+    %% heading
+    continuous(i).phi = phi{i};
     %% final velocity
     indx_end = find(continuous(i).ts > events(i).t_end, 1); % sample number of end-of-trial timestamp (t_end)
     v_monk(i) = (continuous(i).v(indx_end)); w_monk(i) = (continuous(i).w(indx_end));
@@ -35,8 +39,10 @@ for i=1:ntrls
     %% fly position relative to monkey - cartesian
     continuous(i).xfp_rel = x_fly(i) - continuous(i).xmp;
     continuous(i).yfp_rel = y_fly(i) - continuous(i).ymp;
-    continuous(i).r_fly_rel = sqrt(continuous(i).xfp_rel.^2 + continuous(i).yfp_rel.^2);
-    continuous(i).theta_fly_rel = atan2d(continuous(i).xfp_rel,continuous(i).yfp_rel);
+    XY = cell2mat(arrayfun(@(phi,x,y) R(phi)*[x ; y], continuous(i).phi, continuous(i).xfp_rel, continuous(i).yfp_rel, 'UniformOutput', false)');
+    continuous(i).xfp_rel = XY(1,:)'; continuous(i).yfp_rel = XY(2,:)';
+    continuous(i).r_fly_rel = sqrt(continuous(i).xfp_rel.^2 + continuous(i).yfp_rel.^2); continuous(i).r_fly_rel(indx_stop+1:end) = nan;
+    continuous(i).theta_fly_rel = atan2d(continuous(i).xfp_rel,continuous(i).yfp_rel); continuous(i).theta_fly_rel(indx_stop+1:end) = nan;
     %% final stopping position relative to monkey
     continuous(i).xsp_rel = xf_monk(i) - continuous(i).xmp;
     continuous(i).ysp_rel = yf_monk(i) - continuous(i).ymp;
@@ -187,7 +193,7 @@ end
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=[1 4]
+    for i=1
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -271,7 +277,7 @@ if prs.regress_eye
     t_sac = {events.t_sac}; t_stop = [events.t_stop]; t_microstim = [events.t_microstim]; t_ptb = [events.t_ptb]; ts = {continuous.ts};
     ptb_maxlinvel = [trialparams.ptb_linear]; ptb_maxangvel = [trialparams.ptb_angular];
     trialtypes = fields(stats.trialtype);
-    for i=[1 4]%:length(trialtypes)
+    for i=1%:length(trialtypes)
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -286,6 +292,7 @@ if prs.regress_eye
                     AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),prs);
                 stats.trialtype.(trialtypes{i})(j).eye_movement = ...
                     AnalyseEyemovement(stats.trialtype.(trialtypes{i})(j).eye_fixation,xfp_rel(trlindx),yfp_rel(trlindx),xmp(trlindx),ymp(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),spatialstd,prs);
+                stats.trialtype.(trialtypes{i})(j).eye_saccade = AnalyseSaccades(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
                 %do this for perturbation trials only
                 if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
                     [stats.trialtype.(trialtypes{i})(j).ptbtriggered.ts,stats.trialtype.(trialtypes{i})(j).ptbtriggered.eye_movement] = ...
