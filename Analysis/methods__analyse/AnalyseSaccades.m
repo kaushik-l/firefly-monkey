@@ -124,6 +124,9 @@ for i=1:ntrls
         end
     end
     
+    % temporary block for debugging
+%     figure(1); plot(ts{i},yle{i}); hold on; plot(ts{i},yle_pred{i}); hold off;
+%     figure(2); plot(ts{i},zle{i}); hold on; plot(ts{i},zle_pred{i}); hold off;
 end
 
 %% regression

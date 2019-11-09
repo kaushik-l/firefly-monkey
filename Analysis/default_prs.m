@@ -66,6 +66,8 @@ prs.minpeakprominence.monkpos = 10; % expected magnitude of change in monkey pos
 prs.minpeakprominence.flypos = 1; % expected magnitude of change in fly position in consecutive trials (cm)
 prs.fixateduration = 0.75; % length of fixation epochs (s)
 prs.fixate_thresh = 4; % max eye velocity during fixation (deg/s)
+prs.movingwin_trials = 10; % window for estimating moving average/median bias (number of trials)
+prs.rewardwin = 65; % size of reward window around target (cm)
 prs.ptb_sigma = 1/6; % width of the gaussian func for ptb (s)
 prs.ptb_duration = 1; % duration fo ptb (s)
 prs.blink_thresh = 50; % threshold to remove eye blinks
@@ -238,7 +240,7 @@ prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','ey
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = true; % regress response against target position
-prs.regress_eye = true; % regress eye position against target position
+prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods

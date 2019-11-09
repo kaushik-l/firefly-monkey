@@ -7,10 +7,18 @@ eof=0; newline = 'nothingnew'; count=0;
 if strcmp(file(1:6),'replay'), replay_movie = true;
 else, replay_movie = false; end
 %% check for fixed ground landmark
-while ~strcmp(newline(1:9),'Enable Li')
+while ~any(strcmp(newline(1:9),{'Enable Li','Floor Lif'}))
     newline = fgetl(fid);
 end
-fixed_ground = logical(1 - str2double(newline(18))); % if limited lifetime is enabled (1), fixed_ground is 0
+% if limited lifetime is enabled (1), fixed_ground is 0
+fixed_ground = [];
+if strcmp(newline(1:9),'Enable Li'), fixed_ground = logical(1 - str2double(newline(18))); end
+%% read speed limit for this experimental block
+while ~strcmp(newline(1:13),'Joy Stick Max')
+    newline = fgetl(fid);
+end
+v_max = str2num(newline(32:34));
+newline = fgetl(fid); w_max = str2num(newline(41:44));
 while newline ~= -1
     %% get ground plane density
     while ~strcmp(newline(1:9),'Floor Den')
@@ -20,10 +28,9 @@ while newline ~= -1
     if newline == -1, break; end
     count = count+1;
     trials(count).prs.floordensity = str2num(newline(27:34));
-    % initialise
+    %% initialise
     trials(count).logical.landmark_distance = false;
     trials(count).logical.landmark_angle = false; % #$%^&&^&*^danger - change false to nan immediately (what if field missing from log file??)
-    trials(count).logical.landmark_fixedground = fixed_ground;
     trials(count).prs.ptb_linear = 0;
     trials(count).prs.ptb_angular = 0;
     trials(count).prs.ptb_delay = 0;
@@ -31,6 +38,8 @@ while newline ~= -1
     trials(count).logical.firefly_fullON = nan;
     trials(count).prs.stop_duration = nan;
     trials(count).logical.replay = replay_movie;
+    trials(count).prs.v_max = v_max; % cm/s (default 200) 
+    trials(count).prs.w_max = w_max; % deg/s (default 90)
     %% get landmark status, ptb velocities and ptb delay
     newline = fgetl(fid);
     if newline == -1, break; end
@@ -59,4 +68,16 @@ while newline ~= -1
     if strcmp(newline(1:8),'Distance')
         trials(count).prs.stop_duration = str2num(newline(34:end))/1000; % wait duration after stopping before monkey is given feedback (s)
     end
+    %% check for fixed ground
+    if newline == -1, break; end
+    if isempty(fixed_ground)
+        while ~strcmp(newline(1:9),'Enable Li')
+            newline = fgetl(fid);
+        end
+        fixed_ground = logical(1 - str2double(newline(18)));
+    end
+    trials(count).logical.landmark_fixedground = fixed_ground;
 end
+
+%% close file
+fclose(fid);
