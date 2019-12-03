@@ -1,4 +1,4 @@
-function eye_saccade = AnalyseSaccades(x_fly,y_fly,zle,yle,zre,yre,t_sac,t_stop,ts,trlerrors,prs)
+function eye_saccade = AnalyseSaccades(x_fly,y_fly,zle,yle,zre,yre,w,t_sac,t_stop,ts,trlerrors,prs)
 
 %% prs
 delta = prs.interoculardist/2;
@@ -69,6 +69,7 @@ for i=1:ntrls
     
     % saccade direction
     corrective.sacxy{i} = []; corrective.sacxy_pred{i} = []; corrective.sacdir{i} = []; corrective.sacdir_pred{i} = []; corrective.sac_time{i} = []; 
+    corrective.w{i} = [];
     acquisitive.sacxy{i} = []; acquisitive.sacdir{i} = []; acquisitive.sac_time{i} = []; 
     explorative.sacxy{i} = []; explorative.sacdir{i} = []; explorative.sac_time{i} = []; 
     if ~isempty(timeindx)
@@ -81,6 +82,8 @@ for i=1:ntrls
                 corrective.sacxy_pred{i} = [corrective.sacxy_pred{i} [ver_mean_pred{i}(sacstartindx) - ver_mean{i}(sacstartindx); hor_mean_pred{i}(sacstartindx) - hor_mean{i}(sacstartindx)]];
                 corrective.sacdir_pred{i} = [corrective.sacdir_pred{i} atan2d(corrective.sacxy_pred{i}(1,end),corrective.sacxy_pred{i}(2,end))];
                 corrective.sac_time{i} = [corrective.sac_time{i} t_sac2(j)]; % time since target fixation
+                
+                corrective.w{i} = [corrective.w{i} w{i}(sacstartindx)];
             elseif t_sac2(j) == (t_fix(i) - saccade_duration/2)
                 acquisitive.sacxy{i} = [ver_mean{i}(sacendindx) - ver_mean{i}(sacstartindx); hor_mean{i}(sacendindx) - hor_mean{i}(sacstartindx)];
                 acquisitive.sacdir{i} = atan2d(acquisitive.sacxy{i}(1,end),acquisitive.sacxy{i}(2,end));
@@ -138,15 +141,19 @@ for k=1:ntrls
     mag_error = [mag_error cell2mat(trackingerror.mag{k})]; 
     dir_error = [dir_error cell2mat(trackingerror.dir{k})]; 
 end
-sacxy = cell2mat(corrective.sacxy);
+sacxy = cell2mat(corrective.sacxy); w = cell2mat(corrective.w);
 ver_sac = sacxy(1,:); hor_sac = sacxy(2,:);
 mag_sac = sqrt(sum(cell2mat(corrective.sacxy).^2));
 dir_sac = cell2mat(corrective.sacdir);
 
 trackingerror.ridgeregress.ver = ridge(ver_sac(:),ver_error',5e3);
 trackingerror.ridgeregress.hor = ridge(hor_sac(:),hor_error',5e3);
+
 trackingerror.ridgeregress.mag = ridge(mag_sac(:),mag_error',5e3);
 trackingerror.ridgeregress.dir = ridge(dir_sac(:),dir_error',5e3);
+
+trackingerror.timecourse.hor = hor_error;
+trackingerror.timecourse.ver = ver_error;
 
 %% save saccadic eye movements
 eye_saccade.corrective.true.val = corrective.sacxy;

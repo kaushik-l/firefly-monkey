@@ -240,7 +240,7 @@ prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','ey
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
 prs.regress_behv = true; % regress response against target position
-prs.regress_eye = false; % regress eye position against target position
+prs.regress_eye = true; % regress eye position against target position
 
 %% spikes
 % traditional methods
@@ -249,7 +249,7 @@ prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each predictor using GAM
-prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis

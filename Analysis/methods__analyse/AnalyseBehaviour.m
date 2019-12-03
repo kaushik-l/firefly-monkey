@@ -201,7 +201,7 @@ end
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=[1 2 8]
+    for i=1:2
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -298,6 +298,18 @@ if prs.regress_behv
                             regress(log([events(trlindx).t_stop]' - max(0,[events(trlindx).t_move])'),...
                             [log(r_fly(trlindx)') log(speedlimit(trlindx)')]);
                     end
+                    % do this to the 1x gain block if there was gain mainpulation
+                    if strcmp(stats.trialtype.(trialtypes{i})(j).val,{'gain = 1'}) && ...
+                            numel(contains({stats.trialtype.(trialtypes{end}).val},'gain'))>1
+                        meanspeeds = cellfun(@(a,b,c,d) mean(a(b>max(0,c) & b<d)),{continuous(trlindx).v},...
+                            {continuous(trlindx).ts},{events(trlindx).t_move},{events(trlindx).t_end});
+                        stats.trialtype.(trialtypes{i})(j).speed_regress = ...
+                            regress(log([events(trlindx).t_stop]' - max(0,[events(trlindx).t_move])'),...
+                            [log(r_fly(trlindx)') log(meanspeeds')]);
+                        stats.trialtype.(trialtypes{i})(j).gain_regress = ...
+                            regress(log([events(trlindx).t_stop]' - max(0,[events(trlindx).t_move])'),...
+                            [log(r_fly(trlindx)') log(speedlimit(trlindx)')]);
+                    end
                 else
                     stats.trialtype.(trialtypes{i})(j).pos_regress = nan;
                     stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = nan;
@@ -311,11 +323,12 @@ end
 %% analyse eye movements
 if prs.regress_eye
     xfp_rel = {continuous.xfp_rel};
-    yfp_rel = {continuous.yfp_rel};
+    yfp_rel = {continuous.yfp_rel};    
     xmp = {continuous.xmp};
     ymp = {continuous.ymp};
     zle = {continuous.zle}; yle = {continuous.yle};
     zre = {continuous.zre}; yre = {continuous.yre};
+    v = {continuous.v}; w = {continuous.w};
     t_sac = {events.t_sac}; t_stop = [events.t_stop]; t_microstim = [events.t_microstim]; t_ptb = [events.t_ptb]; ts = {continuous.ts};
     ptb_maxlinvel = [trialparams.ptb_linear]; ptb_maxangvel = [trialparams.ptb_angular];
     trialtypes = fields(stats.trialtype);
@@ -334,7 +347,7 @@ if prs.regress_eye
                     AnalyseEyefixation(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),prs);
                 stats.trialtype.(trialtypes{i})(j).eye_movement = ...
                     AnalyseEyemovement(stats.trialtype.(trialtypes{i})(j).eye_fixation,xfp_rel(trlindx),yfp_rel(trlindx),xmp(trlindx),ymp(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),spatialstd,prs);
-                stats.trialtype.(trialtypes{i})(j).eye_saccade = AnalyseSaccades(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
+                stats.trialtype.(trialtypes{i})(j).eye_saccade = AnalyseSaccades(xfp_rel(trlindx),yfp_rel(trlindx),zle(trlindx),yle(trlindx),zre(trlindx),yre(trlindx),w(trlindx),t_sac(trlindx),t_stop(trlindx),ts(trlindx),trlerrors(trlindx),prs);
                 %do this for perturbation trials only
                 if strcmp(stats.trialtype.(trialtypes{i})(j).val,'with perturbation')
                     [stats.trialtype.(trialtypes{i})(j).ptbtriggered.ts,stats.trialtype.(trialtypes{i})(j).ptbtriggered.eye_movement] = ...

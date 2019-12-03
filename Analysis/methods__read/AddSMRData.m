@@ -87,8 +87,8 @@ if any(strcmp(chnames,'microstim'))
 end
 
 %% import hand position
-[ch.h1, ch.h2, isavailable] = ImportHandPosition(ch.v,ch.w,dt,prs);
-if isavailable, chnames(end+1:end+2) = {'h1','h2'}; end % append two more channels
+% [ch.h1, ch.h2, isavailable] = ImportHandPosition(ch.v,ch.w,dt,prs);
+% if isavailable, chnames(end+1:end+2) = {'h1','h2'}; end % append two more channels
 
 %% replace the signal from the untracked eye (if any) with NaNs
 if prs.eyechannels(1) == 0
