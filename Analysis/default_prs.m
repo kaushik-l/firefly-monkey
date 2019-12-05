@@ -239,8 +239,8 @@ prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','ey
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = true; % regress response against target position
-prs.regress_eye = true; % regress eye position against target position
+prs.regress_behv = false; % regress response against target position
+prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods

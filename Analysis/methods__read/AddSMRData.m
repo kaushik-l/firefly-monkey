@@ -204,7 +204,12 @@ for j=1:length(t.end)
    if ~isempty(indx), t.stop(j) = t.move(j) + indx*dt;
    else, t.stop(j) = t.end(j); end % if monkey never stopped, set movement end = trial end
    % if monkey stopped prematurely, set movement end = trial end
-   if (t.stop(j)<t.beg(j) || (t.stop(j)-t.move(j))<prs.mintrialduration), t.stop(j) = t.end(j); end
+   if (t.stop(j)<t.beg(j) || (t.stop(j)-t.move(j))<prs.mintrialduration)
+       % second attempt to locate t_stop (added 12-04-2019)
+       indx = find(abs(v(ts>t.beg(j) & ts<t.end(j))) > v_thresh | abs(w(ts>t.beg(j) & ts<t.end(j))) > w_thresh,1,'last');
+       if ~isempty(indx), t.stop(j) = t.beg(j) + indx*dt;
+       else, t.stop(j) = t.end(j); end
+   end
 end
 
 %% extract trials and downsample for storage
