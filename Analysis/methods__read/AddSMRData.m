@@ -229,7 +229,8 @@ for j=1:length(t.end)
             else, trl(j).continuous.ts_microstim = (dt_original:dt_original:length(trl(j).continuous.microstim)*dt_original)' - pretrial; end
         end
     end
-    trl(j).continuous.ts = (dt:dt:length(trl(j).continuous.(chnames{2}))*dt)' - pretrial;
+    trl(j).continuous.ts = (dt:dt:length(trl(j).continuous.(chnames{2}))*dt)' + ...
+        ((t.beg(j)-pretrial)<0)*(t.beg(j)-pretrial) + ((t.beg(j)-pretrial)>0)*(-pretrial); % because not enough pretrial before 1st trial
     trl(j).continuous.firefly = trl(j).continuous.ts>=0 & trl(j).continuous.ts<(0+prs.fly_ONduration);
     trl(j).events.t_beg = t.beg(j);
     trl(j).events.t_end = t.end(j);
