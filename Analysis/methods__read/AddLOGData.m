@@ -40,6 +40,7 @@ while newline ~= -1
     trials(count).logical.replay = replay_movie;
     trials(count).prs.v_max = v_max; % cm/s (default 200) 
     trials(count).prs.w_max = w_max; % deg/s (default 90)
+    trials(count).logical.landmark_fixedground = false;
     %% get landmark status, ptb velocities and ptb delay
     newline = fgetl(fid);
     if newline == -1, break; end

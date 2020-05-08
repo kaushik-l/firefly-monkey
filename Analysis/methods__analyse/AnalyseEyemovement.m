@@ -48,10 +48,18 @@ for i=1:ntrls
     
     % target position
     xt{i} = x_fly{i}(timeindx); yt{i} = y_fly{i}(timeindx);
-    xt{i}(isnan(xt{i})) = xt{i}(find(~isnan(xt{i}),1)); yt{i}(isnan(yt{i})) = yt{i}(find(~isnan(yt{i}),1));
+    if ~isempty(find(~isnan(xt{i}),1))
+        xt{i}(isnan(xt{i})) = xt{i}(find(~isnan(xt{i}),1)); yt{i}(isnan(yt{i})) = yt{i}(find(~isnan(yt{i}),1));
+    else
+        xt{i}(isnan(xt{i})) = xt{i-1}(find(~isnan(xt{i-1}),1)); yt{i}(isnan(yt{i})) = yt{i-1}(find(~isnan(yt{i-1}),1));
+    end
     % subject position
     xmt{i} = x_monk{i}(timeindx) - x_monk{i}(find(~isnan(x_monk{i}),1)); ymt{i} = y_monk{i}(timeindx) - y_monk{i}(find(~isnan(y_monk{i}),1));
-    xmt{i}(isnan(xmt{i})) = xmt{i}(find(~isnan(xmt{i}),1)); ymt{i}(isnan(ymt{i})) = ymt{i}(find(~isnan(ymt{i}),1));
+    if ~isempty(find(~isnan(xmt{i}),1))
+        xmt{i}(isnan(xmt{i})) = xmt{i}(find(~isnan(xmt{i}),1)); ymt{i}(isnan(ymt{i})) = ymt{i}(find(~isnan(ymt{i}),1));
+    else
+        xmt{i}(isnan(xmt{i})) = xmt{i-1}(find(~isnan(xmt{i-1}),1)); ymt{i}(isnan(ymt{i})) = ymt{i-1}(find(~isnan(ymt{i-1}),1));
+    end
     % variance in subject position
     [~,x_indx] = min(abs(xmt{i}-spatialerr.x),[],2);
     [~,y_indx] = min(abs(ymt{i}-spatialerr.y),[],2);

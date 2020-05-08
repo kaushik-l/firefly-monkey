@@ -19,7 +19,7 @@ prs.eyechannels = monkeyInfo.eyechannels;
 
 %% data acquisition parameters
 prs.fs_smr = 5000/6; % sampling rate of smr file
-prs.fs_lfp = 500; % sampling rate of smr file
+prs.fs_lfp = 500; % sampling rate of ns1 file
 prs.filtwidth = 2; % width in samples (10 samples @ fs_smr = 10x0.0012 = 12 ms)
 prs.filtsize = 2*prs.filtwidth; % size in samples
 prs.factor_downsample = 5; % select every nth sample
@@ -44,10 +44,10 @@ prs.MapDualArray2BrainArea = @(x,y) char((y<=48)*x{1} + (y>48)*x{2});
 %% static stimulus parameters
 prs.monk_startpos = [0 -30];
 prs.fly_ONduration = 0.3;
-prs.saccadeduration = 0.05; % saccades last ~50ms
 
 %% data analysis parameters
 % behavioural analysis
+prs.saccadeduration = 0.05; % saccades last ~50ms
 prs.mintrialsforstats = 50; % need at least 100 trials for stats to be meaningful
 prs.npermutations = 50; % number of permutations for trial shuffled estimates
 prs.saccade_thresh = 50; % deg/s
@@ -56,7 +56,7 @@ prs.v_thresh = 5; % cm/s
 prs.w_thresh = 3; % cm/s
 prs.v_time2thresh = 0.05; % (s) approx time to go from zero to threshold or vice-versa
 prs.ncorrbins = 100; % 100 bins of data in each trial
-prs.pretrial = 1; % (s) // duration to extract before target onset or movement onset, whichever is earlier
+prs.pretrial = 0.5; % (s) // duration to extract before target onset or movement onset, whichever is earlier
 prs.posttrial = 0.5; % (s) // duration to extract following end-of-trial timestamp
 prs.presaccade = 0.5; % (s) // time window for saccade-triggered analysis
 prs.postsaccade = 0.5; % (s)
@@ -247,9 +247,9 @@ prs.regress_eye = false; % regress eye position against target position
 prs.evaluate_peaks = false; % evaluate significance of event-locked responses
 prs.compute_tuning = false; % compute tuning functions
 %% GAM fitting
-prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each predictor using GAM
-prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis

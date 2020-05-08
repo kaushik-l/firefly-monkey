@@ -6,10 +6,20 @@ cluster_locs = [];
 [~,electrode_id] = MapChannel2Electrode(electrode_type);
 spiketimes = readNPY(f_spiketimes);
 cluster_ids = readNPY(f_spikeclusters);
-clusters = readCSV(f_clustergroups);
+if exist(f_clustergroups,'file'), clusters = readCSV(f_clustergroups); 
+elseif exist('cluster_group.tsv','file')
+    data = tdfread('cluster_info.tsv');
+    clusters = struct('id', arrayfun(@(x) num2str(x), data.id, 'UniformOutput', false),...
+        'label', cellfun(@(x) strtrim(x), mat2cell(data.group,ones(size(data.group,1),1),size(data.group,2)),'UniformOutput', false));
+end
 if exist(f_clusterlocations,'file') % remove if clause once we have these files for all recording sessions
     cluster_locs = readtable(f_clusterlocations);
+    load('waveForms.mat')
+elseif exist('cluster_info.tsv','file')
+    data = tdfread('cluster_info.tsv');
+    cluster_locs = array2table([data.id data.channel+1],'VariableNames',{'Cluster_ID','Ch_num'}); % +1 because of 0-based indexing
     load('waveForms.mat');
+    if exist('waveFormsMean'), waveForms(:,1,:) = waveFormsMean; end
 end
 
 sua_indx = find(strcmp({clusters.label},'good'));

@@ -9,6 +9,7 @@ ts = dt*(1:nt);
 %% filter LFP
 [b,a] = butter(prs.lfp_filtorder,[prs.lfp_freqmin prs.lfp_freqmax]/(fs/2));
 lfp = filtfilt(b,a,lfp);
+lfp = downsample(lfp,fs/prs.fs_lfp); ts = downsample(ts,fs/prs.fs_lfp);
 
 %% trials (raw)
 trials(ntrls) = struct();

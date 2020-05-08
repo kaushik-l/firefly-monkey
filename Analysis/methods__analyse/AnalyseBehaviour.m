@@ -201,7 +201,7 @@ end
 %% linear regression, ROC analysis, error distribution, ptb-triggered average
 if prs.regress_behv
     trialtypes = fields(stats.trialtype);
-    for i=1:2
+    for i=1
         nconds = length(stats.trialtype.(trialtypes{i}));
         if ~strcmp((trialtypes{i}),'all') && nconds==1, copystats = true; else, copystats = false; end % only one condition means variable was not manipulated
         for j=1:nconds
@@ -216,10 +216,28 @@ if prs.regress_behv
                     % regression without intercept
                     [pos_regress.beta_r, ~, pos_regress.betaCI_r, ~, pos_regress.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 2);
                     [pos_regress.beta_theta, ~, pos_regress.betaCI_theta, ~, pos_regress.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 2);
+                    % regression without intercept for different ranges
+                    r_fly2 = r_fly(trlindx)'; rf_monk2 = rf_monk(trlindx)';
+                    [pos_regress.beta_r1, ~, ~, ~, pos_regress.corr_r1] = regress_perp(r_fly2(r_fly2 > 100 & r_fly2 < 200),...
+                        rf_monk2(r_fly2 > 100 & r_fly2 < 200), [], 2);
+                    [pos_regress.beta_r2, ~, ~, ~, pos_regress.corr_r2] = regress_perp(r_fly2(r_fly2 > 200 & r_fly2 < 300),...
+                        rf_monk2(r_fly2 > 200 & r_fly2 < 300), [], 2);
+                    [pos_regress.beta_r3, ~, ~, ~, pos_regress.corr_r3] = regress_perp(r_fly2(r_fly2 > 300 & r_fly2 < 400),...
+                        rf_monk2(r_fly2 > 300 & r_fly2 < 400), [], 2);
+                    % save
                     stats.trialtype.(trialtypes{i})(j).pos_regress = pos_regress;
                     % regression with intercept
                     [pos_regress2.beta_r, pos_regress2.alpha_r, pos_regress2.betaCI_r, pos_regress2.alphaCI_r, pos_regress2.corr_r] = regress_perp(r_fly(trlindx)', rf_monk(trlindx)', 0.05, 1);
                     [pos_regress2.beta_theta, pos_regress2.alpha_theta, pos_regress2.betaCI_theta, pos_regress2.alphaCI_theta, pos_regress2.corr_theta] = regress_perp(theta_fly(trlindx)', thetaf_monk(trlindx)', 0.05, 1);
+                    % regression with intercept for different ranges
+                    r_fly2 = r_fly(trlindx)'; rf_monk2 = rf_monk(trlindx)';
+                    [pos_regress2.beta_r1, pos_regress2.alpha_r1, ~, ~, pos_regress2.corr_r1] = regress_perp(r_fly2(r_fly2 > 100 & r_fly2 < 200),...
+                        rf_monk2(r_fly2 > 100 & r_fly2 < 200), [], 1);
+                    [pos_regress2.beta_r2, pos_regress2.alpha_r2, ~, ~, pos_regress2.corr_r2] = regress_perp(r_fly2(r_fly2 > 200 & r_fly2 < 300),...
+                        rf_monk2(r_fly2 > 200 & r_fly2 < 300), [], 1);
+                    [pos_regress2.beta_r3, pos_regress2.alpha_r3, ~, ~, pos_regress2.corr_r3] = regress_perp(r_fly2(r_fly2 > 300 & r_fly2 < 400),...
+                        rf_monk2(r_fly2 > 300 & r_fly2 < 400), [], 1);
+                    % save
                     stats.trialtype.(trialtypes{i})(j).pos_regress_intercept = pos_regress2;
                     % ROC curve
                     [accuracy.rewardwin ,accuracy.pCorrect, accuracy.pcorrect_shuffled_mu] = ComputeROCFirefly([r_fly(trlindx)' (pi/180)*theta_fly(trlindx)'],...
