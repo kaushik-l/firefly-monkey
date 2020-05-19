@@ -3,7 +3,7 @@ function trials = AddTrials2Unit(tspk,trialevents,trials_behv,prs)
 pretrial = prs.pretrial;
 posttrial = prs.posttrial;
 ntrls = length(trialevents.t_end);
-if strcmp(prs.neur_filetype,'nev'), tspk = double(tspk)/prs.fs_spk; end % convert samples to times if using blackrock system
+tspk = double(tspk)/prs.fs_spk; % convert samples to times if using blackrock system / re-sorted Plexon
 
 %% trials
 trials(ntrls) = struct();

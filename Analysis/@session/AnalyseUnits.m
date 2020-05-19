@@ -7,7 +7,7 @@ function AnalyseUnits(this,prs)
 %         this.units(i).AnalyseUnit(this.behaviours,this.lfps,prs);
 %     end
     %% use parallel fitting (way faster)
-    for i=1:nunits
+    parfor i=1:nunits
         fprintf(['... Analysing unit ' num2str(i) '\n']);
         prs2 = prs; prs2.channel_id = this.units(i).channel_id;
         stats(i) = AnalyseUnit(this.units(i).trials,...

@@ -14,7 +14,7 @@ if ~isempty(linearprobe_type) % assume linearprobe is recorded using Plexon
     brain_area = prs.area{strcmp(prs.electrode_type,prs.linearprobe.types{linearprobe_type})};
     file_ead=dir('*_ead.plx'); prs.neur_filetype = 'plx';
     % requires npy-matlab package: https://github.com/kwikteam/npy-matlab
-    [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.utaharray.types{utaharray_type});
+    [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.linearprobe.types{linearprobe_type});
     fprintf(['... reading events from' file_ead.name '\n']);
     [events_plx,prs.fs_spk] = GetEvents_plx(file_ead.name);
     if ~isempty(sua)
@@ -72,7 +72,7 @@ if ~isempty(utaharray_type) % assume utaharray is recorded using Cereplex
             ' , SMR file - ' num2str(length(this.behaviours.trials)) '\n']);
         fprintf('Debug and try again! \n');
     end
-    cd('../..'); % go back to neural data folder
+%     cd('../..'); % go back to neural data folder
 else
     fprintf('No neural data files in the specified path \n');
 end

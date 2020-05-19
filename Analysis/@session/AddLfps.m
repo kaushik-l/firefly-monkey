@@ -78,7 +78,7 @@ function AddLfps(this,prs)
                 ' , SMR file - ' num2str(length(this.behaviours.trials)) '\n']);
             fprintf('Debug and try again! \n');
         end
-        cd('..');
+%         cd('..');
     else
         fprintf('No Cereplex neural data files in the specified path \n');
     end

@@ -74,6 +74,15 @@ for i=1:ntrls
     yre_pred{i} = atan2d(xt{i} - delta, sqrt(yt{i}.^2 + zt^2));
     zle_pred{i} = atan2d(zt , sqrt(yt{i}.^2 + (xt{i} + delta).^2));
     zre_pred{i} = atan2d(zt , sqrt(yt{i}.^2 + (xt{i} - delta).^2));
+    
+    % calibrate
+    coeff = [linspace(.5,0,300) zeros(1,1000)]; coeff = coeff(1:length(yle{i}))';
+    yle{i} = yle{i}.*(1 - coeff) + yle_pred{i}.*(coeff);
+    yre{i} = yre{i}.*(1 - coeff) + yre_pred{i}.*(coeff);
+    zle{i} = zle{i}.*(1 - coeff) + zle_pred{i}.*(coeff);
+    zre{i} = zre{i}.*(1 - coeff) + zre_pred{i}.*(coeff);
+    
+    % predicted eye position
     ver_mean_pred{i} = nanmean([zle_pred{i} , zre_pred{i}],2); % mean vertical eye position (of the two eyes)
     hor_mean_pred{i} = nanmean([yle_pred{i} , yre_pred{i}],2); % mean horizontal eye position
     ver_diff_pred{i} = 0.5*(zle_pred{i} - zre_pred{i}); % 0.5*difference between vertical eye positions (of the two eyes)

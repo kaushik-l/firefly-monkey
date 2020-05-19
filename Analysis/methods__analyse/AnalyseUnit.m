@@ -270,6 +270,10 @@ if fitGAM_tuning
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'a')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0)+1,1) ; diff(x(y>0))/dt],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'alpha')
+                        vars{k} = cellfun(@(x,y) [zeros(sum(y<=0)+1,1) ; diff(x(y>0))/dt],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'eye_ver')
                         isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
                         if isnan_le, vars{k} = {continuous_temp.zre};

@@ -6691,8 +6691,8 @@ monkeyInfo (end).coord.depth = nan;
 monkeyInfo (end).units = 0;
 monkeyInfo (end).folder = 'Schro\Sim_recordings\Jul 25 2018';
 monkeyInfo (end).comments = {'fixed density, no landmarks, no ptb, random DCI, fixed ITI, multifirefly, 1D Azimuth, MSTd'};
-monkeyInfo (end).electrode_type = {'utah2x48'};
-monkeyInfo (end).area = {{'PPC', 'PFC'}};
+monkeyInfo (end).electrode_type = {'utah2x48','linearprobe24'};
+monkeyInfo (end).area = {{'PPC', 'PFC'},'MST'};
 monkeyInfo (end).eyechannels = [2 2];
 
 

@@ -17,6 +17,11 @@ trialtypes = fields(behv_stats.trialtype);
 events = cell2mat({trials_behv.events});
 continuous = cell2mat({trials_behv.continuous});
 
+%% define filter to smooth the firing rate
+t = linspace(-2*prs.filtwidth,2*prs.filtwidth,4*prs.filtwidth + 1);
+h = exp(-t.^2/(2*prs.filtwidth^2));
+h = h/sum(h);
+
 %% fit GAM with cross-neuronal coupling
 if fitGAM_coupled
     stats = [];
@@ -63,6 +68,10 @@ if fitGAM_coupled
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'phi')
                         vars{k} = cellfun(@(x,y) [zeros(sum(y<=0),1) ; cumsum(x(y>0)*dt)],{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'a')
+                        vars{k} = cellfun(@(x,y) double([zeros(sum(y<=0)+1,1) ;  diff(conv(x(y>0),h,'same'))/dt]),{continuous_temp.v},{continuous_temp.ts},'UniformOutput',false);
+                    elseif strcmp(varname(k),'alpha')
+                        vars{k} = cellfun(@(x,y) double([zeros(sum(y<=0)+1,1) ;  diff(conv(x(y>0),h,'same'))/dt]),{continuous_temp.w},{continuous_temp.ts},'UniformOutput',false);
                     elseif strcmp(varname(k),'eye_ver')
                         isnan_le = all(isnan(cell2mat({continuous_temp.zle}'))); isnan_re = all(isnan(cell2mat({continuous_temp.zre}')));
                         if isnan_le, vars{k} = {continuous_temp.zre};
@@ -100,7 +109,7 @@ if fitGAM_coupled
                     elseif any(strcmp(varname(k),{'h1','h2'}))
                         [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                         xt(:,k) = xt(:,k)/100; % 1 unit = 100pixels/s
-                    elseif ~strcmp(vartype(k),'event')
+                    elseif ~strcmp(vartype(k),'event') || ((strcmp(varname(k),'a') || strcmp(varname(k),'alpha')))
                         [xt(:,k),~,yt] = ConcatenateTrials(vars{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                     elseif ~strcmp(varname(k),'spikehist')                        
                         [~,xt(:,k),yt] = ConcatenateTrials([],mat2cell(vars{k}',ones(length(events_temp),1)),{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
@@ -114,14 +123,23 @@ if fitGAM_coupled
                     [~,~,Yt(:,k)] = ConcatenateTrials(vars{1},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
                 end
                 %% fit fully coupled GAM model to each unit
-                for k=1:nunits
+                % replace xt(:,'phase') with the unit-specific LFP channel
+                if any(strcmp(varname,'phase'))
+                    for k=1:nunits
+                        xt2{k} = xt;
+                        xt2{k}(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    end
+                end
+                % fit in parallel
+                parfor k=1:nunits
                     fprintf(['k = ' num2str(k) '\n']);
                     % replace xt(:,'phase') with the unit-specific LFP channel
-                    xt(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
-                    xt_k = mat2cell(xt,size(xt,1),ones(1,size(xt,2))); % convert to cell
-                    models = BuildGAMCoupled(xt_k,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
-                    stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc).units(k) = models;
+%                     xt(:,strcmp(varname,'phase')) = ConcatenateTrials(var_phase{k},[],{trials_spks_temp.tspk},{continuous_temp.ts},timewindow_full);
+                    xt_k = mat2cell(xt2{k},size(xt2{k},1),ones(1,size(xt2{k},2))); % convert to cell
+                    models(k) = BuildGAMCoupled2(xt_k,Yt(:,k),Yt(:,[1:k-1 k+1:nunits]),GAM_prs);
                 end
+                % retrieve ouput
+                for k=1:nunits, stats.trialtype.(trialtypes{i})(j).models.(GAM_prs.linkfunc).units(k) = models(k); end
             end
         end
     end
