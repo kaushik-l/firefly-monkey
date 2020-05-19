@@ -18,7 +18,7 @@ function AddLfps(this,prs)
         % read lfp
         if length(this.behaviours.trials)==length(events_plx.t_end)
             fprintf(['... reading ' file_lfp.name '\n']);
-            [ch_id,electrode_id] = MapChannel2Electrode('linearprobe');
+            [ch_id,electrode_id] = MapChannel2Electrode(prs.linearprobe.types{linearprobe_type});
             for j=1:prs.linearprobe.channelcount(linearprobe_type)
                 fprintf(['...... channel ' num2str(j) '/' num2str(prs.linearprobe.channelcount(linearprobe_type)) '\n']);
                 [adfreq, n, ~, fn, ad] = plx_ad_v(file_lfp.name, j-1);
