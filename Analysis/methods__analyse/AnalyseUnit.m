@@ -259,7 +259,11 @@ if fitGAM_tuning
                 events_temp = events(trlindx);
                 continuous_temp = continuous(trlindx);
                 trials_spks_temp = trials_spks(trlindx);
-                if ~isempty(lfps), trials_lfps_temp = lfps(prs.channel_id).trials(trlindx); end
+                if ~isempty(lfps)
+                    indx = strcmp({lfps.electrode_type},prs.electrode_type) & ...
+                        ([lfps.channel_id]==prs.channel_id);
+                    trials_lfps_temp = lfps(indx).trials(trlindx); 
+                end
                 %% select variables of interest and load their details
                 vars = cell(length(varname),1);
                 GAM_prs.binrange = cell(1,length(varname));

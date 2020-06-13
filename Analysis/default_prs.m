@@ -251,22 +251,22 @@ prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = false; % evaluate significance of event-locked responses
-prs.compute_tuning = false; % compute tuning functions
+prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.compute_tuning = true; % compute tuning functions
 %% GAM fitting
 prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each predictor using GAM
-prs.fitGAM_coupled = true; % fit generalised additive models to single neuron responses with cross-neuronal coupling
+prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis
 prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
-prs.regress_popreadout = false; % regress population activity against individual task variables
+prs.regress_popreadout = true; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models
 prs.corr_neuronbehverr = false;
 
 %% LFP
-prs.event_potential = false;
+prs.event_potential = true;
 prs.compute_spectrum = false;
 prs.analyse_theta = false;
 prs.analyse_beta = false;
