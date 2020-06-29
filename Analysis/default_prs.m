@@ -241,29 +241,29 @@ prs.NNM_method = 'feedforward_nn'; % choose from 'feedforward_nn', 'random_fores
 prs.canoncorr_varname = {'v','w','d','phi','dv','dw'}; % list of variables to include in the task variable matrix
 prs.simulate_varname = {'v','w','d','phi','dv','dw'}; % list of variables to use as inputs in simulation
 prs.simulate_vartype = {'1D','1D','1D','1D','1D','1D','1D','1D'};
-prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ'}; %,'dv','dw','eye_ver','eye_hor'};
+prs.readout_varname = {'v','w','d','phi','r_targ','theta_targ','dv','dw','eye_ver','eye_hor'};
 
 %% ****which analyses to do****
 %% behavioural
 prs.split_trials = true; % split trials into different stimulus conditions
-prs.regress_behv = false; % regress response against target position
+prs.regress_behv = true; % regress response against target position
 prs.regress_eye = false; % regress eye position against target position
 
 %% spikes
 % traditional methods
-prs.evaluate_peaks = true; % evaluate significance of event-locked responses
+prs.evaluate_peaks = false; % evaluate significance of event-locked responses
 prs.compute_tuning = true; % compute tuning functions
 %% GAM fitting
-prs.fitGAM_tuning = true; % fit generalised additive models to single neuron responses using both task variables + events as predictors
+prs.fitGAM_tuning = false; % fit generalised additive models to single neuron responses using both task variables + events as predictors
 prs.GAM_varexp = false; % compute variance explained by each predictor using GAM
 prs.fitGAM_coupled = false; % fit generalised additive models to single neuron responses with cross-neuronal coupling
 %% NNM fitting
 prs.fitNNM = false;
 %% population analysis
-prs.compute_canoncorr = false; % compute cannonical correlation between population response and task variables
+prs.compute_canoncorr = true; % compute cannonical correlation between population response and task variables
 prs.regress_popreadout = true; % regress population activity against individual task variables
 prs.simulate_population = false; % simulate population activity by running the encoding models
-prs.corr_neuronbehverr = false;
+prs.corr_neuronbehverr = true;
 
 %% LFP
 prs.event_potential = true;

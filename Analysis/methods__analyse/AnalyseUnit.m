@@ -227,6 +227,17 @@ if compute_tuning
                     stats.trialtype.(trialtypes{i})(j).continuous.r_stop = ...
                         ComputeTuning(r_stop,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.r_targ);
                 end
+                %% phase tuning
+                if any(strcmp(gettuning,'phase'))
+                    if ~isempty(lfps)
+                        indx = strcmp({lfps.electrode_type},prs.electrode_type) & ...
+                            ([lfps.channel_id]==prs.channel_id);
+                        trials_lfps_temp = lfps(indx).trials(trlindx);
+                        phase = cellfun(@(x) angle(hilbert(x)), {trials_lfps_temp.lfp},'UniformOutput',false);
+                        stats.trialtype.(trialtypes{i})(j).continuous.phase = ...
+                            ComputeTuning(phase,{continuous_temp.ts},{trials_spks_temp.tspk},timewindow_path,duration_zeropad,corr_lag,nbootstraps,prs.tuning,prs.tuning_method,prs.binrange.phase);   
+                    end
+                end
             end
         end
     end

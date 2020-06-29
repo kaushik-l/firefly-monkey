@@ -17,6 +17,7 @@ if ~isempty(linearprobe_type) % assume linearprobe is recorded using Plexon
     [sua, mua] = GetUnits_phy('spike_times.npy', 'spike_clusters.npy', 'cluster_groups.csv','cluster_location.xls',prs.linearprobe.types{linearprobe_type});
     fprintf(['... reading events from' file_ead.name '\n']);
     [events_plx,prs.fs_spk] = GetEvents_plx(file_ead.name);
+    prs.fs_spk = 20000; % hard coding because this info is not available in ead (but can be verfied from lfp file)
     if ~isempty(sua)
         for i=1:length(sua)
             %fetch singleunit
